@@ -5,7 +5,7 @@
 void smxgen_main( igraph_t* g )
 {
     int ident = 0;
-    cgen_header_c_file( "todo" );
+    cgen_header_c_file( "main" );
     cgen_include_local( "smxrts.h" );
     cgen_print( "\n" );
     cgen_main_head();
