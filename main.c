@@ -16,12 +16,12 @@ int main( void )
     __src_file = fopen( "test/main.c", "w" );
     smxgen_main( &g );
     fclose( __src_file );
-    __src_file = fopen( "test/boxes.h", "w" );
+    __src_file = fopen( "test/boxgen.h", "w" );
     smxgen_boxes_h( &g );
     fclose( __src_file );
-    /* __src_file = fopen( "test/boxes.c", "w" ); */
-    /* smxgen_boxes_c( &g ); */
-    /* fclose( __src_file ); */
+    __src_file = fopen( "test/boxgen.c", "w" );
+    smxgen_boxes_c( &g );
+    fclose( __src_file );
 
     return 0;
 }

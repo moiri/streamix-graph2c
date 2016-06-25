@@ -20,10 +20,31 @@ void cgen_box_destroy( int ident, int id )
 }
 
 /******************************************************************************/
+void cgen_box_fct_call( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "%s( handler );\n", name );
+}
+
+/******************************************************************************/
+void cgen_box_fct_head( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "void* box_%s( void* handler )\n", name );
+}
+
+/******************************************************************************/
 void cgen_box_fct_proto( int ident, const char* name )
 {
     cgen_ident( ident );
     cgen_print( "void *box_%s( void* );\n", name );
+}
+
+/******************************************************************************/
+void cgen_box_fct_ret( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "return NULL;\n" );
 }
 
 /******************************************************************************/
@@ -62,6 +83,20 @@ void cgen_box_wait_end( int ident, const char* name )
 }
 
 /******************************************************************************/
+void cgen_box_zlog_end( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "dzlog_info( \"end thread %s\" );\n", name );
+}
+
+/******************************************************************************/
+void cgen_box_zlog_start( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "dzlog_info( \"start thread %s\" );\n", name );
+}
+
+/******************************************************************************/
 void cgen_channel_create( int ident, int id )
 {
     cgen_ident( ident );
@@ -95,6 +130,13 @@ void cgen_function_end( int ident )
 {
     cgen_ident( ident );
     cgen_print( "}\n\n" );
+}
+
+/******************************************************************************/
+void cgen_function_start( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "{\n" );
 }
 
 /******************************************************************************/
@@ -145,6 +187,12 @@ void cgen_ifndef( const char* name )
 }
 
 /******************************************************************************/
+void cgen_include( const char* file )
+{
+    cgen_print( "#include <%s>\n", file );
+}
+
+/******************************************************************************/
 void cgen_include_local( const char* file )
 {
     cgen_print( "#include \"%s\"\n", file );
@@ -153,7 +201,7 @@ void cgen_include_local( const char* file )
 /******************************************************************************/
 void cgen_main_head()
 {
-    cgen_print( "int main( void )\n{\n" );
+    cgen_print( "int main( void )\n" );
 }
 
 /******************************************************************************/
