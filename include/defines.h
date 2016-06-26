@@ -1,11 +1,12 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#ifndef FILE_BOX
 #define FILE_BOX    "boxgen"
-#define FILE_BOX_C  "boxgen.c"
-#define FILE_BOX_H  "boxgen.h"
+#endif
+#define FILE_BOX_C  FILE_BOX ".c"
+#define FILE_BOX_H  FILE_BOX ".h"
 #define FILE_BOX_IH "BOXGEN_H"
-#define FILE_IMPL_H "boximpl.h"
 #define FILE_SMX_H  "smxrts.h"
 #define FILE_ZLOG_H "zlog.h"
 

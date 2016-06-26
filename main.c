@@ -5,6 +5,23 @@
 #include <string.h>
 
 FILE* __src_file;
+char* extract_path( const char* str )
+{
+    const char* slash;
+    char* path;
+    int path_size;
+    slash = strrchr( str, '/' );
+    if( slash == NULL ) {
+        return "";
+    }
+    else {
+        path_size = slash - str + 1;
+    }
+    path = malloc( path_size + 1 );
+    memcpy( path, str, path_size );
+    path[ path_size ] = '\0';
+    return path;
+}
 
 char* extract_base_name( const char* path )
 {
@@ -42,8 +59,11 @@ int main( int argc, char **argv )
 {
     igraph_t g;
     const char* src_file_name;
+    char* path;
     char* file_name;
-    char* file_name_target;
+    char* path_main;
+    char* path_boxh;
+    char* path_boxc;
     FILE* ifile;
     igraph_i_set_attribute_table( &igraph_cattribute_table );
 
@@ -53,29 +73,37 @@ int main( int argc, char **argv )
     }
     src_file_name = argv[ 1 ];
 
+    path = extract_path( src_file_name );
+
     file_name = extract_base_name( src_file_name );
 
-    file_name_target = malloc( strlen( file_name ) + 3 );
-    sprintf( file_name_target, "%s.c", file_name );
+    path_main = malloc( strlen( file_name ) + strlen( path ) + 3 );
+    sprintf( path_main, "%s%s.c", path, file_name );
+    path_boxh = malloc( strlen( FILE_BOX_H ) + strlen( path ) + 1 );
+    sprintf( path_boxh, "%s%s", path, FILE_BOX_H );
+    path_boxc = malloc( strlen( FILE_BOX_C ) + strlen( path ) + 1 );
+    sprintf( path_boxc, "%s%s", path, FILE_BOX_C );
 
     ifile = fopen( src_file_name, "r" );
     igraph_read_graph_gml( &g, ifile );
     fclose( ifile );
 
-    __src_file = fopen( file_name_target, "w" );
+    __src_file = fopen( path_main, "w" );
     smxgen_main( file_name, &g );
     fclose( __src_file );
 
-    __src_file = fopen( FILE_BOX_H, "w" );
+    __src_file = fopen( path_boxh, "w" );
     smxgen_boxes_h( &g );
     fclose( __src_file );
 
-    __src_file = fopen( FILE_BOX_C, "w" );
+    __src_file = fopen( path_boxc, "w" );
     smxgen_boxes_c( &g );
     fclose( __src_file );
 
     free( file_name );
-    free( file_name_target );
+    free( path_main );
+    free( path_boxh );
+    free( path_boxc );
 
     igraph_destroy( &g );
 
