@@ -61,12 +61,15 @@ int main( int argc, char **argv )
     ifile = fopen( src_file_name, "r" );
     igraph_read_graph_gml( &g, ifile );
     fclose( ifile );
+
     __src_file = fopen( file_name_target, "w" );
     smxgen_main( file_name, &g );
     fclose( __src_file );
+
     __src_file = fopen( FILE_BOX_H, "w" );
     smxgen_boxes_h( &g );
     fclose( __src_file );
+
     __src_file = fopen( FILE_BOX_C, "w" );
     smxgen_boxes_c( &g );
     fclose( __src_file );

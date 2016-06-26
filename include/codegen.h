@@ -4,6 +4,7 @@
 void cgen_box_create( int, int, const char* );
 void cgen_box_destroy( int, int );
 void cgen_box_fct_call( int, const char* );
+void cgen_box_fct_ext( int, const char* );
 void cgen_box_fct_head( int, const char* );
 void cgen_box_fct_proto( int, const char* );
 void cgen_box_fct_ret( int );

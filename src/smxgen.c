@@ -30,12 +30,14 @@ void smxgen_box_structs( igraph_t* g, int ident )
             IGRAPH_EIT_NEXT( e_it );
         }
         igraph_eit_destroy( &e_it );
+        igraph_es_destroy( &e_sel );
         ident--;
         cgen_box_struct_tail( ident,
                 igraph_cattribute_VAS( g, GV_LABEL, vid ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -44,7 +46,6 @@ void smxgen_boxes_c( igraph_t* g )
     int ident = 0;
     cgen_header_c_file( FILE_BOX );
     cgen_include_local( FILE_BOX_H );
-    cgen_include_local( FILE_IMPL_H );
     cgen_include_local( FILE_SMX_H );
     cgen_include( FILE_ZLOG_H );
     cgen_print( "\n" );
@@ -76,6 +77,7 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box function definitions
         vid = IGRAPH_VIT_GET( v_it );
+        cgen_box_fct_ext( ident, igraph_cattribute_VAS( g, GV_IMPL, vid ) );
         cgen_box_fct_head( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
         cgen_function_start( ident );
         ident++;
@@ -114,6 +116,7 @@ void smxgen_main( const char* file_name, igraph_t* g )
     int ident = 0;
     cgen_header_c_file( file_name );
     cgen_include_local( FILE_SMX_H );
+    cgen_include_local( FILE_BOX_H );
     cgen_print( "\n" );
     cgen_main_head();
     cgen_function_start( ident );
