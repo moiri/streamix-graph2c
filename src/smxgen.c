@@ -90,6 +90,7 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -108,6 +109,7 @@ void smxgen_box_fct_prots( igraph_t* g, int ident )
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -155,6 +157,7 @@ void smxgen_network_create( igraph_t* g, int ident )
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
     // for all channels in the scope
     e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
     igraph_eit_create( g, e_sel, &e_it );
@@ -173,6 +176,7 @@ void smxgen_network_create( igraph_t* g, int ident )
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
 }
 
 /******************************************************************************/
@@ -193,6 +197,7 @@ void smxgen_network_destroy( igraph_t* g, int ident )
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
     // for all channels in the scope
     e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
     igraph_eit_create( g, e_sel, &e_it );
@@ -203,6 +208,7 @@ void smxgen_network_destroy( igraph_t* g, int ident )
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
 }
 
 /******************************************************************************/
@@ -221,6 +227,7 @@ void smxgen_network_run( igraph_t* g, int ident )
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -239,4 +246,5 @@ void smxgen_network_wait_end( igraph_t* g, int ident )
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
