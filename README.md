@@ -12,11 +12,11 @@ Requires
 
 ## Usage
 
-  ./graph2c [OPTION...] FILE
+    ./graph2c [OPTION...] FILE
 
-  Options:
-    -h            This message
-    -v            Version
-    -p 'path'     Path to store the generated files
-    -f 'format'   Format of the graph either 'gml' or 'graphml'
+    Options:
+      -h            This message
+      -v            Version
+      -p 'path'     Path to store the generated files
+      -f 'format'   Format of the graph either 'gml' or 'graphml'
 
