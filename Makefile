@@ -31,4 +31,13 @@ debug: $(PROJECT)
 
 # compile project
 $(PROJECT): $(SOURCES) $(INCLUDES)
-	$(CC) $(CFLAGS) $(SOURCES) $(INCLUDES_DIR) $(LINK_DIR) $(LINK_FILE) -o $(PROJECT).out
+	$(CC) $(CFLAGS) $(SOURCES) $(INCLUDES_DIR) $(LINK_DIR) $(LINK_FILE) -o $(PROJECT)
+
+.PHONY: clean install
+
+install:
+	mkdir -p /usr/local/bin
+	cp -a $(PROJECT) /usr/local/bin/.
+
+clean:
+	rm -f $(PROJECT)
