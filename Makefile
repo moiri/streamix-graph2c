@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-PROJECT = gml2c
+PROJECT = graph2c
 
 LOC_INC_DIR = include
 LOC_SRC_DIR = src

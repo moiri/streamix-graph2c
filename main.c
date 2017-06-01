@@ -46,12 +46,13 @@ int main( int argc, char **argv )
     char* path_main;
     char* path_boxh;
     char* path_boxc;
+    char* format;
     FILE* ifile;
     int path_size, name_size;
     int c;
     igraph_i_set_attribute_table( &igraph_cattribute_table );
 
-    while( ( c = getopt( argc, argv, "hvp:" ) ) != -1 )
+    while( ( c = getopt( argc, argv, "hvp:f:" ) ) != -1 )
         switch( c ) {
             case 'h':
                 printf( "Usage:\n  %s [OPTION...] FILE\n\n", argv[0] );
@@ -59,6 +60,7 @@ int main( int argc, char **argv )
                 printf( "  -h            This message\n" );
                 printf( "  -v            Version\n" );
                 printf( "  -p 'path'     Path to store the generated files\n" );
+                printf( "  -f 'format'   Format of the graph either 'gml' or 'graphml'\n" );
                 return 0;
             case 'v':
                 printf( "gml2c-v0.0.1\n" );
@@ -66,8 +68,11 @@ int main( int argc, char **argv )
             case 'p':
                 out_path = optarg;
                 break;
+            case 'f':
+                format = optarg;
+                break;
             case '?':
-                if ( optopt == 'p' )
+                if( ( optopt == 'p' ) || ( optopt == 'f' ) )
                     fprintf ( stderr, "Option -%c requires an argument.\n",
                             optopt );
                 else
@@ -83,6 +88,7 @@ int main( int argc, char **argv )
     }
     src_file_name = argv[ optind ];
     if( out_path == NULL ) out_path = "";
+    if( format == NULL ) format = "graphml";
 
     path_size = get_path_size( src_file_name );
     name_size = get_name_size( src_file_name );
@@ -98,7 +104,16 @@ int main( int argc, char **argv )
     sprintf( path_boxc, "%s%s", out_path, FILE_BOX_C );
 
     ifile = fopen( src_file_name, "r" );
-    igraph_read_graph_gml( &g, ifile );
+    if( strcmp( format, "gml" ) == 0 ) {
+        igraph_read_graph_gml( &g, ifile );
+    }
+    else if( strcmp( format, "graphml" ) == 0 ) {
+        igraph_read_graph_graphml( &g, ifile, 0 );
+    }
+    else {
+        printf( "Unknown format '%s'!\n", format );
+        return -1;
+    }
     fclose( ifile );
 
     __src_file = fopen( path_main, "w" );
