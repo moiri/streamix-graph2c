@@ -29,6 +29,8 @@ void cgen_ifndef( const char* );
 void cgen_include( const char* );
 void cgen_include_local( const char* );
 void cgen_main_head();
+void cgen_port_create( int, int, const char*, const char* );
+void cgen_port_destroy( int, int, const char*, const char* );
 int cgen_print( const char*, ... );
 void cgen_program_init( int );
 void cgen_program_cleanup( int );

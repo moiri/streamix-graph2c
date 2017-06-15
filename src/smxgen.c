@@ -46,7 +46,6 @@ void smxgen_boxes_c( igraph_t* g )
     int ident = 0;
     cgen_header_c_file( FILE_BOX );
     cgen_include_local( FILE_BOX_H );
-    cgen_include_local( FILE_SMX_H );
     cgen_include( FILE_ZLOG_H );
     cgen_print( "\n" );
     smxgen_box_fct_defs( g, ident );
@@ -58,6 +57,8 @@ void smxgen_boxes_h( igraph_t* g )
     int ident = 0;
     cgen_header_h_file( FILE_BOX );
     cgen_ifndef( FILE_BOX_IH );
+    cgen_print( "\n" );
+    cgen_include_local( FILE_SMX_H );
     cgen_print( "\n" );
     smxgen_box_structs( g, ident );
     smxgen_box_fct_prots( g, ident );
@@ -167,8 +168,14 @@ void smxgen_network_create( igraph_t* g, int ident )
         cgen_channel_create( ident, eid );
         // generate connection code for a channel and its connecting boxes
         igraph_edge( g, eid, &vid1, &vid2 );
+        cgen_port_create( ident, vid1,
+                igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
         cgen_connect( ident, eid, vid1,
                 igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
+        cgen_port_create( ident, vid2,
+                igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
                 igraph_cattribute_EAS( g, GE_LABEL, eid ) );
         cgen_connect( ident, eid, vid2,
                 igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
@@ -186,29 +193,36 @@ void smxgen_network_destroy( igraph_t* g, int ident )
     igraph_vit_t v_it;
     igraph_es_t e_sel;
     igraph_eit_t e_it;
-    int eid, vid;
-    // for all boxes in the scope
-    v_sel = igraph_vss_all();
-    igraph_vit_create( g, v_sel, &v_it );
-    while( !IGRAPH_VIT_END( v_it ) ) {
-        // generate box destruction code
-        vid = IGRAPH_VIT_GET( v_it );
-        cgen_box_destroy( ident, vid );
-        IGRAPH_VIT_NEXT( v_it );
-    }
-    igraph_vit_destroy( &v_it );
-    igraph_vs_destroy( &v_sel );
+    int eid, vid1, vid2;
     // for all channels in the scope
     e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
     igraph_eit_create( g, e_sel, &e_it );
     while( !IGRAPH_EIT_END( e_it ) ) {
         // generate channel destruction code
         eid = IGRAPH_EIT_GET( e_it );
+        igraph_edge( g, eid, &vid1, &vid2 );
+        cgen_port_destroy( ident, vid1,
+                igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
+        cgen_port_destroy( ident, vid2,
+                igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
+                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
         cgen_channel_destroy( ident, eid );
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        // generate box destruction code
+        vid1 = IGRAPH_VIT_GET( v_it );
+        cgen_box_destroy( ident, vid1 );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
