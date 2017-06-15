@@ -13,5 +13,7 @@
 #define GV_LABEL    "label"
 #define GV_IMPL     "func"
 #define GE_LABEL    "label"
+#define GE_DSRC     "dsrc"
+#define GE_DDST     "ddst"
 
 #endif /* ifndef DEFINES_H */

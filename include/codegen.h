@@ -16,7 +16,7 @@ void cgen_box_struct_tail( int, const char* );
 void cgen_box_wait_end( int, const char* );
 void cgen_box_zlog_end( int, const char* );
 void cgen_box_zlog_start( int, const char* );
-void cgen_channel_create( int, int );
+void cgen_channel_create( int, int, int );
 void cgen_channel_destroy( int, int );
 void cgen_connect( int, int, int, const char*, const char* );
 void cgen_endif( const char* );

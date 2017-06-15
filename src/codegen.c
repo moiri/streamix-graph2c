@@ -104,10 +104,15 @@ void cgen_box_zlog_start( int ident, const char* name )
 }
 
 /******************************************************************************/
-void cgen_channel_create( int ident, int id )
+void cgen_channel_create( int ident, int id, int decoupled )
 {
     cgen_ident( ident );
-    cgen_print( "void* ch_%d = SMX_CHANNEL_CREATE();\n", id );
+    cgen_print( "void* ch_%d = SMX_CHANNEL_CREATE( ", id );
+    if( decoupled )
+        cgen_print( "1, SMX_BLACKBOARD" );
+    else
+        cgen_print( "1, SMX_FIFO" );
+    cgen_print( " );\n" );
 }
 
 /******************************************************************************/
