@@ -171,14 +171,8 @@ void smxgen_network_create( igraph_t* g, int ident )
         cgen_channel_create( ident, eid, decoupled );
         // generate connection code for a channel and its connecting boxes
         igraph_edge( g, eid, &vid1, &vid2 );
-        cgen_port_create( ident, vid1,
-                igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
         cgen_connect( ident, eid, vid1,
                 igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
-        cgen_port_create( ident, vid2,
-                igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
                 igraph_cattribute_EAS( g, GE_LABEL, eid ) );
         cgen_connect( ident, eid, vid2,
                 igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
@@ -204,12 +198,6 @@ void smxgen_network_destroy( igraph_t* g, int ident )
         // generate channel destruction code
         eid = IGRAPH_EIT_GET( e_it );
         igraph_edge( g, eid, &vid1, &vid2 );
-        cgen_port_destroy( ident, vid1,
-                igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
-        cgen_port_destroy( ident, vid2,
-                igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
         cgen_channel_destroy( ident, eid );
         IGRAPH_EIT_NEXT( e_it );
     }

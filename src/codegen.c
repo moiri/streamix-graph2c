@@ -9,7 +9,7 @@ extern FILE* __src_file;
 void cgen_box_create( int ident, int id, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "void* box_%d = SMX_BOX_CREATE( %s );\n", id, name );
+    cgen_print( "box_%s_t* box_%d = SMX_BOX_CREATE( %s );\n", name, id, name );
 }
 
 /******************************************************************************/
@@ -58,7 +58,7 @@ void cgen_box_fct_ret( int ident )
 void cgen_box_port( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "smx_port_t*  port_%s;\n", name );
+    cgen_print( "smx_channel_t*  port_%s;\n", name );
 }
 
 /******************************************************************************/
@@ -107,7 +107,7 @@ void cgen_box_zlog_start( int ident, const char* name )
 void cgen_channel_create( int ident, int id, int decoupled )
 {
     cgen_ident( ident );
-    cgen_print( "void* ch_%d = SMX_CHANNEL_CREATE( ", id );
+    cgen_print( "smx_channel_t* ch_%d = SMX_CHANNEL_CREATE( ", id );
     if( decoupled )
         cgen_print( "1, SMX_BLACKBOARD" );
     else
@@ -216,24 +216,6 @@ void cgen_include_local( const char* file )
 void cgen_main_head()
 {
     cgen_print( "int main( void )\n" );
-}
-
-/******************************************************************************/
-void cgen_port_create( int ident, int id_box, const char* box_name,
-        const char* ch_name )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_PORT_CREATE( box_%d, %s, %s );\n", id_box,
-            box_name, ch_name );
-}
-
-/******************************************************************************/
-void cgen_port_destroy( int ident, int id_box, const char* box_name,
-        const char* ch_name )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_PORT_DESTROY( box_%d, %s, %s );\n", id_box,
-            box_name, ch_name );
 }
 
 /******************************************************************************/
