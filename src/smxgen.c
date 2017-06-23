@@ -2,42 +2,85 @@
 #include "codegen.h"
 #include <defines.h>
 #include <igraph.h>
+#include <string.h>
+
+int smxgen_box_is_duplicate( const char* name, const char** names, int len )
+{
+    int i;
+    for( i=0; i<len; i++ )
+        if( ( names[i] != NULL ) && ( strcmp( names[i], name ) == 0 ) )
+            return 1;
+    return 0;
+}
+
+int smxgen_box_is_cp_sync( igraph_t* g, int vid )
+{
+    const char* impl_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+    if( strcmp( impl_name , CP_SYNC_STR ) == 0 )
+        return 1;
+    return 0;
+}
 
 /******************************************************************************/
 void smxgen_box_structs( igraph_t* g, int ident )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
-    igraph_es_t e_sel;
-    igraph_eit_t e_it;
-    int vid, eid;
+    int vid, idx = 0, box_count = igraph_vcount( g ), i;
+    const char* box_names[box_count];
+    const char* box_name;
+    for( i=0; i<box_count; i++ )
+        box_names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
-        // generate box structure code
         vid = IGRAPH_VIT_GET( v_it );
-        cgen_box_struct_head( ident,
-                igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        // store name of vertex to avoid duplicates
+        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_cp_sync( g, vid )
+                || smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        box_names[idx++] = box_name;
+        // generate box structure code
+        cgen_box_struct_head( ident, box_name );
         ident++;
         // for all incident channels of this box
-        igraph_es_incident( &e_sel, vid, IGRAPH_ALL );
-        igraph_eit_create( g, e_sel, &e_it );
-        while( !IGRAPH_EIT_END( e_it ) ) {
-            // generate port code
-            eid = IGRAPH_EIT_GET( e_it );
-            cgen_box_port( ident, igraph_cattribute_EAS( g, GE_LABEL, eid ) );
-            IGRAPH_EIT_NEXT( e_it );
-        }
-        igraph_eit_destroy( &e_it );
-        igraph_es_destroy( &e_sel );
+        smxgen_box_structs_ports( g, ident, vid, IGRAPH_IN );
+        smxgen_box_structs_ports( g, ident, vid, IGRAPH_OUT );
         ident--;
         cgen_box_struct_tail( ident,
-                igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+                igraph_cattribute_VAS( g, GV_IMPL, vid ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
     igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
+void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode )
+{
+    int eid;
+    const char* mode_str = ( mode == IGRAPH_IN ) ? MODE_IN : MODE_OUT;
+    igraph_es_t e_sel;
+    igraph_eit_t e_it;
+    cgen_struct_head( ident );
+    ident++;
+
+    igraph_es_incident( &e_sel, vid, mode );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate port code
+        eid = IGRAPH_EIT_GET( e_it );
+        cgen_box_port( ident, igraph_cattribute_EAS( g, GE_LABEL, eid ) );
+        IGRAPH_EIT_NEXT( e_it );
+    }
+    igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
+    ident--;
+    cgen_struct_tail( ident, mode_str );
 }
 
 /******************************************************************************/
@@ -71,19 +114,31 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
-    int vid;
+    int vid, idx = 0, box_count = igraph_vcount( g ), i;
+    const char* box_names[box_count];
+    const char* box_name;
+    for( i=0; i<box_count; i++ )
+        box_names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
-        // generate box function definitions
         vid = IGRAPH_VIT_GET( v_it );
-        cgen_box_fct_ext( ident, igraph_cattribute_VAS( g, GV_IMPL, vid ) );
-        cgen_box_fct_head( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        // store name of vertex to avoid duplicates
+        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_cp_sync( g, vid )
+                || smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        box_names[idx++] = box_name;
+        // generate box function definitions
+        cgen_box_fct_ext( ident, box_name );
+        cgen_box_fct_head( ident, box_name );
         cgen_function_start( ident );
         ident++;
         cgen_box_zlog_start( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
-        cgen_box_fct_call( ident, igraph_cattribute_VAS( g, GV_IMPL, vid ) );
+        cgen_box_fct_call( ident, box_name );
         cgen_box_zlog_end( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
         cgen_box_fct_ret( ident );
         ident--;
@@ -99,14 +154,26 @@ void smxgen_box_fct_prots( igraph_t* g, int ident )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
-    int vid;
+    int vid, idx = 0, box_count = igraph_vcount( g ), i;
+    const char* box_names[box_count];
+    const char* box_name;
+    for( i=0; i<box_count; i++ )
+        box_names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
-        // generate box function prototypes
         vid = IGRAPH_VIT_GET( v_it );
-        cgen_box_fct_proto( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        // store name of vertex to avoid duplicates
+        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_cp_sync( g, vid )
+                || smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        box_names[idx++] = box_name;
+        // generate box function prototypes
+        cgen_box_fct_proto( ident, box_name );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -143,11 +210,13 @@ void smxgen_main( const char* file_name, igraph_t* g )
 void smxgen_network_create( igraph_t* g, int ident )
 {
     igraph_vs_t v_sel;
+    igraph_vs_t v_cp;
     igraph_vit_t v_it;
     igraph_es_t e_sel;
     igraph_eit_t e_it;
     int eid, vid1, vid2;
     int decoupled;
+    igraph_vector_t indegree, outdegree;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
@@ -155,7 +224,19 @@ void smxgen_network_create( igraph_t* g, int ident )
         // generate box creation code
         vid1 = IGRAPH_VIT_GET( v_it );
         cgen_box_create( ident, vid1,
-                igraph_cattribute_VAS( g, GV_LABEL, vid1 ) );
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
+        if( smxgen_box_is_cp_sync( g, vid1 ) ) {
+            igraph_vs_1( &v_cp, vid1 );
+            igraph_vector_init( &indegree, 1 );
+            igraph_vector_init( &outdegree, 1 );
+            igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
+            igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
+            cgen_box_cp_init( ident, vid1, VECTOR( indegree )[0],
+                    VECTOR( outdegree )[0] );
+            igraph_vs_destroy( &v_cp );
+            igraph_vector_destroy( &indegree );
+            igraph_vector_destroy( &outdegree );
+        }
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -172,11 +253,13 @@ void smxgen_network_create( igraph_t* g, int ident )
         // generate connection code for a channel and its connecting boxes
         igraph_edge( g, eid, &vid1, &vid2 );
         cgen_connect( ident, eid, vid1,
-                igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
+                igraph_cattribute_EAS( g, GE_LABEL, eid ), MODE_OUT,
+                smxgen_box_is_cp_sync( g, vid1 ) );
         cgen_connect( ident, eid, vid2,
-                igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ) );
+                igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
+                igraph_cattribute_EAS( g, GE_LABEL, eid ), MODE_IN,
+                smxgen_box_is_cp_sync( g, vid2 ) );
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );
@@ -209,7 +292,7 @@ void smxgen_network_destroy( igraph_t* g, int ident )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box destruction code
         vid1 = IGRAPH_VIT_GET( v_it );
-        cgen_box_destroy( ident, vid1 );
+        cgen_box_destroy( ident, vid1, smxgen_box_is_cp_sync( g, vid1 ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -228,7 +311,7 @@ void smxgen_network_run( igraph_t* g, int ident )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate code to run boxes
         vid = IGRAPH_VIT_GET( v_it );
-        cgen_box_run( ident, vid, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        cgen_box_run( ident, vid, igraph_cattribute_VAS( g, GV_IMPL, vid ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -247,7 +330,7 @@ void smxgen_network_wait_end( igraph_t* g, int ident )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box waiting code
         vid = IGRAPH_VIT_GET( v_it );
-        cgen_box_wait_end( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        cgen_box_wait_end( ident, vid );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );

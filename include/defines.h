@@ -15,5 +15,11 @@
 #define GE_LABEL    "label"
 #define GE_DSRC     "dsrc"
 #define GE_DDST     "ddst"
+#define GE_ALT_SRC  "altsrc"
+#define GE_ALT_DST  "altdst"
+
+#define MODE_OUT    "out"
+#define MODE_IN     "in"
+#define CP_SYNC_STR "smx_cp"
 
 #endif /* ifndef DEFINES_H */

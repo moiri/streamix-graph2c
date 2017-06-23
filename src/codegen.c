@@ -5,6 +5,13 @@
 
 extern FILE* __src_file;
 
+void cgen_box_cp_init( int ident, int id, int indegree, int outdegree )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_BOX_CP_INIT( box_%d, %d, %d );\n", id, indegree,
+            outdegree );
+}
+
 /******************************************************************************/
 void cgen_box_create( int ident, int id, const char* name )
 {
@@ -13,8 +20,12 @@ void cgen_box_create( int ident, int id, const char* name )
 }
 
 /******************************************************************************/
-void cgen_box_destroy( int ident, int id )
+void cgen_box_destroy( int ident, int id, int is_sync )
 {
+    if( is_sync ) {
+        cgen_ident( ident );
+        cgen_print( "SMX_BOX_CP_DESTROY( box_%d );\n", id );
+    }
     cgen_ident( ident );
     cgen_print( "SMX_BOX_DESTROY( box_%d );\n", id );
 }
@@ -83,24 +94,24 @@ void cgen_box_struct_tail( int ident, const char* name )
 }
 
 /******************************************************************************/
-void cgen_box_wait_end( int ident, const char* name )
+void cgen_box_wait_end( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_BOX_WAIT_END( %s );\n", name );
+    cgen_print( "SMX_BOX_WAIT_END( box_%d );\n", id );
 }
 
 /******************************************************************************/
 void cgen_box_zlog_end( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "dzlog_info( \"end thread %s\" );\n", name );
+    cgen_print( "dzlog_info( \"end box %s\" );\n", name );
 }
 
 /******************************************************************************/
 void cgen_box_zlog_start( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "dzlog_info( \"start thread %s\" );\n", name );
+    cgen_print( "dzlog_info( \"start box %s\" );\n", name );
 }
 
 /******************************************************************************/
@@ -124,11 +135,15 @@ void cgen_channel_destroy( int ident, int id )
 
 /******************************************************************************/
 void cgen_connect( int ident, int id_ch, int id_box, const char* box_name,
-        const char* ch_name )
+        const char* ch_name, const char* mode, int is_sync )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT( box_%d, ch_%d, %s, %s );\n", id_box,
-            id_ch, box_name, ch_name );
+    if( is_sync )
+        cgen_print( "SMX_CONNECT_CP( box_%d, ch_%d, %s );\n", id_box,
+                id_ch, mode );
+    else
+        cgen_print( "SMX_CONNECT( box_%d, ch_%d, %s, %s, %s );\n", id_box,
+                id_ch, box_name, ch_name, mode );
 }
 
 /******************************************************************************/
@@ -241,4 +256,18 @@ void cgen_program_cleanup( int ident )
 {
     cgen_ident( ident );
     cgen_print( "SMX_PROGRAM_CLEANUP();\n" );
+}
+
+/******************************************************************************/
+void cgen_struct_head( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "struct {\n" );
+}
+
+/******************************************************************************/
+void cgen_struct_tail( int ident, const char* mode )
+{
+    cgen_ident( ident );
+    cgen_print( "} %s;\n", mode );
 }
