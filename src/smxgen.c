@@ -79,6 +79,7 @@ void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode )
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
+    cgen_box_ports( ident );
     ident--;
     cgen_struct_tail( ident, mode_str );
 }
@@ -137,9 +138,10 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         cgen_box_fct_head( ident, box_name );
         cgen_function_start( ident );
         ident++;
-        cgen_box_zlog_start( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        cgen_box_zlog_start( ident, box_name );
         cgen_box_fct_call( ident, box_name );
-        cgen_box_zlog_end( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        cgen_channels_terminate( ident, box_name );
+        cgen_box_zlog_end( ident, box_name );
         cgen_box_fct_ret( ident );
         ident--;
         cgen_function_end( ident );
@@ -225,18 +227,19 @@ void smxgen_network_create( igraph_t* g, int ident )
         vid1 = IGRAPH_VIT_GET( v_it );
         cgen_box_create( ident, vid1,
                 igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
+        igraph_vs_1( &v_cp, vid1 );
+        igraph_vector_init( &indegree, 1 );
+        igraph_vector_init( &outdegree, 1 );
+        igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
+        igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
+        cgen_box_init( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ), vid1,
+                VECTOR( indegree )[0], VECTOR( outdegree )[0] );
         if( smxgen_box_is_cp_sync( g, vid1 ) ) {
-            igraph_vs_1( &v_cp, vid1 );
-            igraph_vector_init( &indegree, 1 );
-            igraph_vector_init( &outdegree, 1 );
-            igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
-            igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
-            cgen_box_cp_init( ident, vid1, VECTOR( indegree )[0],
-                    VECTOR( outdegree )[0] );
-            igraph_vs_destroy( &v_cp );
-            igraph_vector_destroy( &indegree );
-            igraph_vector_destroy( &outdegree );
+            cgen_box_cp_init( ident, vid1 );
         }
+        igraph_vs_destroy( &v_cp );
+        igraph_vector_destroy( &indegree );
+        igraph_vector_destroy( &outdegree );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -260,6 +263,8 @@ void smxgen_network_create( igraph_t* g, int ident )
                 igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
                 igraph_cattribute_EAS( g, GE_LABEL, eid ), MODE_IN,
                 smxgen_box_is_cp_sync( g, vid2 ) );
+        if( smxgen_box_is_cp_sync( g, vid2 ) )
+            cgen_connect_cp( ident, eid, vid2 );
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );
@@ -292,7 +297,8 @@ void smxgen_network_destroy( igraph_t* g, int ident )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box destruction code
         vid1 = IGRAPH_VIT_GET( v_it );
-        cgen_box_destroy( ident, vid1, smxgen_box_is_cp_sync( g, vid1 ) );
+        cgen_box_destroy( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
+                vid1, smxgen_box_is_cp_sync( g, vid1 ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
