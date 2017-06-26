@@ -217,7 +217,6 @@ void smxgen_network_create( igraph_t* g, int ident )
     igraph_es_t e_sel;
     igraph_eit_t e_it;
     int eid, vid1, vid2;
-    int decoupled;
     igraph_vector_t indegree, outdegree;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
@@ -250,9 +249,9 @@ void smxgen_network_create( igraph_t* g, int ident )
     while( !IGRAPH_EIT_END( e_it ) ) {
         // generate channel creation code
         eid = IGRAPH_EIT_GET( e_it );
-        decoupled = igraph_cattribute_EAS( g, GE_DSRC, eid ) ||
-                igraph_cattribute_EAS( g, GE_DDST, eid );
-        cgen_channel_create( ident, eid, decoupled );
+        cgen_channel_create( ident, eid,
+                igraph_cattribute_EAN( g, GE_DSRC, eid ),
+                igraph_cattribute_EAN( g, GE_DDST, eid ) );
         // generate connection code for a channel and its connecting boxes
         igraph_edge( g, eid, &vid1, &vid2 );
         cgen_connect( ident, eid, vid1,
