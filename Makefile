@@ -3,14 +3,19 @@ PROJECT = graph2c
 
 LOC_INC_DIR = include
 LOC_SRC_DIR = src
+SIA_LANG_DIR = streamix-sia-lang
 
 SOURCES = main.c \
-		  $(LOC_SRC_DIR)/*
+		  $(LOC_SRC_DIR)/* \
+		  $(SIA_LANG_DIR)/$(LOC_SRC_DIR)/*
 
-INCLUDES = $(LOC_INC_DIR)/*
+INCLUDES = $(LOC_INC_DIR)/* \
+		   $(SIA_LANG_DIR)/$(LOC_INC_DIR)/*
 
 INCLUDES_DIR = -I/usr/local/include/igraph \
 			   -I$(LOC_INC_DIR) \
+			   -I$(SIA_LANG_DIR)/$(LOC_INC_DIR) \
+			   -I$(SIA_LANG_DIR)/uthash/src \
 			   -I.
 
 LINK_DIR = -L/usr/local/lib
