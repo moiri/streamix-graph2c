@@ -100,12 +100,12 @@ int main( int argc, char **argv )
     memcpy( file_name, &src_file_name[ path_size ], name_size );
     file_name[ name_size ] = '\0';
 
-    path_main = malloc( strlen( file_name ) + strlen( out_path ) + 3 );
-    sprintf( path_main, "%s%s.c", out_path, file_name );
-    path_boxh = malloc( strlen( FILE_BOX_H ) + strlen( out_path ) + 1 );
-    sprintf( path_boxh, "%s%s", out_path, FILE_BOX_H );
-    path_boxc = malloc( strlen( FILE_BOX_C ) + strlen( out_path ) + 1 );
-    sprintf( path_boxc, "%s%s", out_path, FILE_BOX_C );
+    path_main = malloc( strlen( file_name ) + strlen( out_path ) + 4 );
+    sprintf( path_main, "%s/%s.c", out_path, file_name );
+    path_boxh = malloc( strlen( FILE_BOX_H ) + strlen( out_path ) + 2 );
+    sprintf( path_boxh, "%s/%s", out_path, FILE_BOX_H );
+    path_boxc = malloc( strlen( FILE_BOX_C ) + strlen( out_path ) + 2 );
+    sprintf( path_boxc, "%s/%s", out_path, FILE_BOX_C );
 
     ifile = fopen( src_file_name, "r" );
     if( strcmp( format, "gml" ) == 0 ) {
