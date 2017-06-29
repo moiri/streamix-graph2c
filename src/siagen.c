@@ -35,8 +35,7 @@ void siagen( igraph_t* new, igraph_t* nw, sia_t** symbols )
                     sia );
         }
         // copy each vertex and its sia description attribute from nw to new
-        igraph_cattribute_VAN_set( new, GV_SIA, vid,
-                igraph_cattribute_VAN( nw, GE_SIA, vid ) );
+        igraph_cattribute_VAN_set( new, GV_SIA, vid, vid );
         IGRAPH_VIT_NEXT( vit );
     }
     igraph_vit_destroy( &vit );
@@ -69,7 +68,7 @@ sia_t* siagen_channel( igraph_t* nw, int eid, const char* a_in,
 /******************************************************************************/
 sia_t* siagen_cpsync( igraph_t* nw, int vid )
 {
-    int eid, smx_id, id_dst, id_src = 1;
+    int eid, id_dst, id_src = 1;
     igraph_es_t e_sel;
     igraph_eit_t e_it;
     const char* name;
@@ -83,10 +82,8 @@ sia_t* siagen_cpsync( igraph_t* nw, int vid )
     igraph_eit_create( nw, e_sel, &e_it );
     while( !IGRAPH_EIT_END( e_it ) ) {
         eid = IGRAPH_EIT_GET( e_it );
-        smx_id = igraph_cattribute_EAN( nw, GE_SIA, eid );
         name = igraph_cattribute_EAS( nw, GE_LABEL, eid );
-        edge_id = malloc( CONST_ID_LEN + 1 );
-        sprintf( edge_id, "%d", smx_id );
+        edge_id = sia_create_sia_attr( vid, eid );
         sia_add_edge( &sia->g, 0, 1, edge_id, name, G_SIA_MODE_IN );
         free( edge_id );
         IGRAPH_EIT_NEXT( e_it );
@@ -100,12 +97,10 @@ sia_t* siagen_cpsync( igraph_t* nw, int vid )
     igraph_add_vertices( &sia->g, IGRAPH_EIT_SIZE( e_it ) - 1, NULL );
     while( !IGRAPH_EIT_END( e_it ) ) {
         eid = IGRAPH_EIT_GET( e_it );
-        smx_id = igraph_cattribute_EAN( nw, GE_SIA, eid );
         name = igraph_cattribute_EAS( nw, GE_LABEL, eid );
         id_dst = id_src + 1;
         if( id_dst == igraph_vcount( &sia->g ) ) id_dst = 0;
-        edge_id = malloc( CONST_ID_LEN + 1 );
-        sprintf( edge_id, "%d", smx_id );
+        edge_id = sia_create_sia_attr( vid, eid );
         sia_add_edge( &sia->g, id_src, id_dst, edge_id, name,
                 G_SIA_MODE_OUT );
         free( edge_id );
@@ -154,13 +149,13 @@ void siagen_insert_channels( igraph_t* new, igraph_t* nw, sia_t** symbols )
         igraph_add_edge( new, vid1, vid );
         sia_id1 = malloc( 2 * CONST_ID_LEN + 1 );
         sprintf( sia_id1, "%d_%d", vid1, eid );
-        igraph_cattribute_EAS_set( new, GV_SIA, eid1, sia_id1 );
+        igraph_cattribute_EAS_set( new, GE_SIA, eid1, sia_id1 );
 
         eid2 = igraph_ecount( new );
         igraph_add_edge( new, vid, vid2 );
         sia_id2 = malloc( 2 * CONST_ID_LEN + 1 );
         sprintf( sia_id2, "%d_%d", vid2, eid );
-        igraph_cattribute_EAS_set( new, GV_SIA, eid2, sia_id2 );
+        igraph_cattribute_EAS_set( new, GE_SIA, eid2, sia_id2 );
 
         sia = siagen_channel( nw, eid, sia_id1, sia_id2, vid );
         name = malloc( strlen( CH_STR ) + CONST_ID_LEN + 2 );
