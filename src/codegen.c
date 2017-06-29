@@ -50,7 +50,7 @@ void cgen_box_fct_call( int ident, const char* name )
 void cgen_box_fct_ext( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "extern void* %s( void* handler );\n", name );
+    cgen_print( "extern int %s( void* handler );\n", name );
 }
 
 /******************************************************************************/
