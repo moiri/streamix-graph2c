@@ -42,16 +42,19 @@ int get_name_size( const char* str )
 int main( int argc, char **argv )
 {
     igraph_t g;
+    igraph_t g_new;
     sia_t* symbols = NULL;
     const char* src_file_name;
     char* out_path = NULL;
-    char* out_path_sia;
+    char* path_sia;
     char* file_name;
     char* path_main;
+    char* path_main_sia;
     char* path_boxh;
     char* path_boxc;
     char* format;
     FILE* ifile;
+    FILE* out_file;
     int path_size, name_size;
     int c;
     igraph_i_set_attribute_table( &igraph_cattribute_table );
@@ -103,16 +106,22 @@ int main( int argc, char **argv )
 
     path_main = malloc( strlen( file_name ) + strlen( out_path ) + 4 );
     sprintf( path_main, "%s/%s.c", out_path, file_name );
+    path_main_sia = malloc( strlen( file_name ) + strlen( out_path )
+            + strlen( format ) + 7 );
+    sprintf( path_main_sia, "%s/sia_%s.%s", out_path, file_name, format );
     path_boxh = malloc( strlen( FILE_BOX_H ) + strlen( out_path ) + 2 );
     sprintf( path_boxh, "%s/%s", out_path, FILE_BOX_H );
     path_boxc = malloc( strlen( FILE_BOX_C ) + strlen( out_path ) + 2 );
     sprintf( path_boxc, "%s/%s", out_path, FILE_BOX_C );
+    path_sia = malloc( strlen( out_path ) + 5 );
+    sprintf( path_sia, "%s/sia", out_path );
+    mkdir( path_sia, 0755 );
 
     ifile = fopen( src_file_name, "r" );
-    if( strcmp( format, "gml" ) == 0 ) {
+    if( strcmp( format, G_FMT_GML ) == 0 ) {
         igraph_read_graph_gml( &g, ifile );
     }
-    else if( strcmp( format, "graphml" ) == 0 ) {
+    else if( strcmp( format, G_FMT_GRAPHML ) == 0 ) {
         igraph_read_graph_graphml( &g, ifile, 0 );
     }
     else {
@@ -135,10 +144,23 @@ int main( int argc, char **argv )
     fclose( __src_file );
 
     // GENERATE RTS SIA CODE
-    siagen( &g, &symbols );
-    out_path_sia = malloc( strlen( out_path ) + 5 );
-    sprintf( out_path_sia, "%s/sia", out_path );
-    siagen_write( &symbols, out_path_sia, format );
+    siagen( &g_new, &g, &symbols );
+    siagen_write( &symbols, path_sia, format );
+
+    out_file = fopen( path_main_sia, "w" );
+
+    if( strcmp( format, G_FMT_GML ) == 0 ) {
+        igraph_write_graph_gml( &g_new, out_file, NULL, G_GML_HEAD );
+    }
+    else if( strcmp( format, G_FMT_GRAPHML ) == 0 ) {
+        igraph_write_graph_graphml( &g_new, out_file, 0 );
+    }
+    else {
+        printf( "Unknown format '%s'!\n", format );
+        return -1;
+    }
+
+    fclose( out_file );
 
     /* printf( "str( %lu ): %s\n", strlen( src_file_name ), src_file_name ); */
     /* printf( "name( %lu/%d ): %s\n", strlen( file_name ), name_size, file_name ); */
@@ -146,11 +168,13 @@ int main( int argc, char **argv )
 
     free( file_name );
     free( path_main );
+    free( path_main_sia );
     free( path_boxh );
     free( path_boxc );
-    free( out_path_sia );
+    free( path_sia );
 
     igraph_destroy( &g );
+    igraph_destroy( &g_new );
     siagen_destroy( &symbols );
 
     return 0;

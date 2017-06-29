@@ -20,9 +20,12 @@
 #define GE_ALT_SRC  "altsrc"
 #define GE_ALT_DST  "altdst"
 #define GE_SIA      "sia"
+#define GV_SIA      "sia"
+#define GG_SIA      "sia"
 
 #define MODE_OUT    "out"
 #define MODE_IN     "in"
 #define CP_SYNC_STR "smx_cp"
+#define CH_STR      "smx_ch"
 
 #endif /* ifndef DEFINES_H */
