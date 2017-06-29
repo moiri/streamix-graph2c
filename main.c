@@ -45,6 +45,7 @@ int main( int argc, char **argv )
     sia_t* symbols = NULL;
     const char* src_file_name;
     char* out_path = NULL;
+    char* out_path_sia;
     char* file_name;
     char* path_main;
     char* path_boxh;
@@ -135,7 +136,9 @@ int main( int argc, char **argv )
 
     // GENERATE RTS SIA CODE
     siagen( &g, &symbols );
-    siagen_write( &symbols, out_path, format );
+    out_path_sia = malloc( strlen( out_path ) + 5 );
+    sprintf( out_path_sia, "%s/sia", out_path );
+    siagen_write( &symbols, out_path_sia, format );
 
     /* printf( "str( %lu ): %s\n", strlen( src_file_name ), src_file_name ); */
     /* printf( "name( %lu/%d ): %s\n", strlen( file_name ), name_size, file_name ); */
@@ -145,6 +148,7 @@ int main( int argc, char **argv )
     free( path_main );
     free( path_boxh );
     free( path_boxc );
+    free( out_path_sia );
 
     igraph_destroy( &g );
     siagen_destroy( &symbols );
