@@ -22,6 +22,7 @@
 #define GE_SIA      "sia"
 #define GV_SIA      "sia"
 #define GG_SIA      "sia"
+#define GG_NAME     "name"
 
 #define MODE_OUT    "out"
 #define MODE_IN     "in"
