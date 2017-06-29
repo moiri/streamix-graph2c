@@ -10,6 +10,8 @@
 #define FILE_SMX_H  "smxrts.h"
 #define FILE_ZLOG_H "zlog.h"
 
+#define CONST_ID_LEN 9
+
 #define GV_LABEL    "label"
 #define GV_IMPL     "func"
 #define GE_LABEL    "label"
@@ -17,6 +19,7 @@
 #define GE_DDST     "ddst"
 #define GE_ALT_SRC  "altsrc"
 #define GE_ALT_DST  "altdst"
+#define GE_SIA      "sia"
 
 #define MODE_OUT    "out"
 #define MODE_IN     "in"

@@ -1,9 +1,11 @@
 #include "igraph.h"
 #include "smxgen.h"
+#include "siagen.h"
 #include "defines.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 FILE* __src_file;
 
@@ -40,6 +42,7 @@ int get_name_size( const char* str )
 int main( int argc, char **argv )
 {
     igraph_t g;
+    sia_t* symbols = NULL;
     const char* src_file_name;
     char* out_path = NULL;
     char* file_name;
@@ -87,7 +90,8 @@ int main( int argc, char **argv )
         return -1;
     }
     src_file_name = argv[ optind ];
-    if( out_path == NULL ) out_path = "";
+    if( out_path == NULL ) out_path = "./build";
+    mkdir( out_path, 0755 );
     if( format == NULL ) format = "graphml";
 
     path_size = get_path_size( src_file_name );
@@ -116,6 +120,7 @@ int main( int argc, char **argv )
     }
     fclose( ifile );
 
+    // GENERATE RTS C CODE
     __src_file = fopen( path_main, "w" );
     smxgen_main( file_name, &g );
     fclose( __src_file );
@@ -128,6 +133,10 @@ int main( int argc, char **argv )
     smxgen_boxes_c( &g );
     fclose( __src_file );
 
+    // GENERATE RTS SIA CODE
+    siagen( &g, &symbols );
+    siagen_write( &symbols, out_path, format );
+
     /* printf( "str( %lu ): %s\n", strlen( src_file_name ), src_file_name ); */
     /* printf( "name( %lu/%d ): %s\n", strlen( file_name ), name_size, file_name ); */
     /* printf( "path( %lu/%d ): %s\n", strlen( out_path ), path_size, out_path ); */
@@ -138,6 +147,7 @@ int main( int argc, char **argv )
     free( path_boxc );
 
     igraph_destroy( &g );
+    siagen_destroy( &symbols );
 
     return 0;
 }

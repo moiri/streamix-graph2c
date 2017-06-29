@@ -1,10 +1,10 @@
-/* 
+/**
  * Generates the Streamix C code
  *
  * @file    smxgen.h
  * @author  Simon Maurer
  *
- * */
+ */
 
 #ifndef SMXGEN_H
 #define SMXGEN_H
@@ -25,4 +25,4 @@ void smxgen_network_destroy( igraph_t*, int );
 void smxgen_network_run( igraph_t*, int );
 void smxgen_network_wait_end( igraph_t*, int );
 
-#endif /* ifndef SMXGEN_H */
+#endif /* SMXGEN_H */
