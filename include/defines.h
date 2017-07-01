@@ -20,6 +20,7 @@
 #define GE_ALT_SRC  "altsrc"
 #define GE_ALT_DST  "altdst"
 #define GE_SIA      "sia"
+#define GE_LEN      "len"
 #define GV_SIA      "sia"
 #define GG_SIA      "sia"
 #define GG_NAME     "name"
