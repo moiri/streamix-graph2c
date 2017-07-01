@@ -53,18 +53,21 @@ sia_t* siagen_channel( igraph_t* nw, int eid, const char* a_in,
     const char* name;
     char* vsmx_id = sia_create_net_name( vid );
     sia_t* sia = sia_create( NULL, NULL );
-    igraph_add_vertices( &sia->g, 2, NULL );
+    int i, ch_len = igraph_cattribute_EAN( nw, GE_LEN, eid );
+    igraph_add_vertices( &sia->g, ch_len + 1, NULL );
     igraph_cattribute_GAS_set( &sia->g, GG_SIA, vsmx_id );
     igraph_cattribute_GAS_set( &sia->g, GG_NAME, CH_STR );
     name = igraph_cattribute_EAS( nw, GE_LABEL, eid );
     free( vsmx_id );
 
-    sia_add_edge( &sia->g, 0, 1, a_in, name, G_SIA_MODE_IN );
-    sia_add_edge( &sia->g, 1, 0, a_out, name, G_SIA_MODE_OUT );
+    for( i=0; i<ch_len; i++ ) {
+        sia_add_edge( &sia->g, i, i+1, a_in, name, G_SIA_MODE_IN );
+        sia_add_edge( &sia->g, i+1, i, a_out, name, G_SIA_MODE_OUT );
+    }
 
     // add self loops if decoupled
     if( igraph_cattribute_EAN( nw, GE_DSRC, eid ) )
-        sia_add_edge( &sia->g, 1, 1, a_in, name, G_SIA_MODE_IN );
+        sia_add_edge( &sia->g, ch_len, ch_len, a_in, name, G_SIA_MODE_IN );
     if( igraph_cattribute_EAN( nw, GE_DDST, eid ) )
         sia_add_edge( &sia->g, 0, 0, a_out, name, G_SIA_MODE_OUT );
 
