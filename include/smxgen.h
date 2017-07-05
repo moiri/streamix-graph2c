@@ -19,6 +19,7 @@ void smxgen_box_fct_defs( igraph_t*, int );
 void smxgen_box_fct_prots( igraph_t*, int );
 void smxgen_boxes_c( igraph_t* );
 void smxgen_boxes_h( igraph_t* );
+const char* smxgen_get_port_name( igraph_t*, int, int );
 void smxgen_main( const char*, igraph_t* );
 void smxgen_network_create( igraph_t*, int );
 void smxgen_network_destroy( igraph_t*, int );

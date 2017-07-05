@@ -60,19 +60,6 @@ void smxgen_box_structs( igraph_t* g, int ident )
 }
 
 /******************************************************************************/
-const char* smxgen_get_port_name( igraph_t* g, int eid, int mode )
-{
-    const char* name = NULL;
-    if( mode == IGRAPH_IN )
-        name = igraph_cattribute_EAS( g, GE_NDST, eid );
-    else if( mode == IGRAPH_OUT )
-        name = igraph_cattribute_EAS( g, GE_NSRC, eid );
-    if( strcmp( name, TEXT_NULL ) == 0 )
-        name = igraph_cattribute_EAS( g, GE_LABEL, eid );
-    return name;
-}
-
-/******************************************************************************/
 void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode )
 {
     int eid;
@@ -193,6 +180,19 @@ void smxgen_box_fct_prots( igraph_t* g, int ident )
     }
     igraph_vit_destroy( &v_it );
     igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
+const char* smxgen_get_port_name( igraph_t* g, int eid, int mode )
+{
+    const char* name = NULL;
+    if( mode == IGRAPH_IN )
+        name = igraph_cattribute_EAS( g, GE_NDST, eid );
+    else if( mode == IGRAPH_OUT )
+        name = igraph_cattribute_EAS( g, GE_NSRC, eid );
+    if( strcmp( name, TEXT_NULL ) == 0 )
+        name = igraph_cattribute_EAS( g, GE_LABEL, eid );
+    return name;
 }
 
 /******************************************************************************/
