@@ -60,6 +60,19 @@ void smxgen_box_structs( igraph_t* g, int ident )
 }
 
 /******************************************************************************/
+const char* smxgen_get_port_name( igraph_t* g, int eid, int mode )
+{
+    const char* name = NULL;
+    if( mode == IGRAPH_IN )
+        name = igraph_cattribute_EAS( g, GE_NDST, eid );
+    else if( mode == IGRAPH_OUT )
+        name = igraph_cattribute_EAS( g, GE_NSRC, eid );
+    if( strcmp( name, TEXT_NULL ) == 0 )
+        name = igraph_cattribute_EAS( g, GE_LABEL, eid );
+    return name;
+}
+
+/******************************************************************************/
 void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode )
 {
     int eid;
@@ -74,7 +87,7 @@ void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode )
     while( !IGRAPH_EIT_END( e_it ) ) {
         // generate port code
         eid = IGRAPH_EIT_GET( e_it );
-        cgen_box_port( ident, igraph_cattribute_EAS( g, GE_LABEL, eid ) );
+        cgen_box_port( ident, smxgen_get_port_name( g, eid, mode ) );
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );
@@ -257,11 +270,11 @@ void smxgen_network_create( igraph_t* g, int ident )
         igraph_edge( g, eid, &vid1, &vid2 );
         cgen_connect( ident, eid, vid1,
                 igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ), MODE_OUT,
+                smxgen_get_port_name( g, eid, IGRAPH_OUT ), MODE_OUT,
                 smxgen_box_is_cp_sync( g, vid1 ) );
         cgen_connect( ident, eid, vid2,
                 igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
-                igraph_cattribute_EAS( g, GE_LABEL, eid ), MODE_IN,
+                smxgen_get_port_name( g, eid, IGRAPH_IN ), MODE_IN,
                 smxgen_box_is_cp_sync( g, vid2 ) );
         if( smxgen_box_is_cp_sync( g, vid2 ) )
             cgen_connect_cp( ident, eid, vid2 );
