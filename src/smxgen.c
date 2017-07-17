@@ -229,7 +229,7 @@ void smxgen_network_create( igraph_t* g, int ident )
     igraph_vit_t v_it;
     igraph_es_t e_sel;
     igraph_eit_t e_it;
-    int eid, vid1, vid2, ch_len;
+    int eid, vid1, vid2, ch_len, ch_tbs, ch_tbns;
     igraph_vector_t indegree, outdegree;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
@@ -263,6 +263,8 @@ void smxgen_network_create( igraph_t* g, int ident )
         // generate channel creation code
         eid = IGRAPH_EIT_GET( e_it );
         ch_len = igraph_cattribute_EAN( g, GE_LEN, eid );
+        ch_tbs = igraph_cattribute_EAN( g, GE_TBS, eid );
+        ch_tbns = igraph_cattribute_EAN( g, GE_TBNS, eid );
         cgen_channel_create( ident, eid,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ),
                 igraph_cattribute_EAN( g, GE_DDST, eid ), ch_len );
@@ -278,6 +280,8 @@ void smxgen_network_create( igraph_t* g, int ident )
                 smxgen_box_is_cp_sync( g, vid2 ) );
         if( smxgen_box_is_cp_sync( g, vid2 ) )
             cgen_connect_cp( ident, eid, vid2 );
+        if( ( ch_tbs != 0 ) || ( ch_tbns != 0 ) )
+            cgen_connect_guard( ident, eid, ch_tbs, ch_tbns );
         IGRAPH_EIT_NEXT( e_it );
     }
     igraph_eit_destroy( &e_it );

@@ -21,6 +21,8 @@
 #define GE_DDST     "ddst"
 #define GE_NSRC     "nsrc"
 #define GE_NDST     "ndst"
+#define GE_TBS      "tbs"
+#define GE_TBNS     "tbns"
 #define GE_ALT_SRC  "altsrc"
 #define GE_ALT_DST  "altdst"
 #define GE_SIA      "sia"

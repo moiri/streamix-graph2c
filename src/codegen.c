@@ -184,6 +184,13 @@ void cgen_connect_cp( int ident, int id_ch, int id_box )
 }
 
 /******************************************************************************/
+void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_CONNECT_GUARD( ch_%d, %d, %d );\n", id_ch, iats, iatns );
+}
+
+/******************************************************************************/
 void cgen_endif( const char* name )
 {
     cgen_print( "#endif // %s\n", name );
