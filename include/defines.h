@@ -16,6 +16,9 @@
 
 #define GV_LABEL    "label"
 #define GV_IMPL     "func"
+#define GV_TTS      "tts"
+#define GV_TTNS     "ttns"
+#define GV_TTID     "ttid"
 #define GE_LABEL    "label"
 #define GE_DSRC     "dsrc"
 #define GE_DDST     "ddst"

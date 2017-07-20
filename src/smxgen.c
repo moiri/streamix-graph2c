@@ -3,6 +3,7 @@
 #include <defines.h>
 #include <igraph.h>
 #include <string.h>
+#include <time.h>
 
 int smxgen_box_is_duplicate( const char* name, const char** names, int len )
 {
@@ -50,6 +51,7 @@ void smxgen_box_structs( igraph_t* g, int ident )
         // for all incident channels of this box
         smxgen_box_structs_ports( g, ident, vid, IGRAPH_IN );
         smxgen_box_structs_ports( g, ident, vid, IGRAPH_OUT );
+        cgen_box_tt( ident );
         ident--;
         cgen_box_struct_tail( ident,
                 igraph_cattribute_VAS( g, GV_IMPL, vid ) );
@@ -139,7 +141,12 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         cgen_function_start( ident );
         ident++;
         cgen_box_zlog_start( ident, box_name );
+        cgen_box_tt_enable( ident, box_name );
         cgen_box_fct_call( ident, box_name );
+        ident++;
+        cgen_box_tt_wait( ident, box_name );
+        ident--;
+        cgen_box_fct_call_end( ident );
         cgen_channels_terminate( ident, box_name );
         cgen_box_zlog_end( ident, box_name );
         cgen_box_fct_ret( ident );
@@ -224,6 +231,8 @@ void smxgen_main( const char* file_name, igraph_t* g )
 /******************************************************************************/
 void smxgen_network_create( igraph_t* g, int ident )
 {
+    struct timespec tt;
+    const char* name;
     igraph_vs_t v_sel;
     igraph_vs_t v_cp;
     igraph_vit_t v_it;
@@ -237,8 +246,8 @@ void smxgen_network_create( igraph_t* g, int ident )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box creation code
         vid1 = IGRAPH_VIT_GET( v_it );
-        cgen_box_create( ident, vid1,
-                igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
+        name = igraph_cattribute_VAS( g, GV_IMPL, vid1 );
+        cgen_box_create( ident, vid1, name );
         igraph_vs_1( &v_cp, vid1 );
         igraph_vector_init( &indegree, 1 );
         igraph_vector_init( &outdegree, 1 );
@@ -252,6 +261,14 @@ void smxgen_network_create( igraph_t* g, int ident )
         igraph_vs_destroy( &v_cp );
         igraph_vector_destroy( &indegree );
         igraph_vector_destroy( &outdegree );
+        // generate timers
+        tt.tv_sec = igraph_cattribute_VAN( g, GV_TTS, vid1 );
+        tt.tv_nsec = igraph_cattribute_VAN( g, GV_TTNS, vid1 );
+        igraph_cattribute_VAN_set( g, GV_TTID, vid1, 0 );
+        if( ( tt.tv_sec != 0 ) || ( tt.tv_nsec != 0 ) ) {
+            // this box is time-triggered
+            cgen_connect_tt( ident, vid1, name, tt.tv_sec, tt.tv_nsec );
+        }
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );

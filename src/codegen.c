@@ -43,7 +43,14 @@ void cgen_box_destroy( int ident, const char* name, int id, int is_sync )
 void cgen_box_fct_call( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "while( %s( handler ) );\n", name );
+    cgen_print( "while( %s( handler ) ) {\n", name );
+}
+
+/******************************************************************************/
+void cgen_box_fct_call_end( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "}\n" );
 }
 
 /******************************************************************************/
@@ -109,6 +116,27 @@ void cgen_box_struct_tail( int ident, const char* name )
 {
     cgen_ident( ident );
     cgen_print( "} box_%s_t;\n\n", name );
+}
+
+/******************************************************************************/
+void cgen_box_tt( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "smx_timer_t* timer;\n" );
+}
+
+/******************************************************************************/
+void cgen_box_tt_enable( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_BOX_ENABLE( handler, %s );\n", name );
+}
+
+/******************************************************************************/
+void cgen_box_tt_wait( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_BOX_WAIT( handler, %s );\n", name );
 }
 
 /******************************************************************************/
@@ -188,6 +216,14 @@ void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
 {
     cgen_ident( ident );
     cgen_print( "SMX_CONNECT_GUARD( ch_%d, %d, %d );\n", id_ch, iats, iatns );
+}
+
+/******************************************************************************/
+void cgen_connect_tt( int ident, int bid, const char* bname, int sec, int nsec )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_CONNECT_TT( box_%d, %s, %d, %d );\n", bid, bname,
+            sec, nsec );
 }
 
 /******************************************************************************/
