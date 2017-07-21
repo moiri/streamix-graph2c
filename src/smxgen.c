@@ -17,7 +17,7 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len )
 int smxgen_box_is_cp_sync( igraph_t* g, int vid )
 {
     const char* impl_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-    if( strcmp( impl_name , CP_SYNC_STR ) == 0 )
+    if( strcmp( impl_name , TEXT_CP ) == 0 )
         return 1;
     return 0;
 }
@@ -264,7 +264,6 @@ void smxgen_network_create( igraph_t* g, int ident )
         // generate timers
         tt.tv_sec = igraph_cattribute_VAN( g, GV_TTS, vid1 );
         tt.tv_nsec = igraph_cattribute_VAN( g, GV_TTNS, vid1 );
-        igraph_cattribute_VAN_set( g, GV_TTID, vid1, 0 );
         if( ( tt.tv_sec != 0 ) || ( tt.tv_nsec != 0 ) ) {
             // this box is time-triggered
             cgen_connect_tt( ident, vid1, name, tt.tv_sec, tt.tv_nsec );

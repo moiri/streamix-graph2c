@@ -1,6 +1,8 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include "graph_defines.h"
+
 #ifndef FILE_BOX
 #define FILE_BOX    "boxgen"
 #endif
@@ -12,31 +14,7 @@
 
 #define CONST_ID_LEN 9
 
-#define TEXT_NULL   "smx_null"
-
-#define GV_LABEL    "label"
-#define GV_IMPL     "func"
-#define GV_TTS      "tts"
-#define GV_TTNS     "ttns"
-#define GV_TTID     "ttid"
-#define GE_LABEL    "label"
-#define GE_DSRC     "dsrc"
-#define GE_DDST     "ddst"
-#define GE_NSRC     "nsrc"
-#define GE_NDST     "ndst"
-#define GE_TBS      "tbs"
-#define GE_TBNS     "tbns"
-#define GE_ALT_SRC  "altsrc"
-#define GE_ALT_DST  "altdst"
-#define GE_SIA      "sia"
-#define GE_LEN      "len"
-#define GV_SIA      "sia"
-#define GG_SIA      "sia"
-#define GG_NAME     "name"
-
 #define MODE_OUT    "out"
 #define MODE_IN     "in"
-#define CP_SYNC_STR "smx_cp"
-#define CH_STR      "smx_ch"
 
 #endif /* ifndef DEFINES_H */

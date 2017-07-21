@@ -27,10 +27,10 @@ void siagen( igraph_t* new, igraph_t* nw, sia_t** symbols )
     while( !IGRAPH_VIT_END( vit ) ) {
         vid = IGRAPH_VIT_GET( vit );
         impl_name = igraph_cattribute_VAS( nw, GV_IMPL, vid );
-        if( strcmp( impl_name, CP_SYNC_STR ) == 0 ) {
+        if( strcmp( impl_name, TEXT_CP ) == 0 ) {
             sia = siagen_cpsync( nw, vid );
-            name = malloc( strlen( CP_SYNC_STR ) + CONST_ID_LEN + 2 );
-            sprintf( name, "%s_%d", CP_SYNC_STR, vid );
+            name = malloc( strlen( TEXT_CP ) + CONST_ID_LEN + 2 );
+            sprintf( name, "%s_%d", TEXT_CP, vid );
             sia->smx_name = name;
             HASH_ADD( hh_smx, *symbols, smx_name, strlen( sia->smx_name ),
                     sia );
@@ -56,7 +56,7 @@ sia_t* siagen_channel( igraph_t* nw, int eid, const char* a_in,
     int i, ch_len = igraph_cattribute_EAN( nw, GE_LEN, eid );
     igraph_add_vertices( &sia->g, ch_len + 1, NULL );
     igraph_cattribute_GAS_set( &sia->g, GG_SIA, vsmx_id );
-    igraph_cattribute_GAS_set( &sia->g, GG_NAME, CH_STR );
+    igraph_cattribute_GAS_set( &sia->g, GG_NAME, TEXT_CH );
     name = igraph_cattribute_EAS( nw, GE_LABEL, eid );
     free( vsmx_id );
 
@@ -86,7 +86,7 @@ sia_t* siagen_cpsync( igraph_t* nw, int vid )
     sia_t* sia = sia_create( NULL, NULL );
     igraph_add_vertices( &sia->g, 2, NULL );
     igraph_cattribute_GAS_set( &sia->g, GG_SIA, vsmx_id );
-    igraph_cattribute_GAS_set( &sia->g, GG_NAME, CP_SYNC_STR );
+    igraph_cattribute_GAS_set( &sia->g, GG_NAME, TEXT_CP );
     free( vsmx_id );
 
     // handle all input actions
@@ -170,8 +170,8 @@ void siagen_insert_channels( igraph_t* new, igraph_t* nw, sia_t** symbols )
         igraph_cattribute_EAS_set( new, GE_SIA, eid2, sia_id2 );
 
         sia = siagen_channel( nw, eid, sia_id1, sia_id2, vid );
-        name = malloc( strlen( CH_STR ) + CONST_ID_LEN + 2 );
-        sprintf( name, "%s_%d", CH_STR, vid );
+        name = malloc( strlen( TEXT_CH ) + CONST_ID_LEN + 2 );
+        sprintf( name, "%s_%d", TEXT_CH, vid );
         sia->smx_name = name;
         HASH_ADD( hh_smx, *symbols, smx_name, strlen( sia->smx_name ), sia );
 
