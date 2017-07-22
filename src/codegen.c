@@ -6,6 +6,32 @@
 extern FILE* __src_file;
 
 /******************************************************************************/
+void cgen_box_body( int ident, const char* name )
+{
+    cgen_ident( ident );
+    cgen_print( "int state = SMX_BOX_CONTINUE;\n", name );
+    cgen_ident( ident );
+    cgen_print( "SMX_BOX_ENABLE( handler, %s );\n", name );
+    cgen_ident( ident );
+    cgen_print( "while( state == SMX_BOX_CONTINUE )\n", name );
+    cgen_block_start( ident );
+    ident++;
+    cgen_ident( ident );
+    cgen_print( "state = %s( handler );\n", name );
+    cgen_ident( ident );
+    cgen_print( "SMX_BOX_WAIT( handler, %s );\n", name );
+    cgen_ident( ident );
+    cgen_print( "state = SMX_BOX_UPDATE_STATE( handler, %s, state );\n",
+            name );
+    ident--;
+    cgen_block_end( ident );
+    cgen_ident( ident );
+    cgen_print( "SMX_BOX_TERMINATE( handler, %s );\n", name );
+    cgen_ident( ident );
+    cgen_print( "return NULL;\n" );
+}
+
+/******************************************************************************/
 void cgen_box_init( int ident, const char* name, int id, int indegree,
         int outdegree )
 {
@@ -40,20 +66,6 @@ void cgen_box_destroy( int ident, const char* name, int id, int is_sync )
 }
 
 /******************************************************************************/
-void cgen_box_fct_call( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "while( %s( handler ) ) {\n", name );
-}
-
-/******************************************************************************/
-void cgen_box_fct_call_end( int ident )
-{
-    cgen_ident( ident );
-    cgen_print( "}\n" );
-}
-
-/******************************************************************************/
 void cgen_box_fct_ext( int ident, const char* name )
 {
     cgen_ident( ident );
@@ -72,13 +84,6 @@ void cgen_box_fct_proto( int ident, const char* name )
 {
     cgen_ident( ident );
     cgen_print( "void *box_%s( void* );\n", name );
-}
-
-/******************************************************************************/
-void cgen_box_fct_ret( int ident )
-{
-    cgen_ident( ident );
-    cgen_print( "return NULL;\n" );
 }
 
 /******************************************************************************/
@@ -126,38 +131,10 @@ void cgen_box_tt( int ident )
 }
 
 /******************************************************************************/
-void cgen_box_tt_enable( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_BOX_ENABLE( handler, %s );\n", name );
-}
-
-/******************************************************************************/
-void cgen_box_tt_wait( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_BOX_WAIT( handler, %s );\n", name );
-}
-
-/******************************************************************************/
 void cgen_box_wait_end( int ident, int id )
 {
     cgen_ident( ident );
     cgen_print( "SMX_BOX_WAIT_END( box_%d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_box_zlog_end( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "dzlog_info( \"end thread %s\" );\n", name );
-}
-
-/******************************************************************************/
-void cgen_box_zlog_start( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "dzlog_info( \"start thread %s\" );\n", name );
 }
 
 /******************************************************************************/
@@ -181,13 +158,6 @@ void cgen_channel_destroy( int ident, int id )
 {
     cgen_ident( ident );
     cgen_print( "SMX_CHANNEL_DESTROY( ch_%d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_channels_terminate( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_CHANNELS_TERMINATE( handler, %s );\n", name );
 }
 
 /******************************************************************************/
@@ -233,14 +203,14 @@ void cgen_endif( const char* name )
 }
 
 /******************************************************************************/
-void cgen_function_end( int ident )
+void cgen_block_end( int ident )
 {
     cgen_ident( ident );
     cgen_print( "}\n\n" );
 }
 
 /******************************************************************************/
-void cgen_function_start( int ident )
+void cgen_block_start( int ident )
 {
     cgen_ident( ident );
     cgen_print( "{\n" );

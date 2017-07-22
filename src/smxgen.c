@@ -129,8 +129,7 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
         box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_cp_sync( g, vid )
-                || smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
+        if( smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
@@ -138,20 +137,11 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         // generate box function definitions
         cgen_box_fct_ext( ident, box_name );
         cgen_box_fct_head( ident, box_name );
-        cgen_function_start( ident );
+        cgen_block_start( ident );
         ident++;
-        cgen_box_zlog_start( ident, box_name );
-        cgen_box_tt_enable( ident, box_name );
-        cgen_box_fct_call( ident, box_name );
-        ident++;
-        cgen_box_tt_wait( ident, box_name );
+        cgen_box_body( ident, box_name );
         ident--;
-        cgen_box_fct_call_end( ident );
-        cgen_channels_terminate( ident, box_name );
-        cgen_box_zlog_end( ident, box_name );
-        cgen_box_fct_ret( ident );
-        ident--;
-        cgen_function_end( ident );
+        cgen_block_end( ident );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -175,8 +165,7 @@ void smxgen_box_fct_prots( igraph_t* g, int ident )
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
         box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_cp_sync( g, vid )
-                || smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
+        if( smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
@@ -211,7 +200,7 @@ void smxgen_main( const char* file_name, igraph_t* g )
     cgen_include_local( FILE_BOX_H );
     cgen_print( "\n" );
     cgen_main_head();
-    cgen_function_start( ident );
+    cgen_block_start( ident );
     ident++;
     cgen_program_init( ident );
     cgen_print( "\n" );
@@ -225,7 +214,7 @@ void smxgen_main( const char* file_name, igraph_t* g )
     cgen_print( "\n" );
     cgen_program_cleanup( ident );
     ident--;
-    cgen_function_end( ident );
+    cgen_block_end( ident );
 }
 
 /******************************************************************************/
