@@ -18,8 +18,8 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len )
 /******************************************************************************/
 int smxgen_box_is_type( igraph_t* g, int vid, const char* type )
 {
-    const char* impl_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-    if( strcmp( impl_name , type ) == 0 )
+    const char* name = igraph_cattribute_VAS( g, GV_LABEL, vid );
+    if( strcmp( name , type ) == 0 )
         return 1;
     return 0;
 }
@@ -41,8 +41,9 @@ void smxgen_box_structs( igraph_t* g, int ident )
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
         box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_type( g, vid, TEXT_CP )
-                || smxgen_box_is_duplicate( box_name, box_names, box_count ) ) {
+        if( smxgen_box_is_duplicate( box_name, box_names, box_count )
+                || smxgen_box_is_type( g, vid, TEXT_CP )
+                || smxgen_box_is_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
