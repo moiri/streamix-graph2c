@@ -12,7 +12,16 @@
 #include <igraph.h>
 
 int smxgen_box_is_duplicate( const char*, const char**, int );
-int smxgen_box_is_cp_sync( igraph_t*, int );
+
+/**
+ * @brief checks whether a net is a certain type of net
+ *
+ * @param g     pointer to the dependency graph
+ * @param vid   id of a vertex of the dependency graph
+ * @param type  type string to check against
+ * @return      1 if the type matches, 0 otherwise
+ */
+int smxgen_box_is_type( igraph_t* g, int vid, const char* type );
 void smxgen_box_structs( igraph_t*, int );
 void smxgen_box_structs_ports( igraph_t*, int, int, int );
 void smxgen_box_fct_defs( igraph_t*, int );

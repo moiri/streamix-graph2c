@@ -9,26 +9,7 @@ extern FILE* __src_file;
 void cgen_box_body( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "int state = SMX_BOX_CONTINUE;\n", name );
-    cgen_ident( ident );
-    cgen_print( "SMX_BOX_ENABLE( handler, %s );\n", name );
-    cgen_ident( ident );
-    cgen_print( "while( state == SMX_BOX_CONTINUE )\n", name );
-    cgen_block_start( ident );
-    ident++;
-    cgen_ident( ident );
-    cgen_print( "state = %s( handler );\n", name );
-    cgen_ident( ident );
-    cgen_print( "SMX_BOX_WAIT( handler, %s );\n", name );
-    cgen_ident( ident );
-    cgen_print( "state = SMX_BOX_UPDATE_STATE( handler, %s, state );\n",
-            name );
-    ident--;
-    cgen_block_end( ident );
-    cgen_ident( ident );
-    cgen_print( "SMX_BOX_TERMINATE( handler, %s );\n", name );
-    cgen_ident( ident );
-    cgen_print( "return NULL;\n" );
+    cgen_print( "return SMX_BOX_START_ROUTINE( handler, %s );\n", name );
 }
 
 /******************************************************************************/
