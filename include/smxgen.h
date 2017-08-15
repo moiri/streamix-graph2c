@@ -30,9 +30,13 @@ void smxgen_boxes_c( igraph_t* );
 void smxgen_boxes_h( igraph_t* );
 const char* smxgen_get_port_name( igraph_t*, int, int );
 void smxgen_main( const char*, igraph_t* );
-void smxgen_network_create( igraph_t*, int );
-void smxgen_network_destroy( igraph_t*, int );
-void smxgen_network_run( igraph_t*, int );
-void smxgen_network_wait_end( igraph_t*, int );
+void smxgen_network_create( igraph_t*, int, int*, int* );
+void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
+        int ch_len, struct timespec* tt, int* tt_vcnt, int* tt_ecnt );
+void smxgen_network_destroy( igraph_t*, int, int, int);
+void smxgen_network_run( igraph_t*, int, int );
+void smxgen_network_wait_end( igraph_t*, int, int );
+int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
+        int len );
 
 #endif /* SMXGEN_H */

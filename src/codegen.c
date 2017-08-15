@@ -119,7 +119,8 @@ void cgen_box_wait_end( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len )
+void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len,
+        const char* name )
 {
     cgen_ident( ident );
     cgen_print( "smx_channel_t* ch_%d = SMX_CHANNEL_CREATE( %d, ", id, len );
@@ -131,7 +132,7 @@ void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len )
         cgen_print( "SMX_FIFO_D" );
     else
         cgen_print( "SMX_FIFO" );
-    cgen_print( " );\n" );
+    cgen_print( ", %s );\n", name );
 }
 
 /******************************************************************************/
@@ -170,11 +171,11 @@ void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
 }
 
 /******************************************************************************/
-void cgen_connect_tt( int ident, int bid, const char* bname, int sec, int nsec )
+void cgen_connect_tt( int ident, int vid, int eid1, int eid2 )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_TT( box_%d, %s, %d, %d );\n", bid, bname,
-            sec, nsec );
+    cgen_print( "SMX_CONNECT_TT( timer_%d, ch_%d, ch_%d );\n", vid, eid1,
+            eid2 );
 }
 
 /******************************************************************************/
@@ -301,4 +302,33 @@ void cgen_struct_tail( int ident, const char* mode )
 {
     cgen_ident( ident );
     cgen_print( "} %s;\n", mode );
+}
+
+/******************************************************************************/
+void cgen_timer_create( int ident, int id, int sec, int nsec )
+{
+    cgen_ident( ident );
+    cgen_print( "smx_timer_t* timer_%d = SMX_TIMER_CREATE( %d, %d );\n", id,
+            sec, nsec );
+}
+
+/******************************************************************************/
+void cgen_timer_destroy( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_TIMER_DESTROY( timer_%d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_timer_run( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_TIMER_RUN( timer_%d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_timer_wait_end( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_TIMER_WAIT_END( timer_%d );\n", id );
 }
