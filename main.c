@@ -107,8 +107,8 @@ int main( int argc, char **argv )
     path_main = malloc( strlen( file_name ) + strlen( out_path ) + 4 );
     sprintf( path_main, "%s/%s.c", out_path, file_name );
     path_main_sia = malloc( strlen( file_name ) + strlen( out_path )
-            + strlen( format ) + 7 );
-    sprintf( path_main_sia, "%s/sia_%s.%s", out_path, file_name, format );
+            + strlen( format ) + 8 );
+    sprintf( path_main_sia, "%s/pnsc_%s.%s", out_path, file_name, format );
     path_boxh = malloc( strlen( FILE_BOX_H ) + strlen( out_path ) + 2 );
     sprintf( path_boxh, "%s/%s", out_path, FILE_BOX_H );
     path_boxc = malloc( strlen( FILE_BOX_C ) + strlen( out_path ) + 2 );
