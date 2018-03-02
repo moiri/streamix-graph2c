@@ -9,7 +9,7 @@ extern FILE* __src_file;
 void cgen_box_body( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "return SMX_BOX_START_ROUTINE( handler, %s );\n", name );
+    cgen_print( "return START_ROUTINE_NET( handler, %s );\n", name );
 }
 
 /******************************************************************************/
@@ -17,7 +17,7 @@ void cgen_box_init( int ident, const char* name, int id, int indegree,
         int outdegree )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_BOX_INIT( %s, box_%d, %d, %d );\n", name, id, indegree,
+    cgen_print( "SMX_NET_INIT( %s, box_%d, %d, %d );\n", name, id, indegree,
             outdegree );
 }
 
@@ -25,14 +25,14 @@ void cgen_box_init( int ident, const char* name, int id, int indegree,
 void cgen_box_cp_init( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_BOX_CP_INIT( box_%d );\n", id );
+    cgen_print( "SMX_NET_RN_INIT( box_%d );\n", id );
 }
 
 /******************************************************************************/
 void cgen_box_create( int ident, int id, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "box_%s_t* box_%d = SMX_BOX_CREATE( %s );\n", name, id, name );
+    cgen_print( "box_%s_t* box_%d = SMX_NET_CREATE( %s );\n", name, id, name );
 }
 
 /******************************************************************************/
@@ -40,10 +40,10 @@ void cgen_box_destroy( int ident, const char* name, int id, int is_sync )
 {
     if( is_sync ) {
         cgen_ident( ident );
-        cgen_print( "SMX_BOX_CP_DESTROY( box_%d );\n", id );
+        cgen_print( "SMX_NET_RN_DESTROY( box_%d );\n", id );
     }
     cgen_ident( ident );
-    cgen_print( "SMX_BOX_DESTROY( %s, box_%d );\n", name, id );
+    cgen_print( "SMX_NET_DESTROY( %s, box_%d );\n", name, id );
 }
 
 /******************************************************************************/
@@ -87,7 +87,7 @@ void cgen_box_ports( int ident )
 void cgen_box_run( int ident, int id, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_BOX_RUN( box_%d, %s );\n", id, name );
+    cgen_print( "SMX_NET_RUN( box_%d, %s );\n", id, name );
 }
 
 /******************************************************************************/
@@ -115,7 +115,7 @@ void cgen_box_tt( int ident )
 void cgen_box_wait_end( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_BOX_WAIT_END( box_%d );\n", id );
+    cgen_print( "SMX_NET_WAIT_END( box_%d );\n", id );
 }
 
 /******************************************************************************/
@@ -160,7 +160,7 @@ void cgen_connect( int ident, int id_ch, int id_box, const char* box_name,
 void cgen_connect_cp( int ident, int id_ch, int id_box )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_CP( box_%d, ch_%d );\n", id_box, id_ch );
+    cgen_print( "SMX_CONNECT_RN( box_%d, ch_%d );\n", id_box, id_ch );
 }
 
 /******************************************************************************/
@@ -174,7 +174,7 @@ void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
 void cgen_connect_tt( int ident, int vid, int eid1, int eid2 )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_TT( timer_%d, ch_%d, ch_%d );\n", vid, eid1,
+    cgen_print( "SMX_CONNECT_TF( timer_%d, ch_%d, ch_%d );\n", vid, eid1,
             eid2 );
 }
 
@@ -308,7 +308,7 @@ void cgen_struct_tail( int ident, const char* mode )
 void cgen_timer_create( int ident, int id, int sec, int nsec )
 {
     cgen_ident( ident );
-    cgen_print( "smx_timer_t* timer_%d = SMX_TIMER_CREATE( %d, %d );\n", id,
+    cgen_print( "smx_timer_t* timer_%d = SMX_TF_CREATE( %d, %d );\n", id,
             sec, nsec );
 }
 
@@ -316,19 +316,19 @@ void cgen_timer_create( int ident, int id, int sec, int nsec )
 void cgen_timer_destroy( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_TIMER_DESTROY( timer_%d );\n", id );
+    cgen_print( "SMX_TF_DESTROY( timer_%d );\n", id );
 }
 
 /******************************************************************************/
 void cgen_timer_run( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_TIMER_RUN( timer_%d );\n", id );
+    cgen_print( "SMX_TF_RUN( timer_%d );\n", id );
 }
 
 /******************************************************************************/
 void cgen_timer_wait_end( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_TIMER_WAIT_END( timer_%d );\n", id );
+    cgen_print( "SMX_TF_WAIT_END( timer_%d );\n", id );
 }
