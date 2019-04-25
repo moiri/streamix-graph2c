@@ -50,7 +50,7 @@ void cgen_box_destroy( int ident, const char* name, int id, int is_sync )
 void cgen_box_fct_ext( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "extern int %s( void* handler );\n", name );
+    cgen_print( "SMX_NET_EXTERN( %s );\n", name );
 }
 
 /******************************************************************************/
