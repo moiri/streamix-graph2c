@@ -62,7 +62,7 @@ flags = [
 '-isystem', '/usr/include',
 '-I', '.',
 '-I', './include',
-'-I', '/usr/local/include/igraph',
+'-I', '/usr/include/igraph',
 '-I', './streamix-sia-lang/uthash/src',
 '-I', './streamix-sia-lang/include',
 ]

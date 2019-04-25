@@ -12,7 +12,7 @@ SOURCES = main.c \
 INCLUDES = $(LOC_INC_DIR)/* \
 		   $(SIA_LANG_DIR)/$(LOC_INC_DIR)/*
 
-INCLUDES_DIR = -I/usr/local/include/igraph \
+INCLUDES_DIR = -I/usr/include/igraph \
 			   -I$(LOC_INC_DIR) \
 			   -I$(SIA_LANG_DIR)/$(LOC_INC_DIR) \
 			   -I$(SIA_LANG_DIR)/uthash/src \
