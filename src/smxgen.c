@@ -211,6 +211,8 @@ void smxgen_main( const char* file_name, igraph_t* g )
     cgen_print( "\n" );
     smxgen_network_create( g, ident, &tt_vcnt, &tt_ecnt );
     cgen_print( "\n" );
+    cgen_program_init_run( ident );
+    cgen_print( "\n" );
     smxgen_network_run( g, ident, tt_vcnt );
     cgen_print( "\n" );
     smxgen_network_wait_end( g, ident, tt_vcnt );
