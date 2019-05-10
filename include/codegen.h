@@ -34,6 +34,7 @@ void cgen_include_local( const char* );
 void cgen_main_head();
 int cgen_print( const char*, ... );
 void cgen_program_init( int );
+void cgen_program_init_run( int ident );
 void cgen_program_cleanup( int );
 void cgen_struct_head( int );
 void cgen_struct_tail( int, const char* );
