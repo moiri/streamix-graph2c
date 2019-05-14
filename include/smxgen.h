@@ -22,7 +22,7 @@ int smxgen_box_is_duplicate( const char*, const char**, int );
  * @return      1 if the type matches, 0 otherwise
  */
 int smxgen_box_is_type( igraph_t* g, int vid, const char* type );
-void smxgen_box_structs( igraph_t*, int );
+void smxgen_net_structs( igraph_t*, int );
 void smxgen_box_structs_ports( igraph_t*, int, int, int );
 void smxgen_box_fct_defs( igraph_t*, int );
 void smxgen_box_fct_prots( igraph_t*, int );
