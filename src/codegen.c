@@ -171,11 +171,12 @@ void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
 }
 
 /******************************************************************************/
-void cgen_connect_tt( int ident, int vid, int eid1, int eid2 )
+void cgen_connect_tt( int ident, int vid, int eid1, int eid2,
+        const char* ch_name )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_TF( %d, %d, %d );\n", vid, eid1,
-            eid2 );
+    cgen_print( "SMX_CONNECT_TF( %d, %d, %d, %s );\n", vid, eid1,
+            eid2, ch_name );
 }
 
 /******************************************************************************/

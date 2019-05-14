@@ -21,7 +21,8 @@ void cgen_channel_destroy( int, int );
 void cgen_connect( int, int, int, const char*, const char*, const char*, int );
 void cgen_connect_cp( int, int, int );
 void cgen_connect_guard( int, int, int, int );
-void cgen_connect_tt( int ident, int vid, int eid1, int eid2 );
+void cgen_connect_tt( int ident, int vid, int eid1, int eid2,
+        const char* ch_name );
 void cgen_endif( const char* );
 void cgen_block_end( int );
 void cgen_block_start( int );

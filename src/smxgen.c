@@ -349,7 +349,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
-        cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2 );
+        cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2, port_name );
         ( *tt_ecnt )++;
     }
     else if( ( ( stt.tv_sec != 0 ) || ( stt.tv_nsec != 0 ) )
@@ -359,11 +359,11 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1, 1, 1, port_name );
         ( *tt_ecnt )++;
-        cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2 );
+        cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2, port_name );
         ch_idx3 = edge_cnt + *tt_ecnt;
         cgen_channel_create( ident, ch_idx3, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
-        cgen_connect_tt( ident, dtt_idx, ch_idx2, ch_idx3 );
+        cgen_connect_tt( ident, dtt_idx, ch_idx2, ch_idx3, port_name );
         ch_idx2 = ch_idx3;
         ( *tt_ecnt )++;
     }
@@ -373,7 +373,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), ch_len, port_name );
-        cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2 );
+        cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2, port_name );
         ( *tt_ecnt )++;
     }
     else if( ( dtt.tv_sec != 0 ) || ( dtt.tv_nsec != 0 ) ) {
@@ -383,7 +383,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
-        cgen_connect_tt( ident, dtt_idx, ch_idx1, ch_idx2 );
+        cgen_connect_tt( ident, dtt_idx, ch_idx1, ch_idx2, port_name );
         ( *tt_ecnt )++;
     }
     else {
