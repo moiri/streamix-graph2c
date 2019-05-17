@@ -7,7 +7,8 @@ void cgen_box_fct_head( int, const char* );
 void cgen_box_fct_proto( int, const char* );
 void cgen_net_init( int, const char*, int, int, int );
 void cgen_net_cp_init( int, int );
-void cgen_net_create( int, int, const char* );
+void cgen_net_create( int ident, int id, const char* net_name,
+        const char* box_name );
 void cgen_net_destroy( int, const char*, int, int );
 void cgen_net_port( int, const char* );
 void cgen_net_ports( int );
@@ -16,9 +17,12 @@ void cgen_net_struct_head( int, const char* );
 void cgen_net_struct_tail( int, const char* );
 void cgen_net_tt( int );
 void cgen_net_wait_end( int, int );
-void cgen_channel_create( int, int, int, int, int, const char* );
+void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len,
+        const char* name );
 void cgen_channel_destroy( int, int );
-void cgen_connect( int, int, int, const char*, const char*, const char*, int );
+void cgen_connect( int ident, int id_ch, int id_box, const char* net_name,
+        const char* box_name, const char* ch_name, const char* mode,
+        int is_sync );
 void cgen_connect_cp( int, int, int );
 void cgen_connect_guard( int, int, int, int );
 void cgen_connect_tt( int ident, int vid, int eid1, int eid2,

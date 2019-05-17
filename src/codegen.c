@@ -51,10 +51,11 @@ void cgen_net_cp_init( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_net_create( int ident, int id, const char* name )
+void cgen_net_create( int ident, int id, const char* net_name,
+        const char* box_name )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_CREATE( %d, %s );\n", id, name );
+    cgen_print( "SMX_NET_CREATE( %d, %s, %s );\n", id, net_name, box_name );
 }
 
 /******************************************************************************/
@@ -126,12 +127,16 @@ void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len,
 {
     cgen_ident( ident );
     cgen_print( "SMX_CHANNEL_CREATE( %d, %d, ", id, len );
-    if( dsrc && ddst )
+    if( dsrc && ddst == 1 )
         cgen_print( "SMX_D_FIFO_D" );
+    else if( dsrc && ddst == 2 )
+        cgen_print( "SMX_D_FIFO_DD" );
     else if( dsrc )
         cgen_print( "SMX_D_FIFO" );
-    else if( ddst )
+    else if( ddst == 1 )
         cgen_print( "SMX_FIFO_D" );
+    else if( ddst == 2 )
+        cgen_print( "SMX_FIFO_DD" );
     else
         cgen_print( "SMX_FIFO" );
     cgen_print( ", %s );\n", name );
@@ -145,17 +150,18 @@ void cgen_channel_destroy( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_connect( int ident, int id_ch, int id_box, const char* box_name,
-        const char* ch_name, const char* mode, int is_sync )
+void cgen_connect( int ident, int id_ch, int id_box, const char* net_name,
+        const char* box_name, const char* ch_name, const char* mode,
+        int is_sync )
 {
     if( !is_sync ) {
         cgen_ident( ident );
-        cgen_print( "SMX_CONNECT( %d, %d, %s, %s, %s );\n", id_box,
-                id_ch, box_name, ch_name, mode );
+        cgen_print( "SMX_CONNECT( %d, %d, %s, %s, %s, %s );\n", id_box,
+                id_ch, net_name, box_name, ch_name, mode );
     }
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_ARR( %d, %d, %s, %s, %s );\n", id_box,
-            id_ch, box_name, ch_name, mode );
+    cgen_print( "SMX_CONNECT_ARR( %d, %d, %s, %s, %s, %s );\n", id_box,
+            id_ch, net_name, box_name, ch_name, mode );
 }
 
 /******************************************************************************/

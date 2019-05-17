@@ -30,34 +30,33 @@ void smxgen_net_structs( igraph_t* g, int ident )
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
     int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    const char* net_names[net_count];
-    const char* net_name;
+    const char* box_names[net_count];
+    const char* box_name;
     for( i=0; i<net_count; i++ )
-        net_names[i] = NULL;
+        box_names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
-        net_name = igraph_cattribute_VAS( g, GV_LABEL, vid );
-        if( smxgen_box_is_duplicate( net_name, net_names, net_count )
+        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_duplicate( box_name, box_names, net_count )
                 || smxgen_box_is_type( g, vid, TEXT_CP )
                 || smxgen_box_is_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
-        net_names[idx++] = net_name;
+        box_names[idx++] = box_name;
         // generate box structure code
-        cgen_net_struct_head( ident, net_name );
+        cgen_net_struct_head( ident, box_name );
         ident++;
         // for all incident channels of this box
         smxgen_box_structs_ports( g, ident, vid, IGRAPH_IN );
         smxgen_box_structs_ports( g, ident, vid, IGRAPH_OUT );
         cgen_net_tt( ident );
         ident--;
-        cgen_net_struct_tail( ident,
-                igraph_cattribute_VAS( g, GV_LABEL, vid ) );
+        cgen_net_struct_tail( ident, box_name );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -228,7 +227,6 @@ void smxgen_main( const char* file_name, igraph_t* g )
 /******************************************************************************/
 void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
 {
-    const char* name;
     const char* port_name;
     igraph_vs_t v_sel;
     igraph_vs_t v_cp;
@@ -250,14 +248,15 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate net creation code
         vid1 = IGRAPH_VIT_GET( v_it );
-        name = igraph_cattribute_VAS( g, GV_LABEL, vid1 );
-        cgen_net_create( ident, vid1, name );
+        cgen_net_create( ident, vid1,
+                igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
         igraph_vs_1( &v_cp, vid1 );
         igraph_vector_init( &indegree, 1 );
         igraph_vector_init( &outdegree, 1 );
         igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
         igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
-        cgen_net_init( ident, igraph_cattribute_VAS( g, GV_LABEL, vid1 ), vid1,
+        cgen_net_init( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ), vid1,
                 VECTOR( indegree )[0], VECTOR( outdegree )[0] );
         if( smxgen_box_is_type( g, vid1, TEXT_CP ) ) {
             cgen_net_cp_init( ident, vid1 );
@@ -291,10 +290,12 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
             igraph_edge( g, eid, &vid1, &vid2 );
             cgen_connect( ident, eid, vid1,
                     igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+                    igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
                     smxgen_get_port_name( g, eid, IGRAPH_OUT ),
                     MODE_OUT, smxgen_box_is_type( g, vid1, TEXT_CP ) );
             cgen_connect( ident, eid, vid2,
                     igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
+                    igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
                     smxgen_get_port_name( g, eid, IGRAPH_IN ),
                     MODE_IN, smxgen_box_is_type( g, vid2, TEXT_CP ) );
             if( smxgen_box_is_type( g, vid2, TEXT_CP ) )
@@ -347,7 +348,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
             && ( stt.tv_nsec == dtt.tv_nsec ) ) {
         // both veryices are time-triggered at the same rate
         cgen_channel_create( ident, ch_idx1,
-                igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, 1, port_name );
+                igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
         cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2, port_name );
@@ -357,8 +358,8 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
             && ( ( dtt.tv_sec != 0 ) || ( dtt.tv_nsec != 0 ) ) ) {
         // both vertices are time-timetriggered at a different rate
         cgen_channel_create( ident, ch_idx1,
-                igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, 1, port_name );
-        cgen_channel_create( ident, ch_idx2, 1, 1, 1, port_name );
+                igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, 1, port_name );
+        cgen_channel_create( ident, ch_idx2, 1, 2, 1, port_name );
         ( *tt_ecnt )++;
         cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2, port_name );
         ch_idx3 = edge_cnt + *tt_ecnt;
@@ -371,7 +372,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
     else if( ( stt.tv_sec != 0 ) || ( stt.tv_nsec != 0 ) ) {
         // only the source vertex is time-triggered
         cgen_channel_create( ident, ch_idx1,
-                igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, 1, port_name );
+                igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), ch_len, port_name );
         cgen_connect_tt( ident, stt_idx, ch_idx1, ch_idx2, port_name );
@@ -380,7 +381,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
     else if( ( dtt.tv_sec != 0 ) || ( dtt.tv_nsec != 0 ) ) {
         // only the target vertex is time-triggered
         cgen_channel_create( ident, ch_idx1,
-                igraph_cattribute_EAN( g, GE_DSRC, eid ), 1, ch_len,
+                igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, ch_len,
                 port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
@@ -393,10 +394,12 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
     igraph_edge( g, eid, &vid1, &vid2 );
     cgen_connect( ident, ch_idx1, vid1,
             igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+            igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
             smxgen_get_port_name( g, eid, IGRAPH_OUT ), MODE_OUT,
             smxgen_box_is_type( g, vid1, TEXT_CP ) );
     cgen_connect( ident, ch_idx2, vid2,
             igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
+            igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
             smxgen_get_port_name( g, eid, IGRAPH_IN ), MODE_IN,
             smxgen_box_is_type( g, vid2, TEXT_CP ) );
     if( smxgen_box_is_type( g, vid2, TEXT_CP ) )
@@ -433,7 +436,7 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box destruction code
         vid1 = IGRAPH_VIT_GET( v_it );
-        cgen_net_destroy( ident, igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
+        cgen_net_destroy( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
                 vid1, smxgen_box_is_type( g, vid1, TEXT_CP ) );
         IGRAPH_VIT_NEXT( v_it );
     }
