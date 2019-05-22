@@ -127,16 +127,12 @@ void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len,
 {
     cgen_ident( ident );
     cgen_print( "SMX_CHANNEL_CREATE( %d, %d, ", id, len );
-    if( dsrc && ddst == 1 )
+    if( dsrc && ddst )
         cgen_print( "SMX_D_FIFO_D" );
-    else if( dsrc && ddst == 2 )
-        cgen_print( "SMX_D_FIFO_DD" );
     else if( dsrc )
         cgen_print( "SMX_D_FIFO" );
-    else if( ddst == 1 )
+    else if( ddst )
         cgen_print( "SMX_FIFO_D" );
-    else if( ddst == 2 )
-        cgen_print( "SMX_FIFO_DD" );
     else
         cgen_print( "SMX_FIFO" );
     cgen_print( ", %s );\n", name );
