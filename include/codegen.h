@@ -12,7 +12,8 @@ void cgen_net_create( int ident, int id, const char* net_name,
 void cgen_net_destroy( int, const char*, int, int );
 void cgen_net_port( int, const char* );
 void cgen_net_ports( int );
-void cgen_net_run( int, int, const char*, const char* );
+void cgen_net_run( int ident, int id, const char* net_name,
+        const char* box_name, int prio );
 void cgen_net_struct_head( int, const char* );
 void cgen_net_struct_tail( int, const char* );
 void cgen_net_tt( int );

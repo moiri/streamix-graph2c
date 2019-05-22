@@ -87,10 +87,11 @@ void cgen_net_ports( int ident )
 
 /******************************************************************************/
 void cgen_net_run( int ident, int id, const char* net_name,
-        const char* box_name )
+        const char* box_name, int prio )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_RUN( %d, %s, %s );\n", id, net_name, box_name );
+    cgen_print( "SMX_NET_RUN( %d, %s, %s, %d );\n", id, net_name, box_name,
+            prio );
 }
 
 /******************************************************************************/

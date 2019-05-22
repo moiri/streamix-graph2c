@@ -464,8 +464,10 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate code to run boxes
         vid = IGRAPH_VIT_GET( v_it );
-        cgen_net_run( ident, vid, igraph_cattribute_VAS( g, GV_LABEL, vid ),
-                igraph_cattribute_VAS( g, GV_IMPL, vid ) );
+        cgen_net_run( ident, vid,
+                igraph_cattribute_VAS( g, GV_LABEL, vid ),
+                igraph_cattribute_VAS( g, GV_IMPL, vid ),
+                igraph_cattribute_VAN( g, GV_TT, vid ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
