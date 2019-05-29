@@ -318,6 +318,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
 {
     struct timespec stt;
     struct timespec dtt;
+    int net_cnt = igraph_vcount( g );
     const char* port_name = igraph_cattribute_EAS( g, GE_LABEL, eid );
     int stt_idx, dtt_idx, ch_idx1, ch_idx2, ch_idx3, vid1, vid2;
     stt.tv_sec = igraph_cattribute_EAN( g, GE_STS, eid );
@@ -327,7 +328,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
     // create timer instance
     stt_idx = smxgen_timer_is_duplicate( stt, tt, 2*edge_cnt );
     if( stt_idx < 0 ) {
-        stt_idx = *tt_vcnt;
+        stt_idx = net_cnt + *tt_vcnt;
         tt[stt_idx].tv_sec = stt.tv_sec;
         tt[stt_idx].tv_nsec = stt.tv_nsec;
         cgen_timer_create( ident, stt_idx, stt.tv_sec, stt.tv_nsec );
@@ -335,7 +336,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
     }
     dtt_idx = smxgen_timer_is_duplicate( dtt, tt, 2*edge_cnt );
     if( dtt_idx < 0 ) {
-        dtt_idx = *tt_vcnt;
+        dtt_idx = net_cnt + *tt_vcnt;
         tt[dtt_idx].tv_sec = dtt.tv_sec;
         tt[dtt_idx].tv_nsec = dtt.tv_nsec;
         cgen_timer_create( ident, dtt_idx, dtt.tv_sec, dtt.tv_nsec );
@@ -414,6 +415,7 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
     igraph_es_t e_sel;
     igraph_eit_t e_it;
     int eid, vid1, vid2, edge_cnt = igraph_ecount( g ), i;
+    int net_cnt = igraph_vcount( g );
     // for all channels
     e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
     igraph_eit_create( g, e_sel, &e_it );
@@ -444,7 +446,7 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
     igraph_vs_destroy( &v_sel );
     // for all timers
     for( i = 0; i < tt_vcnt; i++ ) {
-        cgen_timer_destroy( ident, i );
+        cgen_timer_destroy( ident, i + net_cnt );
     }
 }
 
@@ -454,9 +456,10 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt )
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
     int vid, i;
+    int net_cnt = igraph_vcount( g );
     // for all timers
     for( i = 0; i < tt_vcnt; i++ ) {
-        cgen_timer_run( ident, i );
+        cgen_timer_run( ident, i + net_cnt );
     }
     // for all boxes
     v_sel = igraph_vss_all();
@@ -480,6 +483,7 @@ void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt )
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
     int vid, i;
+    int net_cnt = igraph_vcount( g );
     // for all boxes
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
@@ -493,7 +497,7 @@ void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt )
     igraph_vs_destroy( &v_sel );
     // for all timers
     for( i = 0; i < tt_vcnt; i++ ) {
-        cgen_timer_wait_end( ident, i );
+        cgen_timer_wait_end( ident, i + net_cnt );
     }
 }
 
