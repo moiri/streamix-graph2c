@@ -1,19 +1,18 @@
 #ifndef CODEGEN_H
 #define CODEGEN_H
 
-void cgen_box_body( int ident, const char* net_name, const char* box_name );
+void cgen_box_body( int ident, const char* box_name );
 void cgen_box_fct_ext( int, const char* );
 void cgen_box_fct_head( int, const char* );
 void cgen_box_fct_proto( int, const char* );
-void cgen_net_init( int, const char*, int, int, int );
+void cgen_net_init( int, int, int, int );
 void cgen_net_cp_init( int, int );
 void cgen_net_create( int ident, int id, const char* net_name,
         const char* box_name );
-void cgen_net_destroy( int, const char*, int, int );
+void cgen_net_destroy( int, int, int );
 void cgen_net_port( int, const char* );
 void cgen_net_ports( int );
-void cgen_net_run( int ident, int id, const char* net_name,
-        const char* box_name, int prio );
+void cgen_net_run( int ident, int id, const char* box_name, int prio );
 void cgen_net_struct_head( int, const char* );
 void cgen_net_struct_tail( int, const char* );
 void cgen_net_tt( int );

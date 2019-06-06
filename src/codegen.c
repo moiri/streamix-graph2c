@@ -6,10 +6,10 @@
 extern FILE* __src_file;
 
 /******************************************************************************/
-void cgen_box_body( int ident, const char* net_name, const char* box_name )
+void cgen_box_body( int ident, const char* box_name )
 {
     cgen_ident( ident );
-    cgen_print( "return START_ROUTINE_NET( handler, %s, %s );\n", net_name,
+    cgen_print( "return START_ROUTINE_NET( handler, %s );\n",
             box_name );
 }
 
@@ -35,11 +35,10 @@ void cgen_box_fct_proto( int ident, const char* name )
 }
 
 /******************************************************************************/
-void cgen_net_init( int ident, const char* name, int id, int indegree,
-        int outdegree )
+void cgen_net_init( int ident, int id, int indegree, int outdegree )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_INIT( %d, %s, %d, %d );\n", id, name, indegree,
+    cgen_print( "SMX_NET_INIT( %d, %d, %d );\n", id, indegree,
             outdegree );
 }
 
@@ -59,14 +58,14 @@ void cgen_net_create( int ident, int id, const char* net_name,
 }
 
 /******************************************************************************/
-void cgen_net_destroy( int ident, const char* name, int id, int is_sync )
+void cgen_net_destroy( int ident, int id, int is_sync )
 {
     if( is_sync ) {
         cgen_ident( ident );
         cgen_print( "SMX_NET_RN_DESTROY( %d );\n", id );
     }
     cgen_ident( ident );
-    cgen_print( "SMX_NET_DESTROY( %d, %s );\n", id, name );
+    cgen_print( "SMX_NET_DESTROY( %d );\n", id );
 }
 
 /******************************************************************************/
@@ -86,11 +85,10 @@ void cgen_net_ports( int ident )
 }
 
 /******************************************************************************/
-void cgen_net_run( int ident, int id, const char* net_name,
-        const char* box_name, int prio )
+void cgen_net_run( int ident, int id, const char* box_name, int prio )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_RUN( %d, %s, %s, %d );\n", id, net_name, box_name,
+    cgen_print( "SMX_NET_RUN( %d, %s, %d );\n", id, box_name,
             prio );
 }
 
@@ -153,12 +151,12 @@ void cgen_connect( int ident, int id_ch, int id_box, const char* net_name,
 {
     if( !is_sync ) {
         cgen_ident( ident );
-        cgen_print( "SMX_CONNECT( %d, %d, %s, %s, %s, %s );\n", id_box,
-                id_ch, net_name, box_name, ch_name, mode );
+        cgen_print( "SMX_CONNECT( %d, %d, %s, %s, %s );\n", id_box,
+                id_ch, box_name, ch_name, mode );
     }
     cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_ARR( %d, %d, %s, %s, %s, %s );\n", id_box,
-            id_ch, net_name, box_name, ch_name, mode );
+    cgen_print( "SMX_CONNECT_ARR( %d, %d, %s, %s, %s );\n", id_box,
+            id_ch, net_name, ch_name, mode );
 }
 
 /******************************************************************************/

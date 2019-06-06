@@ -162,8 +162,7 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         cgen_box_fct_head( ident, box_name );
         cgen_block_start( ident );
         ident++;
-        cgen_box_body( ident, igraph_cattribute_VAS( g, GV_LABEL, vid ),
-                box_name );
+        cgen_box_body( ident, box_name );
         ident--;
         cgen_block_end( ident );
         IGRAPH_VIT_NEXT( v_it );
@@ -301,8 +300,8 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
         igraph_vector_init( &outdegree, 1 );
         igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
         igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
-        cgen_net_init( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ), vid1,
-                VECTOR( indegree )[0], VECTOR( outdegree )[0] );
+        cgen_net_init( ident, vid1, VECTOR( indegree )[0],
+                VECTOR( outdegree )[0] );
         if( smxgen_net_is_type( g, vid1, TEXT_CP ) ) {
             cgen_net_cp_init( ident, vid1 );
         }
@@ -483,8 +482,7 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box destruction code
         vid1 = IGRAPH_VIT_GET( v_it );
-        cgen_net_destroy( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
-                vid1, smxgen_net_is_type( g, vid1, TEXT_CP ) );
+        cgen_net_destroy( ident, vid1, smxgen_net_is_type( g, vid1, TEXT_CP ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -513,7 +511,6 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt )
         // generate code to run boxes
         vid = IGRAPH_VIT_GET( v_it );
         cgen_net_run( ident, vid,
-                igraph_cattribute_VAS( g, GV_LABEL, vid ),
                 igraph_cattribute_VAS( g, GV_IMPL, vid ),
                 igraph_cattribute_VAN( g, GV_TT, vid ) );
         IGRAPH_VIT_NEXT( v_it );
