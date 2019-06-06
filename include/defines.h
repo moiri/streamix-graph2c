@@ -9,8 +9,8 @@
 #define FILE_BOX_C  FILE_BOX ".c"
 #define FILE_BOX_H  FILE_BOX ".h"
 #define FILE_BOX_IH "BOXGEN_H"
-#define FILE_SMX_H  "smxrts.h"
-#define FILE_ZLOG_H "zlog.h"
+#define FILE_SMX    "smxrts"
+#define FILE_SMX_H  FILE_SMX ".h"
 
 #define CONST_ID_LEN 9
 

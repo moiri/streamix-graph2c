@@ -105,7 +105,7 @@ void cgen_net_struct_head( int ident, const char* name )
 void cgen_net_struct_tail( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "} net_%s_t;\n\n", name );
+    cgen_print( "} net_%s_t;\n", name );
 }
 
 /******************************************************************************/
@@ -256,13 +256,13 @@ void cgen_ifndef( const char* name )
 /******************************************************************************/
 void cgen_include( const char* file )
 {
-    cgen_print( "#include <%s>\n", file );
+    cgen_print( "#include <%s.h>\n", file );
 }
 
 /******************************************************************************/
 void cgen_include_local( const char* file )
 {
-    cgen_print( "#include \"%s\"\n", file );
+    cgen_print( "#include \"%s.h\"\n", file );
 }
 
 /******************************************************************************/

@@ -1,3 +1,10 @@
+/**
+ * Generates the Streamix C code
+ *
+ * @file    smxgen.c
+ * @author  Simon Maurer
+ */
+
 #include "smxgen.h"
 #include "codegen.h"
 #include <defines.h>
@@ -16,12 +23,51 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len )
 }
 
 /******************************************************************************/
-int smxgen_box_is_type( igraph_t* g, int vid, const char* type )
+int smxgen_net_is_extern( igraph_t* g, int vid )
+{
+    return igraph_cattribute_VAN( g, GV_EXT, vid );
+}
+
+/******************************************************************************/
+int smxgen_net_is_type( igraph_t* g, int vid, const char* type )
 {
     const char* name = igraph_cattribute_VAS( g, GV_LABEL, vid );
     if( strcmp( name , type ) == 0 )
         return 1;
     return 0;
+}
+
+/******************************************************************************/
+void smxgen_main_includes( igraph_t* g )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx = 0, net_count = igraph_vcount( g ), i;
+    const char* box_names[net_count];
+    const char* box_name;
+
+    cgen_include_local( FILE_SMX );
+    cgen_include_local( FILE_BOX );
+
+    for( i=0; i<net_count; i++ )
+        box_names[i] = NULL;
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid = IGRAPH_VIT_GET( v_it );
+        // store name of vertex to avoid duplicates
+        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( !smxgen_box_is_duplicate( box_name, box_names, net_count )
+                && smxgen_net_is_extern( g, vid ) )
+        {
+            cgen_include_local( box_name );
+        }
+        box_names[idx++] = box_name;
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -42,8 +88,9 @@ void smxgen_net_structs( igraph_t* g, int ident )
         // store name of vertex to avoid duplicates
         box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
         if( smxgen_box_is_duplicate( box_name, box_names, net_count )
-                || smxgen_box_is_type( g, vid, TEXT_CP )
-                || smxgen_box_is_type( g, vid, TEXT_TF ) ) {
+                || smxgen_net_is_extern( g, vid )
+                || smxgen_net_is_type( g, vid, TEXT_CP )
+                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
@@ -54,7 +101,7 @@ void smxgen_net_structs( igraph_t* g, int ident )
         // for all incident channels of this box
         smxgen_box_structs_ports( g, ident, vid, IGRAPH_IN );
         smxgen_box_structs_ports( g, ident, vid, IGRAPH_OUT );
-        cgen_net_tt( ident );
+        /* cgen_net_tt( ident ); */
         ident--;
         cgen_net_struct_tail( ident, box_name );
         IGRAPH_VIT_NEXT( v_it );
@@ -83,35 +130,9 @@ void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode )
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
-    cgen_net_ports( ident );
+    /* cgen_net_ports( ident ); */
     ident--;
     cgen_struct_tail( ident, mode_str );
-}
-
-/******************************************************************************/
-void smxgen_boxes_c( igraph_t* g )
-{
-    int ident = 0;
-    cgen_header_c_file( FILE_BOX );
-    cgen_include_local( FILE_BOX_H );
-    cgen_include( FILE_ZLOG_H );
-    cgen_print( "\n" );
-    smxgen_box_fct_defs( g, ident );
-}
-
-/******************************************************************************/
-void smxgen_boxes_h( igraph_t* g )
-{
-    int ident = 0;
-    cgen_header_h_file( FILE_BOX );
-    cgen_ifndef( FILE_BOX_IH );
-    cgen_print( "\n" );
-    cgen_include_local( FILE_SMX_H );
-    cgen_print( "\n" );
-    smxgen_net_structs( g, ident );
-    smxgen_box_fct_prots( g, ident );
-    cgen_print( "\n" );
-    cgen_endif( FILE_BOX_IH );
 }
 
 /******************************************************************************/
@@ -182,6 +203,31 @@ void smxgen_box_fct_prots( igraph_t* g, int ident )
 }
 
 /******************************************************************************/
+void smxgen_boxes_c( igraph_t* g )
+{
+    int ident = 0;
+    cgen_header_c_file( FILE_BOX );
+    cgen_include_local( FILE_BOX );
+    cgen_print( "\n" );
+    smxgen_box_fct_defs( g, ident );
+}
+
+/******************************************************************************/
+void smxgen_boxes_h( igraph_t* g )
+{
+    int ident = 0;
+    cgen_header_h_file( FILE_BOX );
+    cgen_ifndef( FILE_BOX_IH );
+    cgen_print( "\n" );
+    cgen_include_local( FILE_SMX );
+    cgen_print( "\n" );
+    smxgen_net_structs( g, ident );
+    smxgen_box_fct_prots( g, ident );
+    cgen_print( "\n" );
+    cgen_endif( FILE_BOX_IH );
+}
+
+/******************************************************************************/
 const char* smxgen_get_port_name( igraph_t* g, int eid, int mode )
 {
     const char* name = NULL;
@@ -201,8 +247,7 @@ void smxgen_main( const char* file_name, igraph_t* g )
     int tt_vcnt = 0;
     int tt_ecnt = 0;
     cgen_header_c_file( file_name );
-    cgen_include_local( FILE_SMX_H );
-    cgen_include_local( FILE_BOX_H );
+    smxgen_main_includes( g );
     cgen_print( "\n" );
     cgen_main_head();
     cgen_block_start( ident );
@@ -258,7 +303,7 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
         igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
         cgen_net_init( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ), vid1,
                 VECTOR( indegree )[0], VECTOR( outdegree )[0] );
-        if( smxgen_box_is_type( g, vid1, TEXT_CP ) ) {
+        if( smxgen_net_is_type( g, vid1, TEXT_CP ) ) {
             cgen_net_cp_init( ident, vid1 );
         }
         igraph_vs_destroy( &v_cp );
@@ -292,13 +337,13 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
                     igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
                     igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
                     smxgen_get_port_name( g, eid, IGRAPH_OUT ),
-                    MODE_OUT, smxgen_box_is_type( g, vid1, TEXT_CP ) );
+                    MODE_OUT, smxgen_net_is_type( g, vid1, TEXT_CP ) );
             cgen_connect( ident, eid, vid2,
                     igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
                     igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
                     smxgen_get_port_name( g, eid, IGRAPH_IN ),
-                    MODE_IN, smxgen_box_is_type( g, vid2, TEXT_CP ) );
-            if( smxgen_box_is_type( g, vid2, TEXT_CP ) )
+                    MODE_IN, smxgen_net_is_type( g, vid2, TEXT_CP ) );
+            if( smxgen_net_is_type( g, vid2, TEXT_CP ) )
                 cgen_connect_cp( ident, eid, vid2 );
             if( tt_type == TIME_TB ) {
                 cgen_connect_guard( ident, eid,
@@ -397,13 +442,13 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
             igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
             igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
             smxgen_get_port_name( g, eid, IGRAPH_OUT ), MODE_OUT,
-            smxgen_box_is_type( g, vid1, TEXT_CP ) );
+            smxgen_net_is_type( g, vid1, TEXT_CP ) );
     cgen_connect( ident, ch_idx2, vid2,
             igraph_cattribute_VAS( g, GV_LABEL, vid2 ),
             igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
             smxgen_get_port_name( g, eid, IGRAPH_IN ), MODE_IN,
-            smxgen_box_is_type( g, vid2, TEXT_CP ) );
-    if( smxgen_box_is_type( g, vid2, TEXT_CP ) )
+            smxgen_net_is_type( g, vid2, TEXT_CP ) );
+    if( smxgen_net_is_type( g, vid2, TEXT_CP ) )
         cgen_connect_cp( ident, eid, vid2 );
 }
 
@@ -439,7 +484,7 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
         // generate box destruction code
         vid1 = IGRAPH_VIT_GET( v_it );
         cgen_net_destroy( ident, igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
-                vid1, smxgen_box_is_type( g, vid1, TEXT_CP ) );
+                vid1, smxgen_net_is_type( g, vid1, TEXT_CP ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
