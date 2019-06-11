@@ -90,6 +90,7 @@ void smxgen_net_structs( igraph_t* g, int ident )
         if( smxgen_box_is_duplicate( box_name, box_names, net_count )
                 || smxgen_net_is_extern( g, vid )
                 || smxgen_net_is_type( g, vid, TEXT_CP )
+                || smxgen_net_is_type( g, vid, TEXT_PROFILER )
                 || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
@@ -302,9 +303,10 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
         igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
         cgen_net_init( ident, vid1, VECTOR( indegree )[0],
                 VECTOR( outdegree )[0] );
-        if( smxgen_net_is_type( g, vid1, TEXT_CP ) ) {
+        if( smxgen_net_is_type( g, vid1, TEXT_CP ) )
             cgen_net_cp_init( ident, vid1 );
-        }
+        else if( smxgen_net_is_type( g, vid1, TEXT_PROFILER ) )
+            cgen_net_profiler_init( ident, vid1 );
         igraph_vs_destroy( &v_cp );
         igraph_vector_destroy( &indegree );
         igraph_vector_destroy( &outdegree );
@@ -354,6 +356,18 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
+    // conncet profiler
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        // generate net creation code
+        vid1 = IGRAPH_VIT_GET( v_it );
+        if( smxgen_net_is_type( g, vid1, TEXT_PROFILER ) )
+            cgen_connect_profiler( ident, vid1 );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -482,7 +496,11 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
     while( !IGRAPH_VIT_END( v_it ) ) {
         // generate box destruction code
         vid1 = IGRAPH_VIT_GET( v_it );
-        cgen_net_destroy( ident, vid1, smxgen_net_is_type( g, vid1, TEXT_CP ) );
+        if( smxgen_net_is_type( g, vid1, TEXT_CP ) )
+            cgen_net_cp_destroy( ident, vid1 );
+        else if( smxgen_net_is_type( g, vid1, TEXT_PROFILER ) )
+            cgen_net_profiler_destroy( ident, vid1 );
+        cgen_net_destroy( ident, vid1 );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );

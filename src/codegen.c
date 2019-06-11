@@ -50,6 +50,13 @@ void cgen_net_cp_init( int ident, int id )
 }
 
 /******************************************************************************/
+void cgen_net_profiler_init( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_PROFILER_INIT( %d );\n", id );
+}
+
+/******************************************************************************/
 void cgen_net_create( int ident, int id, const char* net_name,
         const char* box_name )
 {
@@ -58,14 +65,24 @@ void cgen_net_create( int ident, int id, const char* net_name,
 }
 
 /******************************************************************************/
-void cgen_net_destroy( int ident, int id, int is_sync )
+void cgen_net_destroy( int ident, int id )
 {
-    if( is_sync ) {
-        cgen_ident( ident );
-        cgen_print( "SMX_NET_RN_DESTROY( %d );\n", id );
-    }
     cgen_ident( ident );
     cgen_print( "SMX_NET_DESTROY( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_cp_destroy( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_RN_DESTROY( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_profiler_destroy( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_PROFILER_DESTROY( %d );\n", id );
 }
 
 /******************************************************************************/
@@ -164,6 +181,13 @@ void cgen_connect_cp( int ident, int id_ch, int id_box )
 {
     cgen_ident( ident );
     cgen_print( "SMX_CONNECT_RN( %d, %d );\n", id_box, id_ch );
+}
+
+/******************************************************************************/
+void cgen_connect_profiler( int ident, int id_box )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_CONNECT_PROFILER( %d );\n", id_box );
 }
 
 /******************************************************************************/
