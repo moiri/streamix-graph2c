@@ -24,14 +24,14 @@ void cgen_box_fct_ext( int ident, const char* name )
 void cgen_box_fct_head( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "void* box_%s( void* handler )\n", name );
+    cgen_print( "void* start_routine_%s( void* handler )\n", name );
 }
 
 /******************************************************************************/
 void cgen_box_fct_proto( int ident, const char* name )
 {
     cgen_ident( ident );
-    cgen_print( "void *box_%s( void* );\n", name );
+    cgen_print( "void* start_routine_%s( void* );\n", name );
 }
 
 /******************************************************************************/
@@ -343,7 +343,7 @@ void cgen_struct_tail( int ident, const char* mode )
 void cgen_timer_create( int ident, int id, int sec, int nsec )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_TF_CREATE( %d, %d, %d );\n", id,
+    cgen_print( "SMX_NET_CREATE_TF( %d, %d, %d );\n", id,
             sec, nsec );
 }
 
@@ -351,19 +351,12 @@ void cgen_timer_create( int ident, int id, int sec, int nsec )
 void cgen_timer_destroy( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_TF_DESTROY( %d );\n", id );
+    cgen_print( "SMX_NET_DESTROY_TF( %d );\n", id );
 }
 
 /******************************************************************************/
-void cgen_timer_run( int ident, int id )
+void cgen_timer_init( int ident, int id )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_TF_RUN( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_timer_wait_end( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_TF_WAIT_END( %d );\n", id );
+    cgen_print( "SMX_NET_INIT_TF( %d );\n", id );
 }

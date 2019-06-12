@@ -49,7 +49,6 @@ void cgen_struct_head( int );
 void cgen_struct_tail( int, const char* );
 void cgen_timer_create( int ident, int id, int sec, int nsec );
 void cgen_timer_destroy( int ident, int id );
-void cgen_timer_run( int ident, int id );
-void cgen_timer_wait_end( int ident, int id );
+void cgen_timer_init( int ident, int id );
 
 #endif /* ifndef CODEGEN_H */

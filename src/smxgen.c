@@ -159,7 +159,6 @@ void smxgen_box_fct_defs( igraph_t* g, int ident )
         }
         box_names[idx++] = box_name;
         // generate box function definitions
-        cgen_box_fct_ext( ident, box_name );
         cgen_box_fct_head( ident, box_name );
         cgen_block_start( ident );
         ident++;
@@ -195,6 +194,7 @@ void smxgen_box_fct_prots( igraph_t* g, int ident )
         }
         box_names[idx++] = box_name;
         // generate box function prototypes
+        cgen_box_fct_ext( ident, box_name );
         cgen_box_fct_proto( ident, box_name );
         IGRAPH_VIT_NEXT( v_it );
     }
@@ -281,6 +281,7 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     int edge_cnt = igraph_ecount( g );
     struct timespec tt[2*edge_cnt];
     int eid, vid1, vid2, ch_len, tt_type, i;
+    int net_cnt = igraph_vcount( g );
     igraph_vector_t indegree, outdegree;
     // init timer structures
     for( i=0; i<edge_cnt; i++ ) {
@@ -356,6 +357,10 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
+    // init all timers
+    for( i = 0; i < *tt_vcnt; i++ ) {
+        cgen_timer_init( ident, i + net_cnt );
+    }
     // conncet profiler
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
@@ -520,7 +525,7 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt )
     int net_cnt = igraph_vcount( g );
     // for all timers
     for( i = 0; i < tt_vcnt; i++ ) {
-        cgen_timer_run( ident, i + net_cnt );
+        cgen_net_run( ident, i + net_cnt, TEXT_TF, 3 );
     }
     // for all boxes
     v_sel = igraph_vss_all();
@@ -557,7 +562,7 @@ void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt )
     igraph_vs_destroy( &v_sel );
     // for all timers
     for( i = 0; i < tt_vcnt; i++ ) {
-        cgen_timer_wait_end( ident, i + net_cnt );
+        cgen_net_wait_end( ident, i + net_cnt );
     }
 }
 
