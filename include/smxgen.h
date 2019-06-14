@@ -52,17 +52,19 @@ void smxgen_main_includes( igraph_t* g );
  * @param g     pointer to the dependency graph
  * @param ident identation string
  */
-void smxgen_net_structs( igraph_t* g, int ident );
+void smxgen_net_enums( igraph_t* g, int ident );
 
 /**
  * Generate the port entries of the net signatures for a specified mode
  *
- * @param g     pointer to the dependency graph
- * @param ident identation string
- * @param vid   the net id
- * @param mode  the mode of the ports
+ * @param g         pointer to the dependency graph
+ * @param ident     identation string
+ * @param vid       the net id
+ * @param box_name  the name of the box
+ * @param mode      the mode of the ports
  */
-void smxgen_box_structs_ports( igraph_t* g, int ident, int vid, int mode );
+void smxgen_box_enum_ports( igraph_t* g, int ident, int vid,
+        const char* box_name, int mode );
 
 /**
  * Generate the box function definitions.

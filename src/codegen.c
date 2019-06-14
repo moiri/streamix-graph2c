@@ -14,6 +14,20 @@ void cgen_box_body( int ident, const char* box_name )
 }
 
 /******************************************************************************/
+void cgen_box_enum_head( int ident, const char* name, const char* mode )
+{
+    cgen_ident( ident );
+    cgen_print( "enum net_%s_%s_e\n{\n", name, mode );
+}
+
+/******************************************************************************/
+void cgen_box_enum_tail( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "};\n" );
+}
+
+/******************************************************************************/
 void cgen_box_fct_ext( int ident, const char* name )
 {
     cgen_ident( ident );
@@ -35,106 +49,11 @@ void cgen_box_fct_proto( int ident, const char* name )
 }
 
 /******************************************************************************/
-void cgen_net_init( int ident, int id, int indegree, int outdegree )
+void cgen_box_port( int ident, const char* box_name, const char* port_name,
+        const char* mode )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_INIT( %d, %d, %d );\n", id, indegree,
-            outdegree );
-}
-
-/******************************************************************************/
-void cgen_net_cp_init( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_RN_INIT( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_net_profiler_init( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_PROFILER_INIT( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_net_create( int ident, int id, const char* net_name,
-        const char* box_name )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_CREATE( %d, %s, %s );\n", id, net_name, box_name );
-}
-
-/******************************************************************************/
-void cgen_net_destroy( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_DESTROY( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_net_cp_destroy( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_RN_DESTROY( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_net_profiler_destroy( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_PROFILER_DESTROY( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_net_port( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "smx_channel_t*  port_%s;\n", name );
-}
-
-/******************************************************************************/
-void cgen_net_ports( int ident )
-{
-    cgen_ident( ident );
-    cgen_print( "smx_channel_t**  ports;\n" );
-    cgen_ident( ident );
-    cgen_print( "int              count;\n" );
-}
-
-/******************************************************************************/
-void cgen_net_run( int ident, int id, const char* box_name, int prio )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_RUN( %d, %s, %d );\n", id, box_name,
-            prio );
-}
-
-/******************************************************************************/
-void cgen_net_struct_head( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "typedef struct net_%s_s {\n", name );
-}
-
-/******************************************************************************/
-void cgen_net_struct_tail( int ident, const char* name )
-{
-    cgen_ident( ident );
-    cgen_print( "} net_%s_t;\n", name );
-}
-
-/******************************************************************************/
-void cgen_net_tt( int ident )
-{
-    cgen_ident( ident );
-    cgen_print( "smx_timer_t* timer;\n" );
-}
-
-/******************************************************************************/
-void cgen_net_wait_end( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_WAIT_END( %d );\n", id );
+    cgen_print( "SMX_PORT_IDX_%s_%s_%s,\n", box_name, mode, port_name );
 }
 
 /******************************************************************************/
@@ -162,32 +81,27 @@ void cgen_channel_destroy( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_connect( int ident, int id_ch, int id_box, const char* net_name,
-        const char* box_name, const char* ch_name, const char* mode,
-        int is_sync )
+void cgen_connect( int ident, int id_ch, int id_box, const char* box_name,
+        const char* ch_name, const char* mode, int is_sync )
 {
-    if( !is_sync ) {
+    if( is_sync )
+    {
+        cgen_ident( ident );
+        cgen_print( "SMX_CONNECT_ARR( %d, %d, %s );\n", id_box,
+                id_ch, mode );
+    }
+    else {
         cgen_ident( ident );
         cgen_print( "SMX_CONNECT( %d, %d, %s, %s, %s );\n", id_box,
                 id_ch, box_name, ch_name, mode );
     }
-    cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_ARR( %d, %d, %s, %s, %s );\n", id_box,
-            id_ch, net_name, ch_name, mode );
 }
 
 /******************************************************************************/
-void cgen_connect_cp( int ident, int id_ch, int id_box )
+void cgen_connect_rn( int ident, int id_ch, int id_box )
 {
     cgen_ident( ident );
     cgen_print( "SMX_CONNECT_RN( %d, %d );\n", id_box, id_ch );
-}
-
-/******************************************************************************/
-void cgen_connect_profiler( int ident, int id_box )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_CONNECT_PROFILER( %d );\n", id_box );
 }
 
 /******************************************************************************/
@@ -198,7 +112,7 @@ void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
 }
 
 /******************************************************************************/
-void cgen_connect_tt( int ident, int vid, int eid1, int eid2,
+void cgen_connect_tf( int ident, int vid, int eid1, int eid2,
         const char* ch_name )
 {
     cgen_ident( ident );
@@ -294,6 +208,107 @@ void cgen_main_head()
 }
 
 /******************************************************************************/
+void cgen_net_init( int ident, int id, int indegree, int outdegree )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_INIT( %d, %d, %d );\n", id, indegree,
+            outdegree );
+}
+
+/******************************************************************************/
+void cgen_net_init_profiler( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_INIT_PROFILER( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_init_rn( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_INIT_RN( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_init_tf( int ident, int id, int sec, int nsec )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_INIT_TF( %d, %d, %d );\n", id, sec, nsec );
+}
+
+/******************************************************************************/
+void cgen_net_create( int ident, int id, const char* net_name,
+        const char* box_name )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_CREATE( %d, %s, %s );\n", id, net_name, box_name );
+}
+
+/******************************************************************************/
+void cgen_net_destroy( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_DESTROY( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_destroy_profiler( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_DESTROY_PROFILER( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_destroy_rn( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_DESTROY_RN( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_destroy_tf( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_DESTROY_TF( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_finalize_profiler( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_FINALIZE_PROFILER( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_finalize_tf( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_FINALIZE_TF( %d );\n", id );
+}
+
+/******************************************************************************/
+void cgen_net_run( int ident, int id, const char* box_name, int prio )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_RUN( %d, %s, %d );\n", id, box_name,
+            prio );
+}
+
+/******************************************************************************/
+void cgen_net_tt( int ident )
+{
+    cgen_ident( ident );
+    cgen_print( "smx_timer_t* timer;\n" );
+}
+
+/******************************************************************************/
+void cgen_net_wait_end( int ident, int id )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_NET_WAIT_END( %d );\n", id );
+}
+
+/******************************************************************************/
 int cgen_print( const char* format, ... )
 {
     int res;
@@ -337,26 +352,4 @@ void cgen_struct_tail( int ident, const char* mode )
 {
     cgen_ident( ident );
     cgen_print( "} %s;\n", mode );
-}
-
-/******************************************************************************/
-void cgen_timer_create( int ident, int id, int sec, int nsec )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_CREATE_TF( %d, %d, %d );\n", id,
-            sec, nsec );
-}
-
-/******************************************************************************/
-void cgen_timer_destroy( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_DESTROY_TF( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_timer_init( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_INIT_TF( %d );\n", id );
 }
