@@ -20,8 +20,7 @@ INCLUDES_DIR = -I/usr/include/igraph \
 
 LINK_DIR = -L/usr/local/lib
 
-LINK_FILE = -ligraph \
-			-lzlog
+LINK_FILE = -ligraph
 
 CFLAGS = -Wall
 DEBUG_FLAGS = -g -O0

@@ -1,7 +1,6 @@
 #include "codegen.h"
 #include <stdarg.h>
 #include <stdio.h>
-#include "zlog.h"
 
 extern FILE* __src_file;
 
