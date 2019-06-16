@@ -1,0 +1,57 @@
+/**
+ * @author  ADD YOUR NAME
+ * @file    <box_name>.c
+ *
+ * The implementation of the streamix box <box_name>.
+ *
+ * ADD DESCRITPTION HERE
+ */
+
+#include "smxrts.h"
+#include "<box_name>.h"
+#include "<box_name>_state.h>"
+
+/******************************************************************************/
+int <box_name>( void* h, void* state )
+{
+    ( void )( h );
+    ( void )( state );
+
+    // PERFORM READ AND WRITE OPERATIONS ACCORDING TO THE NET SIGNATURE
+
+    return SMX_NET_RETURN;
+}
+
+/******************************************************************************/
+void <box_name>_cleanup( void* h, void* state )
+{
+    ( void )( h );
+
+    if( state == NULL )
+        return;
+
+    // FREE THE FIELDS OF THE STATE VARIABLE
+
+    free( state );
+}
+
+/******************************************************************************/
+int <box_name>_init( void* h, void** state )
+{
+    ( void )( h );
+    *state = smx_malloc( sizeof( struct <box_name>_state_s ) );
+    if( *state == NULL )
+        return -1;
+
+    // INITIALIZE THE STATE VARIABLE FIELDS
+
+    return 0;
+}
+
+/******************************************************************************/
+/* DO NOT MODIFY!                                                             */
+/******************************************************************************/
+void* start_routine_<box_name>( void* h )
+{
+    return START_ROUTINE_NET( handler, <box_name> );
+}

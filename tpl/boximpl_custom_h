@@ -1,0 +1,38 @@
+/**
+ * @author  ADD AUTHOR NAME
+ * @file    <box_name>_custom.h
+ *
+ * This file holds icustom definitions for the streamix box <box_name>.
+ * Use this file to define the state structure as well as port data types.
+ * The state structure allows to keep persistent information during net
+ * iterations.
+ *
+ * The state structure must be allocated and initialized in the function
+ * <box_name>_init() and freed in the function <box_name>_free().
+ *
+ * Port data types must be allocated when creating a streamix message. Functions
+ * that allow to free, copy, and unpack may be passed to the message creation
+ * macro SMX_MSG_CREATE(). If NULL instead of these function definitions is
+ * passed to SMX_MSG_CREATE the following default actions are performed:
+ * - copy:    return memcopy( data, size )
+ * - destroy: free( data )
+ * - unpack:  return data
+ *
+ * Note that a port data type must not necessary be a structure as suggested
+ * below. If a basic type is used no custom data structure or custom copy,
+ * free, or unpack function is required. However, the data **must** be
+ * allocated in order to exist outside the scope of the net function.
+ */
+
+/** ::<box_name>_state_s */
+typedef struct <box_name>_state_s <box_name>_state_t;
+
+/**
+ * The state structure of <box_name>.
+ */
+struct <box_name>_state_s
+{
+    // ADD STATE FIELDS
+};
+
+<box_ports_custom>
