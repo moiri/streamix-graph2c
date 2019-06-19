@@ -1,0 +1,83 @@
+SHELL := /bin/bash
+LIBNAME = <lib_name>
+
+LOC_INC_DIR = include
+LOC_SRC_DIR = src
+LOC_OBJ_DIR = obj
+LOC_LIB_DIR = lib
+
+DEB_DIR = deb
+DEBS = $(DEB_DIR)/lib$(LIBNAME)_0.1-0 \
+	   $(DEB_DIR)/lib$(LIBNAME)-dev
+
+TGT_INCLUDE = /opt/smx/include
+TGT_LIB = /opt/smx/lib
+
+STATLIB = $(LOC_LIB_DIR)/lib$(LIBNAME).a
+DYNLIB = $(LOC_LIB_DIR)/lib$(LIBNAME).so
+
+SOURCES = $(wildcard $(LOC_SRC_DIR)/*.c)
+OBJECTS := $(patsubst $(LOC_SRC_DIR)/%.c, $(LOC_OBJ_DIR)/%.o, $(SOURCES))
+#SOURCES = $(LOC_SRC_DIR)/smxrts.c
+
+#OBJECTS = $(SOURCES:%.c=%.o)
+
+INCLUDES = $(LOC_INC_DIR)/*.h
+
+INCLUDES_DIR = -I$(LOC_INC_DIR) \
+			   -I/usr/include/libxml2 \
+			   -I$(TGT_INCLUDE) \
+			   -I.
+
+CFLAGS = -Wall -fPIC
+DEBUG_FLAGS = -g -O0
+
+CC = gcc
+
+all: $(STATLIB) $(DYNLIB)
+
+# compile with dot stuff and debug flags
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: all
+
+unsafe: CFLAGS += -DSMX_LOG_UNSAFE
+unsafe: all
+
+$(STATLIB): $(OBJECTS)
+	mkdir -p lib
+	ar -cq $@ $^
+
+$(DYNLIB): $(OBJECTS)
+	$(CC) -shared $^ -o $@
+
+# compile project
+#$(OBJECTS): $(SOURCES) $(INCLUDES)
+$(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $(INCLUDES_DIR) $(LINK_FILE) -c $< -o $@
+
+.PHONY: clean install doc deb $(DEBS)
+
+install:
+	mkdir -p $(TGT_LIB) $(TGT_INCLUDE)
+	cp -a $(LOC_INC_DIR)/*.h $(TGT_INCLUDE)/.
+	cp -a $(LOC_LIB_DIR)/lib$(LIBNAME).a $(TGT_LIB)/.
+	cp -a $(LOC_LIB_DIR)/lib$(LIBNAME).so $(TGT_LIB)/.
+
+clean:
+	rm -f $(LOC_OBJ_DIR)/*
+	rm -f $(LOC_LIB_DIR)/*
+	rm -rf $(DEB_DIR)/*/usr
+
+doc:
+	doxygen .doxygen
+
+deb: clean all $(DEBS)
+$(DEBS):
+	mkdir -p $@$(TGT_LIB)
+	cp $(LOC_LIB_DIR)/lib$(LIBNAME).so $@$(TGT_LIB)/.
+	@if [[ $@ == *-dev ]]; then \
+		mkdir -p $@$(TGT_INCLUDE); \
+		cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/.; \
+		echo "cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/."; \
+	fi
+	dpkg-deb -b $@

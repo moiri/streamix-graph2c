@@ -1,0 +1,9 @@
+Package: lib<lib_name>-0.0-0
+Version: 0.0-0
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: libsmxrts_0.1-0 (>= 0.1.0)
+Maintainer: YOUR NAME <YOUR EMAIL>
+Description: ADD A SENSIBLE TITLE HERE
+ ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE

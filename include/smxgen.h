@@ -27,8 +27,8 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len );
  * @param vid   id of a vertex of the dependency graph
  * @return      1 if the box is externally defined, 0 otherwise
  */
+int smxgen_net_is_extern( igraph_t* g, int vid );
 
-int smxgen_box_is_extern( igraph_t* g, int vid );
 /**
  * @brief checks whether a net is a certain type of net
  *

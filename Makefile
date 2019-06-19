@@ -1,9 +1,11 @@
 SHELL := /bin/bash
-PROJECT = graph2c
+PROJECT = smxrtsp
 
 LOC_INC_DIR = include
 LOC_SRC_DIR = src
 SIA_LANG_DIR = streamix-sia-lang
+
+TARGET_PATH = /opt/smx
 
 SOURCES = main.c \
 		  $(LOC_SRC_DIR)/* \
@@ -40,8 +42,10 @@ $(PROJECT): $(SOURCES) $(INCLUDES)
 .PHONY: clean install
 
 install:
-	mkdir -p /usr/local/bin
-	cp -a $(PROJECT) /usr/local/bin/.
+	mkdir -p $(TARGET_PATH)/bin
+	mkdir -p $(TARGET_PATH)/tpl
+	cp -a $(PROJECT) $(TARGET_PATH)/bin/.
+	cp -a tpl/* $(TARGET_PATH)/tpl/.
 
 clean:
 	rm -f $(PROJECT)

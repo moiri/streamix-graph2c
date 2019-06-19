@@ -1,6 +1,7 @@
 #include "igraph.h"
 #include "smxgen.h"
 #include "siagen.h"
+#include "tpl.h"
 #include "defines.h"
 #include <stdio.h>
 #include <string.h>
@@ -45,13 +46,11 @@ int main( int argc, char **argv )
     igraph_t g_new;
     sia_t* symbols = NULL;
     const char* src_file_name;
-    char* out_path = NULL;
+    char* build_path = NULL;
     char* path_sia;
     char* file_name;
     char* path_main;
     char* path_main_sia;
-    char* path_boxh;
-    char* path_boxc;
     char* format;
     FILE* ifile;
     FILE* out_file;
@@ -73,7 +72,7 @@ int main( int argc, char **argv )
                 printf( "gml2c-v0.0.1\n" );
                 return 0;
             case 'p':
-                out_path = optarg;
+                build_path = optarg;
                 break;
             case 'f':
                 format = optarg;
@@ -94,9 +93,6 @@ int main( int argc, char **argv )
         return -1;
     }
     src_file_name = argv[ optind ];
-    if( out_path == NULL ) out_path = "./build";
-    mkdir( out_path, 0755 );
-    if( format == NULL ) format = "graphml";
 
     path_size = get_path_size( src_file_name );
     name_size = get_name_size( src_file_name );
@@ -104,17 +100,17 @@ int main( int argc, char **argv )
     memcpy( file_name, &src_file_name[ path_size ], name_size );
     file_name[ name_size ] = '\0';
 
-    path_main = malloc( strlen( file_name ) + strlen( out_path ) + 4 );
-    sprintf( path_main, "%s/%s.c", out_path, file_name );
-    path_main_sia = malloc( strlen( file_name ) + strlen( out_path )
+    if( build_path == NULL ) build_path = DIR_BUILD;
+    mkdir( build_path, 0755 );
+    if( format == NULL ) format = "graphml";
+
+    path_main = malloc( strlen( file_name ) + strlen( build_path ) + 4 );
+    sprintf( path_main, "%s/%s.c", build_path, file_name );
+    path_main_sia = malloc( strlen( file_name ) + strlen( build_path )
             + strlen( format ) + 8 );
-    sprintf( path_main_sia, "%s/pnsc_%s.%s", out_path, file_name, format );
-    path_boxh = malloc( strlen( FILE_BOX_H ) + strlen( out_path ) + 2 );
-    sprintf( path_boxh, "%s/%s", out_path, FILE_BOX_H );
-    path_boxc = malloc( strlen( FILE_BOX_C ) + strlen( out_path ) + 2 );
-    sprintf( path_boxc, "%s/%s", out_path, FILE_BOX_C );
-    path_sia = malloc( strlen( out_path ) + 5 );
-    sprintf( path_sia, "%s/sia", out_path );
+    sprintf( path_main_sia, "%s/pnsc_%s.%s", build_path, file_name, format );
+    path_sia = malloc( strlen( build_path ) + 5 );
+    sprintf( path_sia, "%s/sia", build_path );
     mkdir( path_sia, 0755 );
 
     ifile = fopen( src_file_name, "r" );
@@ -129,19 +125,6 @@ int main( int argc, char **argv )
         return -1;
     }
     fclose( ifile );
-
-    // GENERATE RTS C CODE
-    __src_file = fopen( path_main, "w" );
-    smxgen_main( file_name, &g );
-    fclose( __src_file );
-
-    __src_file = fopen( path_boxh, "w" );
-    smxgen_boxes_h( &g );
-    fclose( __src_file );
-
-    __src_file = fopen( path_boxc, "w" );
-    smxgen_boxes_c( &g );
-    fclose( __src_file );
 
     // GENERATE RTS SIA CODE
     siagen( &g_new, &g, &symbols );
@@ -162,15 +145,21 @@ int main( int argc, char **argv )
 
     fclose( out_file );
 
+    // GENERATE RTS C CODE
+    __src_file = fopen( path_main, "w" );
+    smxgen_main( file_name, &g );
+    fclose( __src_file );
+
+    // GENERATE BOX HEADER AND TEMPLATE FILES
+    smxgen_tpl( &g );
+
     /* printf( "str( %lu ): %s\n", strlen( src_file_name ), src_file_name ); */
     /* printf( "name( %lu/%d ): %s\n", strlen( file_name ), name_size, file_name ); */
-    /* printf( "path( %lu/%d ): %s\n", strlen( out_path ), path_size, out_path ); */
+    /* printf( "path( %lu/%d ): %s\n", strlen( build_path ), path_size, build_path ); */
 
     free( file_name );
     free( path_main );
     free( path_main_sia );
-    free( path_boxh );
-    free( path_boxc );
     free( path_sia );
 
     igraph_destroy( &g );
