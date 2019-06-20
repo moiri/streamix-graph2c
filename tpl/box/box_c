@@ -9,7 +9,6 @@
 
 #include "smxrts.h"
 #include "<box_name>.h"
-#include "<box_name>_state.h>"
 
 /******************************************************************************/
 int <box_name>( void* h, void* state )
@@ -19,7 +18,8 @@ int <box_name>( void* h, void* state )
 
     // PERFORM READ AND WRITE OPERATIONS ACCORDING TO THE NET SIGNATURE
 
-    return SMX_NET_RETURN;
+    // use SMX_NET_RETURN to run the thread in a loop
+    return SMX_NET_END;
 }
 
 /******************************************************************************/
@@ -53,5 +53,5 @@ int <box_name>_init( void* h, void** state )
 /******************************************************************************/
 void* start_routine_<box_name>( void* h )
 {
-    return START_ROUTINE_NET( handler, <box_name> );
+    return START_ROUTINE_NET( h, <box_name> );
 }

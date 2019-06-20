@@ -24,6 +24,12 @@
  * allocated in order to exist outside the scope of the net function.
  */
 
+#include <stdio.h>
+#include "<box_name>_sig.h"
+
+#ifndef BOX_<box_name>_H
+#define BOX_<box_name>_H
+
 /** ::<box_name>_state_s */
 typedef struct <box_name>_state_s <box_name>_state_t;
 
@@ -36,3 +42,5 @@ struct <box_name>_state_s
 };
 
 <box_ports_custom>
+
+#endif

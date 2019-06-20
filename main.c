@@ -94,6 +94,13 @@ int main( int argc, char **argv )
     }
     src_file_name = argv[ optind ];
 
+    ifile = fopen( src_file_name, "r" );
+    if( ifile == NULL )
+    {
+        fprintf( stderr, "cannot open source file '%s'\n", src_file_name );
+        return -1;
+    }
+
     path_size = get_path_size( src_file_name );
     name_size = get_name_size( src_file_name );
     file_name = malloc( name_size + 1 );
@@ -112,8 +119,6 @@ int main( int argc, char **argv )
     path_sia = malloc( strlen( build_path ) + 5 );
     sprintf( path_sia, "%s/sia", build_path );
     mkdir( path_sia, 0755 );
-
-    ifile = fopen( src_file_name, "r" );
     if( strcmp( format, G_FMT_GML ) == 0 ) {
         igraph_read_graph_gml( &g, ifile );
     }
@@ -145,13 +150,10 @@ int main( int argc, char **argv )
 
     fclose( out_file );
 
-    // GENERATE RTS C CODE
-    __src_file = fopen( path_main, "w" );
-    smxgen_main( file_name, &g );
-    fclose( __src_file );
-
     // GENERATE BOX HEADER AND TEMPLATE FILES
-    smxgen_tpl( &g );
+    smxgen_tpl_box( &g );
+    smxgen_tpl_main( file_name, &g );
+    fprintf( stdout, "\nDO NOT MODIFY FILES MARKED BY (*)\n" );
 
     /* printf( "str( %lu ): %s\n", strlen( src_file_name ), src_file_name ); */
     /* printf( "name( %lu/%d ): %s\n", strlen( file_name ), name_size, file_name ); */

@@ -1,2 +1,3 @@
-<app log="<box_name>.conf">
+<app name="<app_name>" log="app.zlog">
+    <box_configs>
 </app>

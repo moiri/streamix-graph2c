@@ -1,4 +1,5 @@
 #include "codegen.h"
+#include "defines.h"
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -310,11 +311,13 @@ void cgen_net_wait_end( int ident, int id )
 /******************************************************************************/
 int cgen_print( const char* format, ... )
 {
+    char buffer[BUFFER_SIZE];
     int res;
     va_list args;
     va_start( args, format );
-    res = vfprintf( __src_file, format, args );
+    res = vsprintf( buffer, format, args );
     va_end( args );
+    fputs( buffer, __src_file );
     return res;
 }
 

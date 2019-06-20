@@ -1,5 +1,22 @@
 SHELL := /bin/bash
-LIBNAME = <lib_name>
+
+###############################################################################
+# START CUTOMIZATION HERE
+# Changes in this area should be enough to customize the building process.
+# If other changes are necessary, feel free to do so ;)
+###############################################################################
+
+# The library name must start with lib and cannot contain any special characters
+# (only use characters from [a-zA-Z0-9]). Make sure that the library name is
+# unique. Good practice is to use the prefix smxbox.
+LIBNAME = libsmxbox<box_name>
+
+# Each include path must be preceeded by the gcc option -I
+MY_INCLUDES =
+
+###############################################################################
+# END CUTOMIZATION HERE
+###############################################################################
 
 LOC_INC_DIR = include
 LOC_SRC_DIR = src
@@ -7,27 +24,24 @@ LOC_OBJ_DIR = obj
 LOC_LIB_DIR = lib
 
 DEB_DIR = deb
-DEBS = $(DEB_DIR)/lib$(LIBNAME)_0.1-0 \
-	   $(DEB_DIR)/lib$(LIBNAME)-dev
+DEBS = $(DEB_DIR)/$(LIBNAME)_0.1-0 \
+	   $(DEB_DIR)/$(LIBNAME)-dev
 
 TGT_INCLUDE = /opt/smx/include
 TGT_LIB = /opt/smx/lib
 
-STATLIB = $(LOC_LIB_DIR)/lib$(LIBNAME).a
-DYNLIB = $(LOC_LIB_DIR)/lib$(LIBNAME).so
+STATLIB = $(LOC_LIB_DIR)/$(LIBNAME).a
+DYNLIB = $(LOC_LIB_DIR)/$(LIBNAME).so
 
 SOURCES = $(wildcard $(LOC_SRC_DIR)/*.c)
 OBJECTS := $(patsubst $(LOC_SRC_DIR)/%.c, $(LOC_OBJ_DIR)/%.o, $(SOURCES))
-#SOURCES = $(LOC_SRC_DIR)/smxrts.c
-
-#OBJECTS = $(SOURCES:%.c=%.o)
 
 INCLUDES = $(LOC_INC_DIR)/*.h
 
 INCLUDES_DIR = -I$(LOC_INC_DIR) \
 			   -I/usr/include/libxml2 \
 			   -I$(TGT_INCLUDE) \
-			   -I.
+			   -I. $(MY_INCLUDES)
 
 CFLAGS = -Wall -fPIC
 DEBUG_FLAGS = -g -O0
@@ -36,23 +50,20 @@ CC = gcc
 
 all: $(STATLIB) $(DYNLIB)
 
-# compile with dot stuff and debug flags
+# compile with debug flags
 debug: CFLAGS += $(DEBUG_FLAGS)
 debug: all
 
-unsafe: CFLAGS += -DSMX_LOG_UNSAFE
-unsafe: all
-
 $(STATLIB): $(OBJECTS)
-	mkdir -p lib
+	mkdir -p $(LOC_LIB_DIR)
 	ar -cq $@ $^
 
 $(DYNLIB): $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # compile project
-#$(OBJECTS): $(SOURCES) $(INCLUDES)
-$(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c
+$(OBJECTS): $(SOURCES) $(INCLUDES)
+	mkdir -p $(LOC_OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES_DIR) $(LINK_FILE) -c $< -o $@
 
 .PHONY: clean install doc deb $(DEBS)
@@ -60,8 +71,8 @@ $(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c
 install:
 	mkdir -p $(TGT_LIB) $(TGT_INCLUDE)
 	cp -a $(LOC_INC_DIR)/*.h $(TGT_INCLUDE)/.
-	cp -a $(LOC_LIB_DIR)/lib$(LIBNAME).a $(TGT_LIB)/.
-	cp -a $(LOC_LIB_DIR)/lib$(LIBNAME).so $(TGT_LIB)/.
+	cp -a $(LOC_LIB_DIR)/$(LIBNAME).a $(TGT_LIB)/.
+	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/.
 
 clean:
 	rm -f $(LOC_OBJ_DIR)/*
@@ -74,7 +85,7 @@ doc:
 deb: clean all $(DEBS)
 $(DEBS):
 	mkdir -p $@$(TGT_LIB)
-	cp $(LOC_LIB_DIR)/lib$(LIBNAME).so $@$(TGT_LIB)/.
+	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/.
 	@if [[ $@ == *-dev ]]; then \
 		mkdir -p $@$(TGT_INCLUDE); \
 		cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/.; \

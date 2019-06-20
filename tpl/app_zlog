@@ -1,0 +1,10 @@
+[global]
+default format = "[%d.%us] [%V] [%c] %m%n"
+[formats]
+profiler = "[%d(%Y-%m-%dT%H:%M:%S)] [%us] [%c] %m%n"
+debug = "[%d.%us] [%V] [%t] [%c] %m%n"
+[rules]
+#*.DEBUG    "log/debug.log"; debug
+#*.=INFO    "log/profiler.log"; profiler
+*.NOTICE   "<app_name>.log"
+*.WARN     >stderr

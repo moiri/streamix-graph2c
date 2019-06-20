@@ -1,0 +1,6 @@
+lib
+obj
+*.swp
+
+deb/*.deb
+deb/*/usr

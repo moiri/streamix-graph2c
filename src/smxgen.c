@@ -46,9 +46,6 @@ void smxgen_main_includes( igraph_t* g )
     const char* box_names[net_count];
     const char* box_name;
 
-    cgen_include_local( FILE_SMX );
-    cgen_include_local( FILE_BOX );
-
     for( i=0; i<net_count; i++ )
         box_names[i] = NULL;
     // for all boxes in the scope
@@ -58,11 +55,14 @@ void smxgen_main_includes( igraph_t* g )
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
         box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( !smxgen_box_is_duplicate( box_name, box_names, net_count )
-                && smxgen_net_is_extern( g, vid ) )
-        {
-            cgen_include_local( box_name );
+        if( smxgen_box_is_duplicate( box_name, box_names, net_count )
+                || smxgen_net_is_type( g, vid, TEXT_CP )
+                || smxgen_net_is_type( g, vid, TEXT_PROFILER )
+                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
         }
+        cgen_include_local( box_name );
         box_names[idx++] = box_name;
         IGRAPH_VIT_NEXT( v_it );
     }
