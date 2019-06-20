@@ -1,7 +1,6 @@
 #include "igraph.h"
 #include "smxgen.h"
 #include "siagen.h"
-#include "tpl.h"
 #include "defines.h"
 #include <stdio.h>
 #include <string.h>
