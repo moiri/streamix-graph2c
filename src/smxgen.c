@@ -752,8 +752,6 @@ void smxgen_tpl_main( const char* name, igraph_t* g )
         smxgen_replace( buffer, APP_NAME_PATTERN, name );
         if( strstr( buffer, APP_NW_PATTERN ) != NULL )
         {
-            cgen_program_init( ident );
-            cgen_print( "\n" );
             smxgen_network_create( g, ident, &tt_vcnt, &tt_ecnt );
             cgen_print( "\n" );
             cgen_program_init_run( ident );
@@ -763,8 +761,6 @@ void smxgen_tpl_main( const char* name, igraph_t* g )
             smxgen_network_wait_end( g, ident, tt_vcnt );
             cgen_print( "\n" );
             smxgen_network_destroy( g, ident, tt_vcnt, tt_ecnt );
-            cgen_print( "\n" );
-            cgen_program_cleanup( ident );
         }
         else if( strstr( buffer, APP_INC_PATTERN ) != NULL )
         {

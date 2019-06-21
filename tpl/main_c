@@ -10,10 +10,43 @@
  * The main file which builds the streamix network and starts each net.
  */
 
+#include <unistd.h>
 #include "smxrts.h"
 <app_includes>
 
-int main( void )
+#define XML_CONFIG_PATH "app.xml"
+
+int main( int argc, char **argv )
 {
+    int c;
+    char* conf_file = XML_CONFIG_PATH;
+
+    while( ( c = getopt( argc, argv, "hc:" ) ) != -1 )
+        switch( c ) {
+            case 'h':
+                printf( "Usage:\n  %s [OPTION...]\n\n", argv[0] );
+                printf( "Options:\n" );
+                printf( "  -h            This message\n" );
+                printf( "  -c 'FILE'     Configuration file\n" );
+                return 0;
+            case 'c':
+                conf_file = optarg;
+                break;
+            case '?':
+                if( optopt == 'c' )
+                    fprintf ( stderr, "Option -%c requires an argument.\n",
+                            optopt );
+                else
+                    fprintf ( stderr, "Unknown option character `\\x%x'.\n",
+                            optopt );
+                return 1;
+            default:
+                abort();
+        }
+
+    smx_rts_t* rts = smx_program_init( conf_file );
+
     <smx_network>
+
+    smx_program_cleanup( rts );
 }
