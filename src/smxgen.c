@@ -78,9 +78,8 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
         smxgen_replace( buffer, BOX_NAME_PATTERN, name );
-        if( strstr( buffer, BOX_PORTS_PATTERN ) != NULL )
+        if( strstr( buffer, BOX_MSG_PATTERN ) != NULL )
         {
-            smxgen_insert_ports( g, id, IGRAPH_IN, name, TPL_BOX_PORT, ftgt );
             smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_PORT, ftgt );
         }
         else if( strstr( buffer, BOX_SIG_PATTERN ) != NULL )
@@ -497,25 +496,25 @@ void smxgen_insert_conf( igraph_t* g, FILE* ftgt )
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
     int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    const char* box_names[net_count];
-    const char* box_name;
+    const char* net_names[net_count];
+    const char* net_name;
 
     for( i=0; i<net_count; i++ )
-        box_names[i] = NULL;
+        net_names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
-        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_duplicate( box_name, box_names, net_count )
-                || smxgen_net_is_type( g, vid, TEXT_PROFILER ) ) {
+        net_name = igraph_cattribute_VAS( g, GV_LABEL, vid );
+        if( smxgen_box_is_duplicate( net_name, net_names, net_count ) )
+        {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
-        box_names[idx++] = box_name;
-        smxgen_box_file( g, vid, box_name, TPL_APP_XML_BOX, ftgt );
+        net_names[idx++] = net_name;
+        smxgen_box_file( g, vid, net_name, TPL_APP_XML_BOX, ftgt );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -710,9 +709,12 @@ void smxgen_tpl_box( igraph_t* g )
         sprintf( path_file, "%s/%s.h", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_H, path_file );
+        sprintf( path_file, "%s/%s_msg.h", path_tmp, name );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_MSG_H, path_file );
         fprintf( stdout, "(*) " );
         sprintf( path_file, "%s/%s_sig.h", path_tmp, name );
-        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG, path_file );
+        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );

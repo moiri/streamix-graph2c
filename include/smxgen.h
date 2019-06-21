@@ -15,7 +15,7 @@
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
 #define BOX_NAME_PATTERN      "<box_name>"
-#define BOX_PORTS_PATTERN     "<box_ports_custom>"
+#define BOX_MSG_PATTERN       "<box_msg_types>"
 #define BOX_PORTS_IN_PATTERN  "<box_ports_in>"
 #define BOX_PORTS_OUT_PATTERN "<box_ports_out>"
 #define BOX_SIG_PATTERN       "<box_signature>"
@@ -37,7 +37,8 @@
 #define TPL_BOX_CONF        TPL_BOX_PATH "/box_xml"
 #define TPL_BOX_DEB         TPL_BOX_PATH "/box_deb"
 #define TPL_BOX_DEB_DEV     TPL_BOX_PATH "/box-dev_deb"
-#define TPL_BOX_SIG         TPL_BOX_PATH "/box_sig_h"
+#define TPL_BOX_MSG_H       TPL_BOX_PATH "/box_msg_h"
+#define TPL_BOX_SIG_H       TPL_BOX_PATH "/box_sig_h"
 #define TPL_BOX_SIG_PORT    TPL_BOX_PATH "/tpl_port_sig_h"
 
 /**
