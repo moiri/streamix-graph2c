@@ -23,6 +23,7 @@
 #define PORT_MODE_PATTERN     "<port_mode>"
 
 #define TPL_PATH            "/opt/smx/tpl"
+#define TPL_APP_GITIGNORE   TPL_PATH "/_gitignore"
 #define TPL_APP_MK          TPL_PATH "/app_mk"
 #define TPL_APP_XML         TPL_PATH "/app_xml"
 #define TPL_APP_XML_BOX     TPL_PATH "/tpl_box_xml"
@@ -30,7 +31,7 @@
 #define TPL_APP_MAIN        TPL_PATH "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
 #define TPL_BOX_MK          TPL_BOX_PATH "/box_mk"
-#define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/.gitignore"
+#define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/_gitignore"
 #define TPL_BOX_H           TPL_BOX_PATH "/box_h"
 #define TPL_BOX_PORT        TPL_BOX_PATH "/tpl_port_h"
 #define TPL_BOX_C           TPL_BOX_PATH "/box_c"

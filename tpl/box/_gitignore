@@ -4,3 +4,4 @@ obj
 
 deb/*.deb
 deb/*/usr
+deb/*/opt

@@ -777,4 +777,5 @@ void smxgen_tpl_main( const char* name, igraph_t* g )
     smxgen_app_file( g, name, TPL_APP_MK, "Makefile" );
     smxgen_app_file( g, name, TPL_APP_XML, "app.xml" );
     smxgen_app_file( g, name, TPL_APP_LOG, "app.zlog" );
+    smxgen_app_file( g, name, TPL_APP_GITIGNORE, ".gitignore" );
 }

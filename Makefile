@@ -45,7 +45,7 @@ install:
 	mkdir -p $(TARGET_PATH)/bin
 	mkdir -p $(TARGET_PATH)/tpl
 	cp -a $(PROJECT) $(TARGET_PATH)/bin/.
-	cp -a tpl/* $(TARGET_PATH)/tpl/.
+	cp -a tpl $(TARGET_PATH)/
 
 clean:
 	rm -f $(PROJECT)
