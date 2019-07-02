@@ -29,7 +29,7 @@ PROJECT = <app_name>
 
 GENPATH = build
 BOXIMPL = boxes/*
-BOXES = $(widlcard $(BOXIMPL))
+BOXES = $(wildcard $(BOXIMPL))
 FORMAT = graphml
 
 BIN_PATH = /opt/smx/bin
