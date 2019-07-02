@@ -29,6 +29,7 @@ PROJECT = <app_name>
 
 GENPATH = build
 BOXIMPL = boxes/*
+BOXES = $(widlcard $(BOXIMPL))
 FORMAT = graphml
 
 BIN_PATH = /opt/smx/bin
@@ -40,11 +41,11 @@ OUTGRAPH = $(GENPATH)/$(OUTGRAPH_NAME)
 SIAGRAPH = $(GENPATH)/$(SIAGRAPH_NAME)
 PNSCGRAPH = $(GENPATH)/$(PNSCGRAPH_NAME)
 OUTSRC = $(PROJECT).c
-OUTINC = $(BOXIMPL)/include/*_sig.h
+OUTINC = $(wildcard $(BOXIMPL)/include/*_sig.h)
 
 SOURCES = $(OUTSRC)
 
-INCLUDES = $(BOXIMPL)/include/*.h
+INCLUDES = $(wildcard $(BOXIMPL)/include/*.h)
 
 INCLUDES_DIR = -I/usr/local/ \
 	-I/opt/smx/include \
@@ -76,8 +77,8 @@ debug: $(PROJECT)
 $(PROJECT): $(SOURCES) $(INCLUDES) boximpl
 	$(CC) $(CFLAGS) $(SOURCES) $(INCLUDES_DIR) $(LINK_DIR) $(LINK_FILE) -o $@
 
-boximpl: $(BOXIMPL) setboxpaths
-$(BOXIMPL):
+boximpl: $(BOXES) setboxpaths
+$(BOXES):
 	$(MAKE) -C $@
 
 setboxpaths:
@@ -111,6 +112,7 @@ clean: clean_run
 clean_run:
 	rm -f out/*
 	rm -f log/*
+	rm -f <app_name>.log
 
 run:
 	./$(PROJECT)
