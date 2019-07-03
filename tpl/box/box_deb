@@ -5,5 +5,8 @@ Priority: optional
 Architecture: amd64
 Depends: libsmxrts_0.1-0 (>= 0.1.0)
 Maintainer: YOUR NAME <YOUR EMAIL>
-Description: ADD A SENSIBLE TITLE HERE
+Description: Box implmentation of the Streamix box '<box_name>'
+ This is a box implementation to be used in a network described with the
+ coordination language Streamix.
+ .
  ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE

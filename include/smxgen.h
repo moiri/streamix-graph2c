@@ -15,6 +15,7 @@
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
 #define BOX_NAME_PATTERN      "<box_name>"
+#define BOX_LIB_PATTERN       "<lib_name>"
 #define BOX_MSG_PATTERN       "<box_msg_types>"
 #define BOX_PORTS_IN_PATTERN  "<box_ports_in>"
 #define BOX_PORTS_OUT_PATTERN "<box_ports_out>"
@@ -32,6 +33,7 @@
 #define TPL_BOX_PATH        TPL_PATH "/box"
 #define TPL_BOX_MK          TPL_BOX_PATH "/box_mk"
 #define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/_gitignore"
+#define TPL_BOX_README      TPL_BOX_PATH "/README.md"
 #define TPL_BOX_H           TPL_BOX_PATH "/box_h"
 #define TPL_BOX_PORT        TPL_BOX_PATH "/tpl_port_h"
 #define TPL_BOX_C           TPL_BOX_PATH "/box_c"
@@ -242,6 +244,14 @@ void smxgen_replace( char* str, const char* old_word, const char* new_word );
  */
 int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
         int len );
+
+/**
+ * Convert a string to an alphanumeric string.
+ *
+ * @param dst   The target string
+ * @param src   The source string
+ */
+void smxgen_to_alnum( char* dst, const char* src );
 
 /**
  * Copies the box template files to the output and replaces the generic patterns

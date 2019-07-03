@@ -13,6 +13,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <ctype.h>
 
 extern FILE* __src_file;
 
@@ -67,6 +68,7 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     int cnt;
+    char* libname;
 
     ftpl = fopen( tpl_path, "r" );
 
@@ -78,6 +80,10 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
         smxgen_replace( buffer, BOX_NAME_PATTERN, name );
+        libname = malloc( strlen( name ) + 1 );
+        smxgen_to_alnum( libname, name );
+        smxgen_replace( buffer, BOX_LIB_PATTERN, libname );
+        free( libname );
         if( strstr( buffer, BOX_MSG_PATTERN ) != NULL )
         {
             smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_PORT, ftgt );
@@ -640,6 +646,21 @@ void smxgen_replace( char* str, const char* old_word, const char* new_word )
 }
 
 /******************************************************************************/
+void smxgen_to_alnum( char* dst, const char* src )
+{
+    unsigned long i = 0, c = 0;
+    for(i = 0; i < strlen( src ); i++)
+    {
+        if( isalnum( src[i] ) )
+        {
+            dst[c] = src[i];
+            c++;
+        }
+    }
+    dst[c] = '\0';
+}
+
+/******************************************************************************/
 int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
         int len )
 {
@@ -697,6 +718,23 @@ void smxgen_tpl_box( igraph_t* g )
         sprintf( path_file, "%s/.gitignore", path );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_GITIGNORE, path_file );
+        // create box config file
+        sprintf( path_file, "%s/box.xml", path );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_CONF, path_file );
+        // create box README file
+        sprintf( path_file, "%s/README.md", path );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_README, path_file );
+        // create box package control files
+        sprintf( path_tmp, "%s/dpkg-ctl", path );
+        mkdir( path_tmp, 0755 );
+        sprintf( path_file, "%s/control", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file );
+        sprintf( path_file, "%s/control-dev", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB_DEV, path_file );
         // create box.c file
         sprintf( path_tmp, "%s/src", path );
         mkdir( path_tmp, 0755 );
