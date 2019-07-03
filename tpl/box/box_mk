@@ -62,7 +62,7 @@ $(DYNLIB): $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # compile project
-$(OBJECTS): $(SOURCES) $(INCLUDES)
+$(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c $(INCLUDES)
 	mkdir -p $(LOC_OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES_DIR) $(LINK_FILE) -c $< -o $@
 
