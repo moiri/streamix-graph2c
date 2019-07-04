@@ -25,7 +25,9 @@
 
 #define TPL_PATH            "/opt/smx/tpl"
 #define TPL_APP_GITIGNORE   TPL_PATH "/_gitignore"
+#define TPL_APP_README      TPL_PATH "/README.md"
 #define TPL_APP_MK          TPL_PATH "/app_mk"
+#define TPL_APP_DEB         TPL_PATH "/app_deb"
 #define TPL_APP_XML         TPL_PATH "/app_xml"
 #define TPL_APP_XML_BOX     TPL_PATH "/tpl_box_xml"
 #define TPL_APP_LOG         TPL_PATH "/app_zlog"
@@ -258,15 +260,17 @@ void smxgen_to_alnum( char* dst, const char* src );
  * with concrete content.
  *
  * @param g         pointer to the dependency graph
+ * @param box_path  path to the folder holding the box implementations
  */
-void smxgen_tpl_box( igraph_t* g );
+void smxgen_tpl_box( igraph_t* g, char* box_path );
 
 /**
  * Copies the main c file to the output and replaces the generic patterns.
  *
  * @param name      the app name
  * @param g         pointer to the dependency graph
+ * @param path      path to the build folder
  */
-void smxgen_tpl_main( const char* name, igraph_t* g );
+void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path );
 
 #endif /* SMXGEN_H */

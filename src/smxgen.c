@@ -673,7 +673,7 @@ int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
 }
 
 /******************************************************************************/
-void smxgen_tpl_box( igraph_t* g )
+void smxgen_tpl_box( igraph_t* g, char* box_path )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -688,7 +688,6 @@ void smxgen_tpl_box( igraph_t* g )
     for( idx = 0; idx < net_count; idx++ )
         names[idx] = NULL;
     idx = 0;
-    mkdir( DIR_BOXES, 0755 );
 
     // for all boxes
     v_sel = igraph_vss_all();
@@ -707,7 +706,7 @@ void smxgen_tpl_box( igraph_t* g )
         }
         names[idx++] = name;
         // create boxes directory
-        sprintf( path_tmp, "%s/%s", DIR_BOXES, name );
+        sprintf( path_tmp, "%s/%s", box_path, name );
         strcpy( path, path_tmp );
         mkdir( path, 0755 );
         // create box Makefile
@@ -760,9 +759,10 @@ void smxgen_tpl_box( igraph_t* g )
 }
 
 /******************************************************************************/
-void smxgen_tpl_main( const char* name, igraph_t* g )
+void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
 {
     char file[1000];
+    char* binname;
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     int tt_vcnt = 0;
@@ -777,7 +777,7 @@ void smxgen_tpl_main( const char* name, igraph_t* g )
         return;
     }
 
-    sprintf( file, "%s.c", name );
+    sprintf( file, "%s/app.c", path );
     __src_file = fopen( file, "w" );
 
     if( __src_file == NULL )
@@ -813,7 +813,16 @@ void smxgen_tpl_main( const char* name, igraph_t* g )
     fclose( __src_file );
 
     smxgen_app_file( g, name, TPL_APP_MK, "Makefile" );
+    smxgen_app_file( g, name, TPL_APP_README, "README.md" );
     smxgen_app_file( g, name, TPL_APP_XML, "app.xml" );
     smxgen_app_file( g, name, TPL_APP_LOG, "app.zlog" );
     smxgen_app_file( g, name, TPL_APP_GITIGNORE, ".gitignore" );
+    mkdir( DIR_DPKG, 0755 );
+    sprintf( file, "%s/control", DIR_DPKG );
+    binname = malloc( strlen( name ) + 1 );
+    smxgen_to_alnum( binname, name );
+    smxgen_replace( buffer, BOX_LIB_PATTERN, binname );
+    smxgen_app_file( g, binname, TPL_APP_DEB, file );
+    free( binname );
+    mkdir( DIR_LOG, 0755 );
 }

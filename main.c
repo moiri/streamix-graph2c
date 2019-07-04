@@ -46,6 +46,7 @@ int main( int argc, char **argv )
     sia_t* symbols = NULL;
     const char* src_file_name;
     char* build_path = NULL;
+    char* box_path = NULL;
     char* path_sia;
     char* file_name;
     char* path_main;
@@ -57,21 +58,25 @@ int main( int argc, char **argv )
     int c;
     igraph_i_set_attribute_table( &igraph_cattribute_table );
 
-    while( ( c = getopt( argc, argv, "hvp:f:" ) ) != -1 )
+    while( ( c = getopt( argc, argv, "hvb:p:f:" ) ) != -1 )
         switch( c ) {
             case 'h':
                 printf( "Usage:\n  %s [OPTION...] FILE\n\n", argv[0] );
                 printf( "Options:\n" );
                 printf( "  -h            This message\n" );
                 printf( "  -v            Version\n" );
-                printf( "  -p 'path'     Path to store the generated files\n" );
+                printf( "  -b 'path'     Path to store the generated box files\n" );
+                printf( "  -p 'path'     Path to store the generated app files\n" );
                 printf( "  -f 'format'   Format of the graph either 'gml' or 'graphml'\n" );
                 return 0;
             case 'v':
-                printf( "gml2c-v0.0.1\n" );
+                printf( "%s v%s\n", argv[0], VERSION );
                 return 0;
             case 'p':
                 build_path = optarg;
+                break;
+            case 'b':
+                box_path = optarg;
                 break;
             case 'f':
                 format = optarg;
@@ -108,6 +113,8 @@ int main( int argc, char **argv )
 
     if( build_path == NULL ) build_path = DIR_BUILD;
     mkdir( build_path, 0755 );
+    if( box_path == NULL ) box_path = DIR_BOXES;
+    mkdir( box_path, 0755 );
     if( format == NULL ) format = "graphml";
 
     path_main = malloc( strlen( file_name ) + strlen( build_path ) + 4 );
@@ -150,9 +157,26 @@ int main( int argc, char **argv )
     fclose( out_file );
 
     // GENERATE BOX HEADER AND TEMPLATE FILES
-    smxgen_tpl_box( &g );
-    smxgen_tpl_main( file_name, &g );
-    fprintf( stdout, "\nDO NOT MODIFY FILES MARKED BY (*)\n" );
+    smxgen_tpl_box( &g, box_path );
+    smxgen_tpl_main( file_name, &g, build_path );
+    fprintf( stdout, "\n" );
+    fprintf( stdout, "  DO NOT MODIFY FILES MARKED BY (*)\n" );
+    fprintf( stdout, "\n" );
+    fprintf( stdout, "  All generated files NOT marked by (*) are intended as\n"
+            "  templates and should be changed according to your needs.\n"
+            "  However, as is, the project is compilable and runable after\n"
+            "  compilation.\n" );
+    fprintf( stdout, "  Use the command 'make' to compile and 'make run' to\n"
+            "  run the Streamix application.\n" );
+    fprintf( stdout, "  In a first step it is recommended to do this and have a\n"
+            "  look at the generated log file. Feel free to change the file\n"
+            "  'app.zlog' to increase the log level.\n" );
+    fprintf( stdout, "\n" );
+    fprintf( stdout, "  Afterwards, your foucus should be on implementing the\n"
+            "  box functions in the folder 'boxes'. Refer to the descriptions\n"
+            "  in the header files in the folder 'include' of a box for more\n"
+            "  information on this topic.\n" );
+    fprintf( stdout, "\n" );
 
     /* printf( "str( %lu ): %s\n", strlen( src_file_name ), src_file_name ); */
     /* printf( "name( %lu/%d ): %s\n", strlen( file_name ), name_size, file_name ); */

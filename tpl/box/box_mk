@@ -11,12 +11,20 @@ SHELL := /bin/bash
 # unique. Good practice is to use the prefix smxbox.
 LIBNAME = lib<lib_name>
 
+# The version number of the library
+MAJ_VERSION = 0.1
+MIN_VERSION = 0
+
 # Each include path must be preceeded by the gcc option -I
 MY_INCLUDES =
 
 ###############################################################################
 # END CUTOMIZATION HERE
 ###############################################################################
+
+DEBIAN_REVISION = 0
+UPSTREAM_VERSION = $(MAJ_VERSION).$(MIN_VERSION)
+VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
 BOXNAME = <box_name>
 LOC_INC_DIR = include
@@ -26,13 +34,13 @@ LOC_LIB_DIR = lib
 
 DPKG_DIR = dpkg
 DPKG_CTL_DIR = dpkg-ctl
-DPKGS = $(DPKG_DIR)/$(LIBNAME)_0.1-0 \
-	   $(DPKG_DIR)/$(LIBNAME)-dev
+DPKGS = $(DPKG_DIR)/$(LIBNAME)_$(VERSION)_amd64 \
+	   $(DPKG_DIR)/$(LIBNAME)_amd64-dev
 
 TGT_INCLUDE = /opt/smx/include
 TGT_LIB = /opt/smx/lib
-TGT_DOC = /opt/smx/doc
-TGT_CONF = /opt/smx/conf
+TGT_DOC = /opt/smx/doc/boxes
+TGT_CONF = /opt/smx/conf/boxes
 
 STATLIB = $(LOC_LIB_DIR)/$(LIBNAME).a
 DYNLIB = $(LOC_LIB_DIR)/$(LIBNAME).so
@@ -75,42 +83,52 @@ $(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c $(INCLUDES)
 install:
 	mkdir -p $(TGT_LIB) $(TGT_INCLUDE) $(TGT_DOC) $(TGT_CONF)
 	cp -a $(LOC_INC_DIR)/*.h $(TGT_INCLUDE)/.
-	cp -a $(LOC_LIB_DIR)/$(LIBNAME).a $(TGT_LIB)/.
-	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/.
-	cp -a README.md $(TGT_DOC)/$(BOXNAME).md
-	cp -a box.xml $(TGT_CONF)/$(BOXNAME).xml
+	cp -a $(LOC_LIB_DIR)/$(LIBNAME).a $(TGT_LIB)/$(LIBNAME).a.$(MAJ_VERSION)
+	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/$(LIBNAME).so.$(MAJ_VERSION)
+	ln -sf $(LIBNAME)_$(MAJ_VERSION).a $(TGT_BIN)/$(LIBNAME).a
+	ln -sf $(LIBNAME)_$(MAJ_VERSION).so $(TGT_BIN)/$(LIBNAME).so
+	cp -a README.md $(TGT_DOC)/$(BOXNAME)_$(MAJ_VERSION).md
+	cp -a box.xml $(TGT_CONF)/$(BOXNAME)_$(MAJ_VERSION).xml
 
 uninstall:
 	rm $(addprefix $(TGT_INCLUDE)/,$(notdir $(wildcard $(INCLUDES))))
 	rm $(TGT_LIB)/$(LIBNAME).a
 	rm $(TGT_LIB)/$(LIBNAME).so
-	rm $(TGT_DOC)/$(BOXNAME).md
-	rm $(TGT_CONF)/$(BOXNAME).xml
+	rm $(TGT_LIB)/$(LIBNAME).a.$(MAJ_VERSION)
+	rm $(TGT_LIB)/$(LIBNAME).so.$(MAJ_VERSION)
+	rm $(TGT_DOC)/$(BOXNAME)_$(MAJ_VERSION).md
+	rm $(TGT_CONF)/$(BOXNAME)_$(MAJ_VERSION).xml
 
 clean:
 	rm -rf $(LOC_OBJ_DIR)
 	rm -rf $(LOC_LIB_DIR)
-	rm -rf $(DPKG_DIR)
 
 doc:
 	doxygen .doxygen
 
-dpkg: clean all $(DPKGS)
+dpkg: $(DPKGS)
 $(DPKGS):
 	mkdir -p $@$(TGT_LIB)
-	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/.
-	cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/.
+	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/$(LIBNAME).so.$(MAJ_VERSION)
+	cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/$(LIBNAME).a.$(MAJ_VERSION)
+	ln -sf $(LIBNAME)_$(MAJ_VERSION).a $@$(TGT_BIN)/$(LIBNAME).a
+	ln -sf $(LIBNAME)_$(MAJ_VERSION).so $@$(TGT_BIN)/$(LIBNAME).so
 	mkdir -p $@$(TGT_DOC)
-	cp README.md $@$(TGT_DOC)/$(BOXNAME).md
+	cp README.md $@$(TGT_DOC)/$(BOXNAME)_$(VERSION).md
 	mkdir -p $@$(TGT_CONF)
-	cp box.xml $@$(TGT_CONF)/$(BOXNAME).xml
+	cp box.xml $@$(TGT_CONF)/$(BOXNAME)_$(VERSION).xml
 	mkdir -p $@/DEBIAN
 	@if [[ $@ == *-dev ]]; then \
 		mkdir -p $@$(TGT_INCLUDE); \
 		cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/.; \
 		echo "cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/."; \
-        cp $(DPKG_CTL_DIR)/control-dev $@/DEBIAN/control; \
-    else \
-        cp $(DPKG_CTL_DIR)/control $@/DEBIAN/control; \
+		cp $(DPKG_CTL_DIR)/control-dev $@/DEBIAN/control; \
+	else \
+		cp $(DPKG_CTL_DIR)/control $@/DEBIAN/control; \
 	fi
+	sed -i 's/<version>/$(VERSION)/g' $@/DEBIAN/control
+	sed -i 's/<maj_version>/$(MAJ_VERSION)/g' $@/DEBIAN/control
 	dpkg-deb -b $@
+
+dpkg-clean:
+	rm -rf $(DPKG_DIR)

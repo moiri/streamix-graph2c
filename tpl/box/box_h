@@ -39,7 +39,7 @@ struct <box_name>_state_s
  *  macros but must not be modified.
  * @param state
  *  A pointer to the state variable of the net. This state variable must be
- *  allocated in <box_name>_init() and freed in <box_name>()_cleanup.
+ *  allocated in <box_name>_init() and freed in <box_name>_cleanup().
  * @return
  *  Either of the following values:
  *  - SMX_NET_RETURN: the RTS determines when the net is terminated.
@@ -49,7 +49,7 @@ struct <box_name>_state_s
 int <box_name>( void* h, void* state );
 
 /**
- * The cleanup function of the net. This function is executed once the net is
+ * The cleanup function of the net. This function is executed once the net has
  * terminated (either automatically by the RTS or by returning SMX_NET_END in
  * <box_name>()).
  *
@@ -58,14 +58,14 @@ int <box_name>( void* h, void* state );
  *  macros but must not be modified.
  * @param state
  *  A pointer to the state variable of the net. This state variable must be
- *  freed here if it was allocated in 
+ *  freed here if it was allocated in <box_name>_init().
  */
 void <box_name>_cleanup( void* h, void* state );
 
 /**
  * The initialisation function of the net. This function is executed before the
  * net thread is started. All nets have to complete their initialisation before
- * any net thread is started. Use this function to initialise the state variable
+ * any net thread is started. This function must initialise the state variable
  * and assign initial values to fields as needed.
  *
  * @param h
@@ -73,18 +73,18 @@ void <box_name>_cleanup( void* h, void* state );
  *  macros but must not be modified.
  * @param state
  *  A pointer to the state variable pointer. To access the state variable
- *  pointer dereference this arguments (i.e. *state = ...)
+ *  pointer dereference this argument (i.e. *state = ...)
  * @return
- *  If the initialisation return 0. If the initialisation fails, return -1.
- *  Returning -1 will terminate (or rather never execute) the net.
+ *  If the initialisation succeedes return 0. If the initialisation fails,
+ *  return -1.  Returning -1 will terminate (or rather never execute) the net.
  */
 int <box_name>_init( void* h, void** state );
 
 /**
  * This function is predefined and must not be changed. It will be passed to the
  * net thread upon creation and will be executed as soon as the thread is
- * started. This function calls a macro which is define in the RTS and handles
- * the initialisation, the main loop of the net and the cleanup.
+ * started. This function calls a macro which is defined in the RTS and handles
+ * the initialisation, the main loop and the cleanup of the net.
  *
  * @param h
  *  A pointer to the net handler.

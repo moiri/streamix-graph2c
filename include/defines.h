@@ -1,3 +1,7 @@
+#ifndef VERSION
+#define VERSION "unknown"
+#endif
+
 #ifndef DEFINES_H
 #define DEFINES_H
 
@@ -13,6 +17,8 @@
 #define FILE_SMX_H  FILE_SMX ".h"
 #define DIR_BOXES   "./boxes"
 #define DIR_BUILD   "./build"
+#define DIR_LOG     "./log"
+#define DIR_DPKG    "./dpkg-ctl"
 
 #define BUFFER_SIZE 1000
 

@@ -6,5 +6,5 @@ debug = "[%d.%us] [%V] [%t] [%c] %m%n"
 [rules]
 #*.DEBUG    "log/debug.log"; debug
 #*.=INFO    "log/profiler.log"; profiler
-*.NOTICE   "<app_name>.log"
+*.NOTICE   "log/<app_name>.log"
 *.WARN     >stderr

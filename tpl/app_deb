@@ -1,12 +1,11 @@
-Package: lib<lib_name>-<maj_version>
+Package: <app_name>-<maj_version>
 Version: <version>
 Section: base
 Priority: optional
 Architecture: amd64
 Depends: libsmxrts-0.1 (>= 0.1.0-0)
 Maintainer: YOUR NAME <YOUR EMAIL>
-Description: Box implmentation of the Streamix box '<box_name>'
- This is a box implementation to be used in a network described with the
- coordination language Streamix.
+Description: Streamix Application '<app_name>'
+ This is an application that was created with the coordination language Streamix.
  .
  ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE

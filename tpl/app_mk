@@ -6,6 +6,15 @@ SHELL := /bin/bash
 # If other changes are necessary, feel free to do so ;)
 ###############################################################################
 
+# The name of the application. Choose a descriptive name that should be unique
+# such that the binary can be installed without conflicting with already
+# existing Streamix applications.
+APPNAME = <app_name>
+
+# The version number of the application
+MAJ_VERSION = 0.1
+MIN_VERSION = 0
+
 # list the external libraries prefixed with -l
 EXT_LIBS =
 
@@ -25,7 +34,16 @@ EXT_INCS_DIR =
 # END CUTOMIZATION HERE
 ###############################################################################
 
-PROJECT = <app_name>
+UPSTREAM_VERSION = $(MAJ_VERSION).$(MIN_VERSION)
+DEBIAN_REVISION = 0
+VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
+
+DPKG_DIR = dpkg
+DPKG_CTL_DIR = dpkg-ctl
+DPKGS = $(DPKG_DIR)/$(APPNAME)_$(VERSION)_amd64
+TGT_BIN = /opt/smx/bin
+TGT_DOC = /opt/smx/doc/apps
+TGT_CONF = /opt/smx/conf/apps
 
 GENPATH = build
 BOXIMPL = boxes/*
@@ -34,13 +52,13 @@ FORMAT = graphml
 
 BIN_PATH = /opt/smx/bin
 
-OUTGRAPH_NAME = $(PROJECT).$(FORMAT)
-SIAGRAPH_NAME = sia_$(PROJECT).$(FORMAT)
-PNSCGRAPH_NAME = pnsc_$(PROJECT).$(FORMAT)
+OUTGRAPH_NAME = $(APPNAME).$(FORMAT)
+SIAGRAPH_NAME = sia_$(APPNAME).$(FORMAT)
+PNSCGRAPH_NAME = pnsc_$(APPNAME).$(FORMAT)
 OUTGRAPH = $(GENPATH)/$(OUTGRAPH_NAME)
 SIAGRAPH = $(GENPATH)/$(SIAGRAPH_NAME)
 PNSCGRAPH = $(GENPATH)/$(PNSCGRAPH_NAME)
-OUTSRC = $(PROJECT).c
+OUTSRC = $(GENPATH)/app.c
 OUTINC = $(wildcard $(BOXIMPL)/include/*_sig.h)
 
 SOURCES = $(OUTSRC)
@@ -61,10 +79,10 @@ LINK_FILE = -lsmxrts \
 	-lzlog $(LIBS) $(PROFILER_LIBS) $(EXT_LIBS)
 
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\"
 DEBUG_FLAGS = -g -O0
 
-all: $(PROJECT)
+all: $(APPNAME)
 
 smx: $(OUTSRC) $(OUTINC)
 
@@ -72,9 +90,9 @@ sia: $(SIAGRAPH)
 
 # compile with dot stuff and debug flags
 debug: CFLAGS += $(DEBUG_FLAGS)
-debug: $(PROJECT)
+debug: $(APPNAME)
 
-$(PROJECT): $(SOURCES) $(INCLUDES) boximpl
+$(APPNAME): $(SOURCES) $(INCLUDES) boximpl
 	$(CC) $(CFLAGS) $(SOURCES) $(INCLUDES_DIR) $(LINK_DIR) $(LINK_FILE) -o $@
 
 boximpl: $(BOXES) setboxpaths
@@ -95,16 +113,16 @@ $(SIAGRAPH): $(PNSCGRAPH)
 $(PNSCGRAPH) $(OUTSRC) $(OUTINC): $(OUTGRAPH)
 	$(BIN_PATH)/smxrtsp $^ -p $(GENPATH) -f $(FORMAT)
 
-$(OUTGRAPH): $(PROJECT).smx
+$(OUTGRAPH): $(APPNAME).smx
 	$(BIN_PATH)/smxc -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^
 
 
-.PHONY: clean run valgrind boximpl $(BOXIMPL) setboxpaths
+.PHONY: clean run clean_run valgrind boximpl $(BOXIMPL) setboxpaths dpkg $(DPKGS) install uninstall
 
 clean: clean_run
 	rm -rf $(GENPATH)
-	rm -f $(PROJECT)
-	rm -f $(PROJECT).c
+	rm -f $(APPNAME)
+	rm -f $(APPNAME).c
 	rm -f $(BOXIMPL)/include/*_sig.h
 	rm -rf $(BOXIMPL)/lib
 	rm -rf $(BOXIMPL)/obj
@@ -115,11 +133,41 @@ clean_run:
 	rm -f <app_name>.log
 
 run:
-	./$(PROJECT)
+	./$(APPNAME)
 
 test: clean_run run
 	./test.sh
 
 valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(PROJECT)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(APPNAME)
 
+install:
+	mkdir -p (TGT_BIN) $(TGT_DOC) $(TGT_CONF)
+	cp -a $(APPNAME) $(TGT_BIN)/$(APPNAME)_$(MAJ_VERSION)
+	ln -sf $(APPNAME)_$(MAJ_VERSION) $(TGT_BIN)/$(APPNAME)
+	cp -a README.md $(TGT_DOC)/$(APPNAME)_$(MAJ_VERSION).md
+	cp -a app.xml $(TGT_CONF)/$(APPNAME)_$(MAJ_VERSION).xml
+
+uninstall:
+	rm $(TGT_BIN)/$(APPNAME)
+	rm $(TGT_BIN)/$(APPNAME)_$(MAJ_VERSION)
+	rm $(TGT_DOC)/$(APPNAME)_$(MAJ_VERSION).md
+	rm $(TGT_CONF)/$(APPNAME)_$(MAJ_VERSION).xml
+
+dpkg: $(DPKGS)
+$(DPKGS):
+	mkdir -p $@$(TGT_BIN)
+	cp $(APPNAME) $@$(TGT_BIN)/$(APPNAME)_$(MAJ_VERSION)
+	ln -sf $(APPNAME)_$(MAJ_VERSION) $@$(TGT_BIN)/$(APPNAME)
+	mkdir -p $@$(TGT_DOC)
+	cp README.md $@$(TGT_DOC)/$(APPNAME)_$(MAJ_VERSION).md
+	mkdir -p $@$(TGT_CONF)
+	cp app.xml $@$(TGT_CONF)/$(APPNAME)_$(MAJ_VERSION).xml
+	mkdir -p $@/DEBIAN
+	cp $(DPKG_CTL_DIR)/control $@/DEBIAN/control
+	sed -i 's/<version>/$(VERSION)/g' $@/DEBIAN/control
+	sed -i 's/<maj_version>/$(MAJ_VERSION)/g' $@/DEBIAN/control
+	dpkg-deb -b $@
+
+dpkg-clean:
+	rm -rf $(DPKG_DIR)

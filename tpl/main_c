@@ -10,24 +10,43 @@
  * The main file which builds the streamix network and starts each net.
  */
 
+#ifndef APP_VERSION
+#define APP_VERSION "unknown"
+#endif
+
 #include <unistd.h>
 #include "smxrts.h"
 <app_includes>
 
-#define XML_CONFIG_PATH "app.xml"
+#define XML_APP_CONFIG_PATH "app.xml"
+#define XML_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" APP_VERSION ".xml"
 
 int main( int argc, char **argv )
 {
     int c;
-    char* conf_file = XML_CONFIG_PATH;
+    char* conf_file;
 
-    while( ( c = getopt( argc, argv, "hc:" ) ) != -1 )
+    if( access( XML_APP_CONFIG_PATH, F_OK ) != -1 )
+        conf_file = XML_APP_CONFIG_PATH;
+    else if( access( XML_OPT_CONFIG_PATH, F_OK ) != -1 )
+        conf_file = XML_OPT_CONFIG_PATH;
+    else
+        fprintf( stderr, "warning: no default app config file found\n" );
+
+    while( ( c = getopt( argc, argv, "hvc:" ) ) != -1 )
         switch( c ) {
             case 'h':
                 printf( "Usage:\n  %s [OPTION...]\n\n", argv[0] );
                 printf( "Options:\n" );
-                printf( "  -h            This message\n" );
-                printf( "  -c 'FILE'     Configuration file\n" );
+                printf( "  -h            This message.\n" );
+                printf( "  -v            The version of the application.\n" );
+                printf( "  -c 'FILE'     Configuration file to be passed to the application.\n" );
+                printf( "                If no file is specified the application falls back to:\n" );
+                printf( "                 1. '%s' in the application root\n", XML_APP_CONFIG_PATH );
+                printf( "                 2. '%s'\n", XML_OPT_CONFIG_PATH );
+                return 0;
+            case 'v':
+                printf( "%s v%s\n", argv[0], APP_VERSION );
                 return 0;
             case 'c':
                 conf_file = optarg;
