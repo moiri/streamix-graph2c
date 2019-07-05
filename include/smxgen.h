@@ -11,6 +11,7 @@
 #include <igraph.h>
 
 #define APP_NAME_PATTERN      "<app_name>"
+#define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_CONF_PATTERN      "<box_configs>"
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"

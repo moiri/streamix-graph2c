@@ -6,34 +6,44 @@ SHELL := /bin/bash
 # If other changes are necessary, feel free to do so ;)
 ###############################################################################
 
-# The library name must start with lib and cannot contain any special characters
-# (only use characters from [a-zA-Z0-9]). Make sure that the library name is
-# unique. Good practice is to use the prefix smxbox.
-LIBNAME = lib<lib_name>
+# The version number of the library ($(VMAJ).$(VMIN).$(VREV))
+VMAJ = 0
+VMIN = 1
+VREV = 0
 
-# The version number of the library
-MAJ_VERSION = 0.1
-MIN_VERSION = 0
+# list the external libraries prefixed with -l
+EXT_LIBS =
 
-# Each include path must be preceeded by the gcc option -I
-MY_INCLUDES =
+# list the external libraries directories prefixed with -L
+EXT_LIBS_DIR =
+
+# list the external include files prefixed with -I
+EXT_INCS_DIR =
 
 ###############################################################################
 # END CUTOMIZATION HERE
 ###############################################################################
 
+LIBNAME = lib<lib_name>
+
+LIB_VERSION = $(VMAJ).$(VMIN)
+UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
 DEBIAN_REVISION = 0
-UPSTREAM_VERSION = $(MAJ_VERSION).$(MIN_VERSION)
 VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
 BOXNAME = <box_name>
+VBOXNAME = $(BOXNAME)-$(LIB_VERSION)
+SONAME = $(LIBNAME)-$(LIB_VERSION).so.$(VREV)
+ANAME = $(LIBNAME)-$(LIB_VERSION).a
+
 LOC_INC_DIR = include
 LOC_SRC_DIR = src
 LOC_OBJ_DIR = obj
 LOC_LIB_DIR = lib
 
 DPKG_DIR = dpkg
-DPKG_CTL_DIR = dpkg-ctl
+DPKG_CTL_DIR = debian
+DPKG_TGT = DEBIAN
 DPKGS = $(DPKG_DIR)/$(LIBNAME)_$(VERSION)_amd64 \
 	   $(DPKG_DIR)/$(LIBNAME)_amd64-dev
 
@@ -53,7 +63,13 @@ INCLUDES = $(LOC_INC_DIR)/*.h
 INCLUDES_DIR = -I$(LOC_INC_DIR) \
 			   -I/usr/include/libxml2 \
 			   -I$(TGT_INCLUDE) \
-			   -I. $(MY_INCLUDES)
+			   -I. $(EXT_INCS_DIR)
+
+LINK_DIR = -L/usr/local/lib \
+	-L/opt/smx/lib $(EXT_LIBS_DIR)
+
+LINK_FILE = -lsmxrts \
+	-lxml2 $(EXT_LIBS)
 
 CFLAGS = -Wall -fPIC
 DEBUG_FLAGS = -g -O0
@@ -71,33 +87,33 @@ $(STATLIB): $(OBJECTS)
 	ar -cq $@ $^
 
 $(DYNLIB): $(OBJECTS)
-	$(CC) -shared $^ -o $@
+	$(CC) -shared -Wl,-soname,$(SONAME) $^ -o $@ $(LINK_DIR) $(LINK_FILE)
 
 # compile project
 $(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c $(INCLUDES)
 	mkdir -p $(LOC_OBJ_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES_DIR) $(LINK_FILE) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES_DIR) -c $< -o $@ $(LINK_DIR) $(LINK_FILE)
 
 .PHONY: clean install uninstall doc dpkg $(DPKGS)
 
 install:
 	mkdir -p $(TGT_LIB) $(TGT_INCLUDE) $(TGT_DOC) $(TGT_CONF)
 	cp -a $(LOC_INC_DIR)/*.h $(TGT_INCLUDE)/.
-	cp -a $(LOC_LIB_DIR)/$(LIBNAME).a $(TGT_LIB)/$(LIBNAME).a.$(MAJ_VERSION)
-	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/$(LIBNAME).so.$(MAJ_VERSION)
-	ln -sf $(LIBNAME)_$(MAJ_VERSION).a $(TGT_BIN)/$(LIBNAME).a
-	ln -sf $(LIBNAME)_$(MAJ_VERSION).so $(TGT_BIN)/$(LIBNAME).so
-	cp -a README.md $(TGT_DOC)/$(BOXNAME)_$(MAJ_VERSION).md
-	cp -a box.xml $(TGT_CONF)/$(BOXNAME)_$(MAJ_VERSION).xml
+	cp -a $(LOC_LIB_DIR)/$(LIBNAME).a $(TGT_LIB)/$(ANAME)
+	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/$(SONAME)
+	ln -sf $(ANAME) $(TGT_BIN)/$(LIBNAME).a
+	ln -sf $(SONAME) $(TGT_BIN)/$(LIBNAME).so
+	cp -a README.md $(TGT_DOC)/$(VBOXNAME).md
+	cp -a box.xml $(TGT_CONF)/$(VBOXNAME).xml
 
 uninstall:
 	rm $(addprefix $(TGT_INCLUDE)/,$(notdir $(wildcard $(INCLUDES))))
 	rm $(TGT_LIB)/$(LIBNAME).a
 	rm $(TGT_LIB)/$(LIBNAME).so
-	rm $(TGT_LIB)/$(LIBNAME).a.$(MAJ_VERSION)
-	rm $(TGT_LIB)/$(LIBNAME).so.$(MAJ_VERSION)
-	rm $(TGT_DOC)/$(BOXNAME)_$(MAJ_VERSION).md
-	rm $(TGT_CONF)/$(BOXNAME)_$(MAJ_VERSION).xml
+	rm $(TGT_LIB)/$(ANAME)
+	rm $(TGT_LIB)/$(SONAME)
+	rm $(TGT_DOC)/$(VBOXNAME).md
+	rm $(TGT_CONF)/$(VBOXNAME).xml
 
 clean:
 	rm -rf $(LOC_OBJ_DIR)
@@ -109,25 +125,25 @@ doc:
 dpkg: $(DPKGS)
 $(DPKGS):
 	mkdir -p $@$(TGT_LIB)
-	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/$(LIBNAME).so.$(MAJ_VERSION)
-	cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/$(LIBNAME).a.$(MAJ_VERSION)
-	ln -sf $(LIBNAME)_$(MAJ_VERSION).a $@$(TGT_BIN)/$(LIBNAME).a
-	ln -sf $(LIBNAME)_$(MAJ_VERSION).so $@$(TGT_BIN)/$(LIBNAME).so
+	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/$(SONAME)
+	cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/$(ANAME)
+	ln -sf $(ANAME) $@$(TGT_BIN)/$(LIBNAME).a
+	ln -sf $(SONAME) $@$(TGT_BIN)/$(LIBNAME).so
 	mkdir -p $@$(TGT_DOC)
 	cp README.md $@$(TGT_DOC)/$(BOXNAME)_$(VERSION).md
 	mkdir -p $@$(TGT_CONF)
 	cp box.xml $@$(TGT_CONF)/$(BOXNAME)_$(VERSION).xml
-	mkdir -p $@/DEBIAN
+	mkdir -p $@/$(DPKG_TGT)
 	@if [[ $@ == *-dev ]]; then \
 		mkdir -p $@$(TGT_INCLUDE); \
 		cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/.; \
 		echo "cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/."; \
-		cp $(DPKG_CTL_DIR)/control-dev $@/DEBIAN/control; \
+		cp $(DPKG_CTL_DIR)/control-dev $@/$(DPKG_TGT)/control; \
 	else \
-		cp $(DPKG_CTL_DIR)/control $@/DEBIAN/control; \
+		cp $(DPKG_CTL_DIR)/control $@/$(DPKG_TGT)/control; \
 	fi
-	sed -i 's/<version>/$(VERSION)/g' $@/DEBIAN/control
-	sed -i 's/<maj_version>/$(MAJ_VERSION)/g' $@/DEBIAN/control
+	sed -i 's/<version>/$(VERSION)/g' $@/$(DPKG_TGT)/control
+	sed -i 's/<maj_version>/$(LIB_VERSION)/g' $@/$(DPKG_TGT)/control
 	dpkg-deb -b $@
 
 dpkg-clean:

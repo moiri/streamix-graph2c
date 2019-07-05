@@ -6,14 +6,10 @@ SHELL := /bin/bash
 # If other changes are necessary, feel free to do so ;)
 ###############################################################################
 
-# The name of the application. Choose a descriptive name that should be unique
-# such that the binary can be installed without conflicting with already
-# existing Streamix applications.
-APPNAME = <app_name>
-
-# The version number of the application
-MAJ_VERSION = 0.1
-MIN_VERSION = 0
+# The version number of the application ($(VMAJ).$(VMIN).$(VREV))
+VMAJ = 0
+VMIN = 1
+VREV = 0
 
 # list the external libraries prefixed with -l
 EXT_LIBS =
@@ -34,12 +30,18 @@ EXT_INCS_DIR =
 # END CUTOMIZATION HERE
 ###############################################################################
 
-UPSTREAM_VERSION = $(MAJ_VERSION).$(MIN_VERSION)
+APPNAME = <app_name>
+
+LIB_VERSION = $(VMAJ).$(VMIN)
+UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
 DEBIAN_REVISION = 0
 VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
+VAPPNAME = $(APPNAME)-$(LIB_VERSION)
+
 DPKG_DIR = dpkg
-DPKG_CTL_DIR = dpkg-ctl
+DPKG_CTL_DIR = debian
+DPKG_TGT = DEBIAN
 DPKGS = $(DPKG_DIR)/$(APPNAME)_$(VERSION)_amd64
 TGT_BIN = /opt/smx/bin
 TGT_DOC = /opt/smx/doc/apps
@@ -73,10 +75,10 @@ INCLUDES_DIR = -I/usr/local/ \
 LINK_DIR = -L/usr/local/lib \
 	-L/opt/smx/lib $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
 
-LINK_FILE = -lsmxrts \
+LINK_FILE = $(LIBS) -lsmxrts \
 	-lpthread \
 	-lxml2 \
-	-lzlog $(LIBS) $(PROFILER_LIBS) $(EXT_LIBS)
+	-lzlog $(PROFILER_LIBS) $(EXT_LIBS)
 
 CC = gcc
 CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\"
@@ -130,7 +132,6 @@ clean: clean_run
 clean_run:
 	rm -f out/*
 	rm -f log/*
-	rm -f <app_name>.log
 
 run:
 	./$(APPNAME)
@@ -143,30 +144,30 @@ valgrind:
 
 install:
 	mkdir -p (TGT_BIN) $(TGT_DOC) $(TGT_CONF)
-	cp -a $(APPNAME) $(TGT_BIN)/$(APPNAME)_$(MAJ_VERSION)
-	ln -sf $(APPNAME)_$(MAJ_VERSION) $(TGT_BIN)/$(APPNAME)
-	cp -a README.md $(TGT_DOC)/$(APPNAME)_$(MAJ_VERSION).md
-	cp -a app.xml $(TGT_CONF)/$(APPNAME)_$(MAJ_VERSION).xml
+	cp -a $(APPNAME) $(TGT_BIN)/$(VAPPNAME)
+	ln -sf $(VAPPNAME) $(TGT_BIN)/$(APPNAME)
+	cp -a README.md $(TGT_DOC)/$(VAPPNAME).md
+	cp -a app.xml $(TGT_CONF)/$(VAPPNAME).xml
 
 uninstall:
 	rm $(TGT_BIN)/$(APPNAME)
-	rm $(TGT_BIN)/$(APPNAME)_$(MAJ_VERSION)
-	rm $(TGT_DOC)/$(APPNAME)_$(MAJ_VERSION).md
-	rm $(TGT_CONF)/$(APPNAME)_$(MAJ_VERSION).xml
+	rm $(TGT_BIN)/$(VAPPNAME)
+	rm $(TGT_DOC)/$(VAPPNAME).md
+	rm $(TGT_CONF)/$(VAPPNAME).xml
 
 dpkg: $(DPKGS)
 $(DPKGS):
 	mkdir -p $@$(TGT_BIN)
-	cp $(APPNAME) $@$(TGT_BIN)/$(APPNAME)_$(MAJ_VERSION)
-	ln -sf $(APPNAME)_$(MAJ_VERSION) $@$(TGT_BIN)/$(APPNAME)
+	cp $(APPNAME) $@$(TGT_BIN)/$(VAPPNAME)
+	ln -sf $(VAPPNAME) $@$(TGT_BIN)/$(APPNAME)
 	mkdir -p $@$(TGT_DOC)
-	cp README.md $@$(TGT_DOC)/$(APPNAME)_$(MAJ_VERSION).md
+	cp README.md $@$(TGT_DOC)/$(VAPPNAME).md
 	mkdir -p $@$(TGT_CONF)
-	cp app.xml $@$(TGT_CONF)/$(APPNAME)_$(MAJ_VERSION).xml
-	mkdir -p $@/DEBIAN
-	cp $(DPKG_CTL_DIR)/control $@/DEBIAN/control
-	sed -i 's/<version>/$(VERSION)/g' $@/DEBIAN/control
-	sed -i 's/<maj_version>/$(MAJ_VERSION)/g' $@/DEBIAN/control
+	cp app.xml $@$(TGT_CONF)/$(VAPPNAME).xml
+	mkdir -p $@/$(DPKG_TGT)
+	cp $(DPKG_CTL_DIR)/control $@/$(DPKG_TGT)/control
+	sed -i 's/<version>/$(VERSION)/g' $@/$(DPKG_TGT)/control
+	sed -i 's/<maj_version>/$(LIB_VERSION)/g' $@/$(DPKG_TGT)/control
 	dpkg-deb -b $@
 
 dpkg-clean:

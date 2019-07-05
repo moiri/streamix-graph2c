@@ -1,4 +1,4 @@
-Package: <app_name>-<maj_version>
+Package: <bin_name>-<maj_version>
 Version: <version>
 Section: base
 Priority: optional

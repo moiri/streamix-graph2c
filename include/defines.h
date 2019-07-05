@@ -18,7 +18,7 @@
 #define DIR_BOXES   "./boxes"
 #define DIR_BUILD   "./build"
 #define DIR_LOG     "./log"
-#define DIR_DPKG    "./dpkg-ctl"
+#define DIR_DPKG    "./debian"
 
 #define BUFFER_SIZE 1000
 

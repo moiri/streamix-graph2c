@@ -24,6 +24,7 @@ void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
     FILE* ftpl;
     FILE* ftgt;
     char buffer[BUFFER_SIZE];
+    char* binname;
 
     // return if item exists
     if( access( tgt_path, F_OK ) == 0 )
@@ -47,6 +48,10 @@ void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
         smxgen_replace( buffer, APP_NAME_PATTERN, name );
+        binname = malloc( strlen( name ) + 1 );
+        smxgen_to_alnum( binname, name );
+        smxgen_replace( buffer, BIN_NAME_PATTERN, binname );
+        free( binname );
         if( strstr( buffer, APP_CONF_PATTERN ) != NULL )
         {
             smxgen_insert_conf( g, ftgt );
@@ -726,7 +731,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_README, path_file );
         // create box package control files
-        sprintf( path_tmp, "%s/dpkg-ctl", path );
+        sprintf( path_tmp, "%s/%s", path, DIR_DPKG );
         mkdir( path_tmp, 0755 );
         sprintf( path_file, "%s/control", path_tmp );
         if( access( path_file, F_OK ) < 0 )
@@ -762,7 +767,6 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
 void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
 {
     char file[1000];
-    char* binname;
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     int tt_vcnt = 0;
@@ -819,10 +823,6 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
     smxgen_app_file( g, name, TPL_APP_GITIGNORE, ".gitignore" );
     mkdir( DIR_DPKG, 0755 );
     sprintf( file, "%s/control", DIR_DPKG );
-    binname = malloc( strlen( name ) + 1 );
-    smxgen_to_alnum( binname, name );
-    smxgen_replace( buffer, BOX_LIB_PATTERN, binname );
-    smxgen_app_file( g, binname, TPL_APP_DEB, file );
-    free( binname );
+    smxgen_app_file( g, name, TPL_APP_DEB, file );
     mkdir( DIR_LOG, 0755 );
 }
