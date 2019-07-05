@@ -101,8 +101,8 @@ install:
 	cp -a $(LOC_INC_DIR)/*.h $(TGT_INCLUDE)/.
 	cp -a $(LOC_LIB_DIR)/$(LIBNAME).a $(TGT_LIB)/$(ANAME)
 	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/$(SONAME)
-	ln -sf $(ANAME) $(TGT_BIN)/$(LIBNAME).a
-	ln -sf $(SONAME) $(TGT_BIN)/$(LIBNAME).so
+	ln -sf $(ANAME) $(TGT_LIB)/$(LIBNAME).a
+	ln -sf $(SONAME) $(TGT_LIB)/$(LIBNAME).so
 	cp -a README.md $(TGT_DOC)/$(VBOXNAME).md
 	cp -a box.xml $(TGT_CONF)/$(VBOXNAME).xml
 
@@ -127,8 +127,8 @@ $(DPKGS):
 	mkdir -p $@$(TGT_LIB)
 	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/$(SONAME)
 	cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/$(ANAME)
-	ln -sf $(ANAME) $@$(TGT_BIN)/$(LIBNAME).a
-	ln -sf $(SONAME) $@$(TGT_BIN)/$(LIBNAME).so
+	ln -sf $(ANAME) $@$(TGT_LIB)/$(LIBNAME).a
+	ln -sf $(SONAME) $@$(TGT_LIB)/$(LIBNAME).so
 	mkdir -p $@$(TGT_DOC)
 	cp README.md $@$(TGT_DOC)/$(BOXNAME)_$(VERSION).md
 	mkdir -p $@$(TGT_CONF)
