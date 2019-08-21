@@ -91,13 +91,6 @@ void cgen_net_init( int ident, int id, int indegree, int outdegree )
 }
 
 /******************************************************************************/
-void cgen_net_init_profiler( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_INIT_PROFILER( %d );\n", id );
-}
-
-/******************************************************************************/
 void cgen_net_init_rn( int ident, int id )
 {
     cgen_ident( ident );
@@ -127,13 +120,6 @@ void cgen_net_destroy( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_net_destroy_profiler( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_DESTROY_PROFILER( %d );\n", id );
-}
-
-/******************************************************************************/
 void cgen_net_destroy_rn( int ident, int id )
 {
     cgen_ident( ident );
@@ -145,13 +131,6 @@ void cgen_net_destroy_tf( int ident, int id )
 {
     cgen_ident( ident );
     cgen_print( "SMX_NET_DESTROY_TF( %d );\n", id );
-}
-
-/******************************************************************************/
-void cgen_net_finalize_profiler( int ident, int id )
-{
-    cgen_ident( ident );
-    cgen_print( "SMX_NET_FINALIZE_PROFILER( %d );\n", id );
 }
 
 /******************************************************************************/
