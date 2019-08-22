@@ -231,7 +231,8 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
         vid1 = IGRAPH_VIT_GET( v_it );
         cgen_net_create( ident, vid1,
                 igraph_cattribute_VAS( g, GV_LABEL, vid1 ),
-                igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
+                igraph_cattribute_VAN( g, GV_TT, vid1 ) );
         igraph_vs_1( &v_cp, vid1 );
         igraph_vector_init( &indegree, 1 );
         igraph_vector_init( &outdegree, 1 );
@@ -313,7 +314,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
         stt_idx = net_cnt + *tt_vcnt;
         tt[stt_idx].tv_sec = stt.tv_sec;
         tt[stt_idx].tv_nsec = stt.tv_nsec;
-        cgen_net_create( ident, stt_idx, TEXT_TF, TEXT_TF );
+        cgen_net_create( ident, stt_idx, TEXT_TF, TEXT_TF, 3 );
         cgen_net_init_tf( ident, stt_idx, stt.tv_sec, stt.tv_nsec );
         ( *tt_vcnt )++;
     }
@@ -322,7 +323,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
         dtt_idx = net_cnt + *tt_vcnt;
         tt[dtt_idx].tv_sec = dtt.tv_sec;
         tt[dtt_idx].tv_nsec = dtt.tv_nsec;
-        cgen_net_create( ident, dtt_idx, TEXT_TF, TEXT_TF );
+        cgen_net_create( ident, dtt_idx, TEXT_TF, TEXT_TF, 3 );
         cgen_net_init_tf( ident, dtt_idx, dtt.tv_sec, dtt.tv_nsec );
         ( *tt_vcnt )++;
     }
@@ -443,7 +444,7 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt )
     int net_cnt = igraph_vcount( g );
     // for all timers
     for( i = 0; i < tt_vcnt; i++ ) {
-        cgen_net_run( ident, i + net_cnt, TEXT_TF, 3 );
+        cgen_net_run( ident, i + net_cnt, TEXT_TF );
     }
     // for all boxes
     v_sel = igraph_vss_all();
@@ -452,8 +453,7 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt )
         // generate code to run boxes
         vid = IGRAPH_VIT_GET( v_it );
         cgen_net_run( ident, vid,
-                igraph_cattribute_VAS( g, GV_IMPL, vid ),
-                igraph_cattribute_VAN( g, GV_TT, vid ) );
+                igraph_cattribute_VAS( g, GV_IMPL, vid ) );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );

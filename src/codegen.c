@@ -106,10 +106,11 @@ void cgen_net_init_tf( int ident, int id, int sec, int nsec )
 
 /******************************************************************************/
 void cgen_net_create( int ident, int id, const char* net_name,
-        const char* box_name )
+        const char* box_name, int prio )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_CREATE( %d, %s, %s );\n", id, net_name, box_name );
+    cgen_print( "SMX_NET_CREATE( %d, %s, %s, %d );\n", id, net_name, box_name,
+            prio );
 }
 
 /******************************************************************************/
@@ -141,11 +142,10 @@ void cgen_net_finalize_tf( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_net_run( int ident, int id, const char* box_name, int prio )
+void cgen_net_run( int ident, int id, const char* box_name )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_RUN( %d, %s, %d );\n", id, box_name,
-            prio );
+    cgen_print( "SMX_NET_RUN( %d, %s );\n", id, box_name );
 }
 
 /******************************************************************************/

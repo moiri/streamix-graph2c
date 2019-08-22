@@ -17,14 +17,14 @@ void cgen_net_init_profiler( int ident, int id );
 void cgen_net_init_rn( int ident, int id );
 void cgen_net_init_tf( int ident, int id, int sec, int nsec );
 void cgen_net_create( int ident, int id, const char* net_name,
-        const char* box_name );
+        const char* box_name, int prio );
 void cgen_net_destroy( int ident, int id );
 void cgen_net_destroy_profiler( int ident, int id );
 void cgen_net_destroy_rn( int ident, int id );
 void cgen_net_destroy_tf( int ident, int id );
 void cgen_net_finalize_profiler( int ident, int id );
 void cgen_net_finalize_tf( int ident, int id );
-void cgen_net_run( int ident, int id, const char* box_name, int prio );
+void cgen_net_run( int ident, int id, const char* box_name );
 void cgen_net_tt( int );
 void cgen_net_wait_end( int, int );
 int cgen_print( const char*, ... );
