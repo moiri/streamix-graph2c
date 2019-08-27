@@ -18,18 +18,18 @@
 #include "smxrts.h"
 <app_includes>
 
-#define XML_APP_CONFIG_PATH "app.xml"
-#define XML_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" APP_VERSION ".xml"
+#define JSON_APP_CONFIG_PATH "app.json"
+#define JSON_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" APP_VERSION ".json"
 
 int main( int argc, char **argv )
 {
     int c;
     char* conf_file;
 
-    if( access( XML_APP_CONFIG_PATH, F_OK ) != -1 )
-        conf_file = XML_APP_CONFIG_PATH;
-    else if( access( XML_OPT_CONFIG_PATH, F_OK ) != -1 )
-        conf_file = XML_OPT_CONFIG_PATH;
+    if( access( JSON_APP_CONFIG_PATH, F_OK ) != -1 )
+        conf_file = JSON_APP_CONFIG_PATH;
+    else if( access( JSON_OPT_CONFIG_PATH, F_OK ) != -1 )
+        conf_file = JSON_OPT_CONFIG_PATH;
     else
         fprintf( stderr, "warning: no default app config file found\n" );
 
@@ -42,8 +42,8 @@ int main( int argc, char **argv )
                 printf( "  -v            The version of the application.\n" );
                 printf( "  -c 'FILE'     Configuration file to be passed to the application.\n" );
                 printf( "                If no file is specified the application falls back to:\n" );
-                printf( "                 1. '%s' in the application root\n", XML_APP_CONFIG_PATH );
-                printf( "                 2. '%s'\n", XML_OPT_CONFIG_PATH );
+                printf( "                 1. '%s' in the application root\n", JSON_APP_CONFIG_PATH );
+                printf( "                 2. '%s'\n", JSON_OPT_CONFIG_PATH );
                 return 0;
             case 'v':
                 printf( "%s v%s\n", argv[0], APP_VERSION );
