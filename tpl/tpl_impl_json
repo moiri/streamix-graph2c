@@ -1,0 +1,8 @@
+        , "<box_name>": {
+            "_default": {
+                "comment": "fallback configuration for all nets using box implementation `<box_name>`",
+                "profiler": null,
+                "config": null
+            }
+            <net_configs>
+        }

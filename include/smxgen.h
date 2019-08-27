@@ -13,9 +13,13 @@
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_CONF_PATTERN      "<box_configs>"
+#define APP_CONF_NET_PATTERN  "<net_configs>"
+#define APP_CONF_INST_PATTERN "<net_inst_configs>"
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
 #define BOX_NAME_PATTERN      "<box_name>"
+#define NET_NAME_PATTERN      "<net_name>"
+#define NET_ID_PATTERN        "<net_id>"
 #define BOX_LIB_PATTERN       "<lib_name>"
 #define BOX_MSG_PATTERN       "<box_msg_types>"
 #define BOX_PORTS_IN_PATTERN  "<box_ports_in>"
@@ -29,8 +33,10 @@
 #define TPL_APP_README      TPL_PATH "/README.md"
 #define TPL_APP_MK          TPL_PATH "/app_mk"
 #define TPL_APP_DEB         TPL_PATH "/app_deb"
-#define TPL_APP_XML         TPL_PATH "/app_xml"
-#define TPL_APP_XML_BOX     TPL_PATH "/tpl_box_xml"
+#define TPL_APP_JSON        TPL_PATH "/app_json"
+#define TPL_IMPL_JSON       TPL_PATH "/tpl_impl_json"
+#define TPL_NET_JSON        TPL_PATH "/tpl_net_json"
+#define TPL_INST_JSON       TPL_PATH "/tpl_inst_json"
 #define TPL_APP_LOG         TPL_PATH "/app_zlog"
 #define TPL_APP_MAIN        TPL_PATH "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
@@ -40,7 +46,7 @@
 #define TPL_BOX_H           TPL_BOX_PATH "/box_h"
 #define TPL_BOX_PORT        TPL_BOX_PATH "/tpl_port_h"
 #define TPL_BOX_C           TPL_BOX_PATH "/box_c"
-#define TPL_BOX_CONF        TPL_BOX_PATH "/box_xml"
+#define TPL_BOX_CONF        TPL_BOX_PATH "/box_json"
 #define TPL_BOX_DEB         TPL_BOX_PATH "/box_deb"
 #define TPL_BOX_DEB_DEV     TPL_BOX_PATH "/box-dev_deb"
 #define TPL_BOX_MSG_H       TPL_BOX_PATH "/box_msg_h"
@@ -189,7 +195,27 @@ void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt );
  * @param g         pointer to the dependency graph
  * @param ftgt      file descriptor to the target file
  */
-void smxgen_insert_conf( igraph_t* g, FILE* ftgt );
+void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt );
+
+/**
+ * Insert the net configurations to the implementation configuration entry.
+ *
+ * @param g         pointer to the dependency graph
+ * @param ftgt      file descriptor to the target file
+ * @param impl      the name of the implementation
+ */
+void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl );
+
+/**
+ * Insert the net instance configurations to the net configuration entry.
+ *
+ * @param g         pointer to the dependency graph
+ * @param ftgt      file descriptor to the target file
+ * @param impl      the name of the implementation
+ * @param net       the name of the net
+ */
+void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
+        const char* net );
 
 /**
  * Insert port templates to the target file.

@@ -1,0 +1,12 @@
+{
+    "_name": "<app_name>",
+    "_log": "app.zlog",
+    "_nets": {
+        "_default": {
+            "comment": "fallback configuration for all nets",
+            "profiler": false,
+            "config": {}
+        }
+        <box_configs>
+    }
+}

@@ -54,7 +54,7 @@ void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
         free( binname );
         if( strstr( buffer, APP_CONF_PATTERN ) != NULL )
         {
-            smxgen_insert_conf( g, ftgt );
+            smxgen_insert_conf_impl( g, ftgt );
         }
         else
             fputs( buffer, ftgt );
@@ -142,6 +142,52 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len )
         if( ( names[i] != NULL ) && ( strcmp( names[i], name ) == 0 ) )
             return 1;
     return 0;
+}
+
+/******************************************************************************/
+int smxgen_box_is_duplicate_id( int id, int* ids, int len )
+{
+    int i;
+    for( i=0; i<len; i++ )
+        if( ids[i] == id )
+            return 1;
+    return 0;
+}
+
+/******************************************************************************/
+void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
+        const char* tpl_path, FILE* ftgt )
+{
+    FILE* ftpl;
+    char buffer[BUFFER_SIZE];
+    char id_str[10];
+
+    ftpl = fopen( tpl_path, "r" );
+
+    if( ftpl == NULL )
+    {
+        fprintf( stderr, "cannot open source file '%s'\n", tpl_path );
+        return;
+    }
+    while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
+    {
+        smxgen_replace( buffer, BOX_NAME_PATTERN, impl );
+        smxgen_replace( buffer, NET_NAME_PATTERN, net );
+        sprintf( id_str, "%d", id );
+        smxgen_replace( buffer, NET_ID_PATTERN, id_str );
+        if( strstr( buffer, APP_CONF_NET_PATTERN ) != NULL )
+        {
+            smxgen_insert_conf_net( g, ftgt, impl );
+        }
+        else if( strstr( buffer, APP_CONF_INST_PATTERN ) != NULL )
+        {
+            smxgen_insert_conf_inst( g, ftgt, impl, net );
+        }
+        else
+            fputs( buffer, ftgt );
+    }
+
+    fclose( ftpl );
 }
 
 /******************************************************************************/
@@ -485,35 +531,112 @@ void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt )
 }
 
 /******************************************************************************/
-void smxgen_insert_conf( igraph_t* g, FILE* ftgt )
+void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
     int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    const char* net_names[net_count];
-    const char* net_name;
+    const char* names[net_count];
+    const char* name;
 
     for( i=0; i<net_count; i++ )
-        net_names[i] = NULL;
+        names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
-        net_name = igraph_cattribute_VAS( g, GV_LABEL, vid );
-        if( smxgen_box_is_duplicate( net_name, net_names, net_count ) )
+        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_duplicate( name, names, net_count ) )
         {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
-        net_names[idx++] = net_name;
-        smxgen_box_file( g, vid, net_name, TPL_APP_XML_BOX, ftgt );
+        names[idx++] = name;
+        smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_JSON, ftgt );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
     igraph_vs_destroy( &v_sel );
+}
 
+/******************************************************************************/
+void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx = 0, net_count = igraph_vcount( g ), i;
+    const char* names[net_count];
+    const char* name;
+
+    for( i=0; i<net_count; i++ )
+        names[i] = NULL;
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid = IGRAPH_VIT_GET( v_it );
+        // store name of vertex to avoid duplicates
+        name = igraph_cattribute_VAS( g, GV_LABEL, vid );
+        if( strcmp( impl, igraph_cattribute_VAS( g, GV_IMPL, vid ) ) != 0 )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+
+        if( smxgen_box_is_duplicate( name, names, net_count ) )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        names[idx++] = name;
+        smxgen_conf_file( g, vid, impl, name, TPL_NET_JSON, ftgt );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
+void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
+        const char* net )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx = 0, net_count = igraph_vcount( g ), i;
+    int ids[net_count];
+
+    for( i=0; i<net_count; i++ )
+        ids[i] = -1;
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid = IGRAPH_VIT_GET( v_it );
+        // store name of vertex to avoid duplicates
+        if( strcmp( impl, igraph_cattribute_VAS( g, GV_IMPL, vid ) ) != 0 )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        if( strcmp( net, igraph_cattribute_VAS( g, GV_LABEL, vid ) ) != 0 )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+
+        if( smxgen_box_is_duplicate_id( vid, ids, net_count ) )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        ids[idx++] = vid;
+        smxgen_conf_file( g, vid, impl, net, TPL_INST_JSON, ftgt );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 }
 
 /******************************************************************************/
@@ -705,7 +828,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_GITIGNORE, path_file );
         // create box config file
-        sprintf( path_file, "%s/box.xml", path );
+        sprintf( path_file, "%s/box.json", path );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_CONF, path_file );
         // create box README file
@@ -800,7 +923,7 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
 
     smxgen_app_file( g, name, TPL_APP_MK, "Makefile" );
     smxgen_app_file( g, name, TPL_APP_README, "README.md" );
-    smxgen_app_file( g, name, TPL_APP_XML, "app.xml" );
+    smxgen_app_file( g, name, TPL_APP_JSON, "app.json" );
     smxgen_app_file( g, name, TPL_APP_LOG, "app.zlog" );
     smxgen_app_file( g, name, TPL_APP_GITIGNORE, ".gitignore" );
     mkdir( DIR_DPKG, 0755 );

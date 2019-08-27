@@ -20,12 +20,6 @@ EXT_LIBS_DIR =
 # list the external include files prefixed with -I
 EXT_INCS_DIR =
 
-# list of libraries required for the profiler
-#PROFILER_LIBS = -lsmxmongo -lmongoc -lbson
-
-# list include directories required for the profiler
-#PROFILER_INCS_DIR = -I/usr/include/libmongoc-1.0 -I/usr/include/libbson-1.0
-
 ###############################################################################
 # END CUTOMIZATION HERE
 ###############################################################################
@@ -69,16 +63,16 @@ INCLUDES = $(wildcard $(BOXIMPL)/include/*.h)
 
 INCLUDES_DIR = -I/usr/local/ \
 	-I/opt/smx/include \
-	-I/usr/include/libxml2 \
-	-I. $(BOX_INC_DIR) $(PROFILER_INCS_DIR) $(EXT_INCS_DIR)
+	-I/usr/include/libbson-1.0 \
+	-I. $(BOX_INC_DIR) $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
 	-L/opt/smx/lib $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
 
 LINK_FILE = $(LIBS) -lsmxrts \
 	-lpthread \
-	-lxml2 \
-	-lzlog $(PROFILER_LIBS) $(EXT_LIBS)
+	-lbson \
+	-lzlog $(EXT_LIBS)
 
 CC = gcc
 CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\"
