@@ -18,6 +18,12 @@
 #ifndef BOX_<box_name>_SIG_H
 #define BOX_<box_name>_SIG_H
 
+/** #enum ports_<box_name>_in_e */
+typedef enum ports_<box_name>_in_e ports_<box_name>_in_t;
+
+/** #enum ports_<box_name>_out_e */
+typedef enum ports_<box_name>_out_e ports_<box_name>_out_t;
+
 /**
  * The input signature of <box_name>
  */

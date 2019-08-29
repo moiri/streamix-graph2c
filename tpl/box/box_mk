@@ -1,28 +1,6 @@
 SHELL := /bin/bash
 
-###############################################################################
-# START CUTOMIZATION HERE
-# Changes in this area should be enough to customize the building process.
-# If other changes are necessary, feel free to do so ;)
-###############################################################################
-
-# The version number of the library ($(VMAJ).$(VMIN).$(VREV))
-VMAJ = 0
-VMIN = 1
-VREV = 0
-
-# list the external libraries prefixed with -l
-EXT_LIBS =
-
-# list the external libraries directories prefixed with -L
-EXT_LIBS_DIR =
-
-# list the external include files prefixed with -I
-EXT_INCS_DIR =
-
-###############################################################################
-# END CUTOMIZATION HERE
-###############################################################################
+include config.mk
 
 LIBNAME = lib<lib_name>
 
@@ -66,12 +44,12 @@ INCLUDES_DIR = -I$(LOC_INC_DIR) \
 			   -I. $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
-	-L/opt/smx/lib $(EXT_LIBS_DIR)
+	-L$(TGT_LIB) $(EXT_LIBS_DIR)
 
 LINK_FILE = -lsmxrts \
 	-lbson $(EXT_LIBS)
 
-CFLAGS = -Wall -fPIC
+CFLAGS = -Wall -fPIC $(EXT_CFLAGS)
 DEBUG_FLAGS = -g -O0
 
 CC = gcc

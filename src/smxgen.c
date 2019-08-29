@@ -74,6 +74,17 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     char buffer[BUFFER_SIZE];
     int cnt;
     char* libname;
+    char indeg[10];
+    char outdeg[10];
+    igraph_vs_t v_cp;
+    igraph_vector_t indegree, outdegree;
+    igraph_vs_1( &v_cp, id );
+    igraph_vector_init( &indegree, 1 );
+    igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
+    sprintf( indeg, "%d", ( int )VECTOR( indegree )[0] );
+    igraph_vector_init( &outdegree, 1 );
+    igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
+    sprintf( outdeg, "%d", ( int )VECTOR( outdegree )[0] );
 
     ftpl = fopen( tpl_path, "r" );
 
@@ -89,6 +100,8 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
         smxgen_to_alnum( libname, name );
         smxgen_replace( buffer, BOX_LIB_PATTERN, libname );
         free( libname );
+        smxgen_replace( buffer, INDEGREE_PATTERN, indeg );
+        smxgen_replace( buffer, OUTDEGREE_PATTERN, outdeg );
         if( strstr( buffer, BOX_MSG_PATTERN ) != NULL )
         {
             smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_PORT, ftgt );
@@ -101,13 +114,45 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
         {
             cnt = smxgen_insert_ports( g, id, IGRAPH_IN, name, TPL_BOX_SIG_PORT, ftgt );
             if( cnt == 0 )
-                smxgen_port_file( name, "EMPTY", MODE_IN, TPL_BOX_SIG_PORT, ftgt );
+                smxgen_port_file( 0, name, "EMPTY", MODE_IN, TPL_BOX_SIG_PORT, ftgt );
         }
         else if( strstr( buffer, BOX_PORTS_OUT_PATTERN ) != NULL )
         {
             cnt = smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_SIG_PORT, ftgt );
             if( cnt == 0 )
-                smxgen_port_file( name, "EMPTY", MODE_OUT, TPL_BOX_SIG_PORT, ftgt );
+                smxgen_port_file( 0, name, "EMPTY", MODE_OUT, TPL_BOX_SIG_PORT, ftgt );
+        }
+        else if( strstr( buffer, BOX_IN_CASE_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_IN, name, TPL_BOX_TEST_PORT, ftgt );
+        }
+        else if( strstr( buffer, BOX_OUT_CASE_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_TEST_PORT, ftgt );
+        }
+        else if( strstr( buffer, BOX_IN_CONF_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_IN, name, TPL_BOX_TEST_P_JSON, ftgt );
+        }
+        else if( strstr( buffer, BOX_OUT_CONF_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_TEST_P_JSON, ftgt );
+        }
+        else if( strstr( buffer, NET_IN_CH_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_IN, name, TPL_BOX_TEST_CH, ftgt );
+        }
+        else if( strstr( buffer, NET_OUT_CH_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_TEST_CH, ftgt );
+        }
+        else if( strstr( buffer, NET_IN_CH_RM_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_IN, name, TPL_BOX_TEST_CH_RM, ftgt );
+        }
+        else if( strstr( buffer, NET_OUT_CH_RM_PATTERN ) != NULL )
+        {
+            smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_TEST_CH_RM, ftgt );
         }
         else
             fputs( buffer, ftgt );
@@ -653,8 +698,8 @@ int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
     while( !IGRAPH_EIT_END( e_it ) ) {
         // generate port code
         eid = IGRAPH_EIT_GET( e_it );
-        smxgen_port_file( name, smxgen_get_port_name( g, eid, mode ), mode_str,
-                tpl_path, ftgt );
+        smxgen_port_file( eid, name, smxgen_get_port_name( g, eid, mode ),
+                mode_str, tpl_path, ftgt );
         IGRAPH_EIT_NEXT( e_it );
         cnt++;
     }
@@ -662,6 +707,7 @@ int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
     igraph_es_destroy( &e_sel );
     return cnt;
 }
+
 /******************************************************************************/
 void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt )
 {
@@ -698,11 +744,14 @@ void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt )
 }
 
 /******************************************************************************/
-void smxgen_port_file( const char* box_name, const char* port_name,
+void smxgen_port_file( int eid, const char* box_name, const char* port_name,
         const char* port_mode, const char* tpl_path, FILE* ftgt )
 {
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
+    char id[10];
+
+    sprintf( id, "%d", eid );
 
     ftpl = fopen( tpl_path, "r" );
 
@@ -717,6 +766,7 @@ void smxgen_port_file( const char* box_name, const char* port_name,
         smxgen_replace( buffer, BOX_NAME_PATTERN, box_name );
         smxgen_replace( buffer, PORT_NAME_PATTERN, port_name );
         smxgen_replace( buffer, PORT_MODE_PATTERN, port_mode );
+        smxgen_replace( buffer, CH_ID_PATTERN, id );
         fputs( buffer, ftgt );
     }
 
@@ -820,6 +870,9 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
         strcpy( path, path_tmp );
         mkdir( path, 0755 );
         // create box Makefile
+        sprintf( path_file, "%s/config.mk", path );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_CONF_MK, path_file );
         sprintf( path_file, "%s/Makefile", path );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_MK, path_file );
@@ -844,6 +897,27 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
         sprintf( path_file, "%s/control-dev", path_tmp );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_DEB_DEV, path_file );
+        // create test files
+        sprintf( path_tmp, "%s/test", path );
+        mkdir( path_tmp, 0755 );
+        sprintf( path_file, "%s/Makefile", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MK, path_file );
+        sprintf( path_file, "%s/test.c", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MAIN_C, path_file );
+        sprintf( path_file, "%s/test.json", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_JSON, path_file );
+        sprintf( path_file, "%s/test.zlog", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_ZLOG, path_file );
+        sprintf( path_file, "%s/test_%s.c", path_tmp, name );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_C, path_file );
+        sprintf( path_file, "%s/test_%s.h", path_tmp, name );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_H, path_file );
         // create box.c file
         sprintf( path_tmp, "%s/src", path );
         mkdir( path_tmp, 0755 );

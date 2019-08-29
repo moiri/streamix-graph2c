@@ -27,10 +27,21 @@
 #define BOX_SIG_PATTERN       "<box_signature>"
 #define PORT_NAME_PATTERN     "<port_name>"
 #define PORT_MODE_PATTERN     "<port_mode>"
+#define CH_ID_PATTERN         "<ch_id>"
+#define BOX_IN_CASE_PATTERN   "<box_ports_in_case>"
+#define BOX_OUT_CASE_PATTERN  "<box_ports_out_case>"
+#define BOX_IN_CONF_PATTERN   "<box_ports_in_conf>"
+#define BOX_OUT_CONF_PATTERN  "<box_ports_out_conf>"
+#define NET_IN_CH_PATTERN     "<net_ch_in>"
+#define NET_OUT_CH_PATTERN    "<net_ch_out>"
+#define NET_IN_CH_RM_PATTERN  "<net_ch_rm_in>"
+#define NET_OUT_CH_RM_PATTERN "<net_ch_rm_out>"
+#define INDEGREE_PATTERN      "<in_degree>"
+#define OUTDEGREE_PATTERN     "<out_degree>"
 
 #define TPL_PATH            "/opt/smx/tpl"
 #define TPL_APP_GITIGNORE   TPL_PATH "/_gitignore"
-#define TPL_APP_README      TPL_PATH "/README.md"
+#define TPL_APP_README      TPL_PATH "/README_md"
 #define TPL_APP_MK          TPL_PATH "/app_mk"
 #define TPL_APP_DEB         TPL_PATH "/app_deb"
 #define TPL_APP_JSON        TPL_PATH "/app_json"
@@ -41,8 +52,9 @@
 #define TPL_APP_MAIN        TPL_PATH "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
 #define TPL_BOX_MK          TPL_BOX_PATH "/box_mk"
+#define TPL_BOX_CONF_MK     TPL_BOX_PATH "/config_mk"
 #define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/_gitignore"
-#define TPL_BOX_README      TPL_BOX_PATH "/README.md"
+#define TPL_BOX_README      TPL_BOX_PATH "/README_md"
 #define TPL_BOX_H           TPL_BOX_PATH "/box_h"
 #define TPL_BOX_PORT        TPL_BOX_PATH "/tpl_port_h"
 #define TPL_BOX_C           TPL_BOX_PATH "/box_c"
@@ -52,6 +64,17 @@
 #define TPL_BOX_MSG_H       TPL_BOX_PATH "/box_msg_h"
 #define TPL_BOX_SIG_H       TPL_BOX_PATH "/box_sig_h"
 #define TPL_BOX_SIG_PORT    TPL_BOX_PATH "/tpl_port_sig_h"
+#define TPL_BOX_TEST_PATH   TPL_BOX_PATH "/test"
+#define TPL_BOX_TEST_MK     TPL_BOX_TEST_PATH "/test_mk"
+#define TPL_BOX_TEST_H      TPL_BOX_TEST_PATH "/test_h"
+#define TPL_BOX_TEST_C      TPL_BOX_TEST_PATH "/test_c"
+#define TPL_BOX_TEST_MAIN_C TPL_BOX_TEST_PATH "/main_c"
+#define TPL_BOX_TEST_PORT   TPL_BOX_TEST_PATH "/tpl_port_c"
+#define TPL_BOX_TEST_CH     TPL_BOX_TEST_PATH "/tpl_ch_c"
+#define TPL_BOX_TEST_CH_RM  TPL_BOX_TEST_PATH "/tpl_ch_rm_c"
+#define TPL_BOX_TEST_JSON   TPL_BOX_TEST_PATH "/test_json"
+#define TPL_BOX_TEST_ZLOG   TPL_BOX_TEST_PATH "/test_zlog"
+#define TPL_BOX_TEST_P_JSON TPL_BOX_TEST_PATH "/tpl_port_json"
 
 /**
  * Read an app template file, replace the generic patterns and insert it to the
@@ -245,13 +268,14 @@ void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt );
  * Read a port template file, replace the generic patterns and insert it to the
  * target file
  *
+ * @param eid       the edge id
  * @param box_name  name of the box
  * @param port_name name of the port
  * @param port_mode port direction string
  * @param tpl_path  path to the template file
  * @param ftgt      file descriptor to the target file
  */
-void smxgen_port_file( const char* box_name, const char* port_name,
+void smxgen_port_file( int eid, const char* box_name, const char* port_name,
         const char* port_mode, const char* tpl_path, FILE* ftgt );
 
 /**

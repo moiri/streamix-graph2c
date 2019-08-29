@@ -6,3 +6,4 @@ deb/*.deb
 deb/*/usr
 deb/*/opt
 dpkg
+test/<box_name>

@@ -9,6 +9,9 @@
 
 #include "smxrts.h"
 #include "<box_name>.h"
+#ifdef SMX_TESTING
+#include "test_<box_name>.h"
+#endif /* SMX_TESTING */
 
 /******************************************************************************/
 int <box_name>( void* h, void* state )
