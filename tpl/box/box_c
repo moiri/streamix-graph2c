@@ -1,10 +1,7 @@
 /**
  * @author  ADD YOUR NAME
- * @file    <box_name>.c
  *
  * The implementation of the streamix box <box_name>.
- *
- * ADD DESCRITPTION HERE
  */
 
 #include "smxrts.h"

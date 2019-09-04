@@ -141,13 +141,13 @@ install:
 	cp -a $(APPNAME) $(TGT_BIN)/$(VAPPNAME)
 	ln -sf $(VAPPNAME) $(TGT_BIN)/$(APPNAME)
 	cp -a README.md $(TGT_DOC)/$(VAPPNAME).md
-	cp -a app.xml $(TGT_CONF)/$(VAPPNAME).xml
+	cp -a app.json $(TGT_CONF)/$(VAPPNAME).json
 
 uninstall:
 	rm $(TGT_BIN)/$(APPNAME)
 	rm $(TGT_BIN)/$(VAPPNAME)
 	rm $(TGT_DOC)/$(VAPPNAME).md
-	rm $(TGT_CONF)/$(VAPPNAME).xml
+	rm $(TGT_CONF)/$(VAPPNAME).json
 
 dpkg: $(DPKGS)
 $(DPKGS):
@@ -157,7 +157,7 @@ $(DPKGS):
 	mkdir -p $@$(TGT_DOC)
 	cp README.md $@$(TGT_DOC)/$(VAPPNAME).md
 	mkdir -p $@$(TGT_CONF)
-	cp app.xml $@$(TGT_CONF)/$(VAPPNAME).xml
+	cp app.json $@$(TGT_CONF)/$(VAPPNAME).json
 	mkdir -p $@/$(DPKG_TGT)
 	cp $(DPKG_CTL_DIR)/control $@/$(DPKG_TGT)/control
 	sed -i 's/<version>/$(VERSION)/g' $@/$(DPKG_TGT)/control

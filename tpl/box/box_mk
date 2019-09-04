@@ -82,7 +82,7 @@ install:
 	ln -sf $(ANAME) $(TGT_LIB)/$(LIBNAME).a
 	ln -sf $(SONAME) $(TGT_LIB)/$(LIBNAME).so
 	cp -a README.md $(TGT_DOC)/$(VBOXNAME).md
-	cp -a box.xml $(TGT_CONF)/$(VBOXNAME).xml
+	cp -a box.json $(TGT_CONF)/$(VBOXNAME).json
 
 uninstall:
 	rm $(addprefix $(TGT_INCLUDE)/,$(notdir $(wildcard $(INCLUDES))))
@@ -91,7 +91,7 @@ uninstall:
 	rm $(TGT_LIB)/$(ANAME)
 	rm $(TGT_LIB)/$(SONAME)
 	rm $(TGT_DOC)/$(VBOXNAME).md
-	rm $(TGT_CONF)/$(VBOXNAME).xml
+	rm $(TGT_CONF)/$(VBOXNAME).json
 
 clean:
 	rm -rf $(LOC_OBJ_DIR)
@@ -110,7 +110,7 @@ $(DPKGS):
 	mkdir -p $@$(TGT_DOC)
 	cp README.md $@$(TGT_DOC)/$(BOXNAME)_$(VERSION).md
 	mkdir -p $@$(TGT_CONF)
-	cp box.xml $@$(TGT_CONF)/$(BOXNAME)_$(VERSION).xml
+	cp box.json $@$(TGT_CONF)/$(BOXNAME)_$(VERSION).json
 	mkdir -p $@/$(DPKG_TGT)
 	@if [[ $@ == *-dev ]]; then \
 		mkdir -p $@$(TGT_INCLUDE); \
