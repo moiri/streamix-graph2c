@@ -5,8 +5,8 @@ This library provides message definitions for messages that are ...
 ## Using the library
 
 When a `<msg_name>` message is used in a Streamix box implementation, the file
-`smx_msg_<msg_name>.h` must be added to the box implemntation header and the
-box implemntation must be compiled with `-lsmxmsg<msg_name>` (add this to the
+`smx_msg_<msg_name>.h` must be added to the box implementation header and the
+box implementation must be compiled with `-lsmxmsg<msg_name>` (add this to the
 `EXT_LIBS` variable in the box Makefile).
 
 ## Compiling and Installing
