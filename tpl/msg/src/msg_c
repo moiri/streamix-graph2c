@@ -1,0 +1,33 @@
+/**
+ * @author  ADD AUTHOR NAME
+ *
+ * This file holds custom definitions for the streamix message smx_msg_<msg_name>.
+ */
+
+#include "smx_msg_<msg_name>.h"
+#include "smxutils.h"
+#include "smxmsg.h"
+
+/*****************************************************************************/
+void* smx_data_ctrl_copy( void* data, size_t size )
+{
+    // CHANGE THIS FUNCTION TO ALTER THE DEfAULT BEHAVIOUR
+
+    return smx_msg_data_copy( data, size );
+}
+
+/*****************************************************************************/
+void smx_data_ctrl_destroy( void* data )
+{
+    // CHANGE THIS FUNCTION TO ALTER THE DEfAULT BEHAVIOUR
+
+    smx_msg_data_destroy( data );
+}
+
+/*****************************************************************************/
+void* smx_data_ctrl_unpack( void* data )
+{
+    // CHANGE THIS FUNCTION TO ALTER THE DEfAULT BEHAVIOUR
+
+    return smx_msg_data_unpack( data );
+}

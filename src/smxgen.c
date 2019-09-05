@@ -102,11 +102,7 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
         free( libname );
         smxgen_replace( buffer, INDEGREE_PATTERN, indeg );
         smxgen_replace( buffer, OUTDEGREE_PATTERN, outdeg );
-        if( strstr( buffer, BOX_MSG_PATTERN ) != NULL )
-        {
-            smxgen_insert_ports( g, id, IGRAPH_OUT, name, TPL_BOX_PORT, ftgt );
-        }
-        else if( strstr( buffer, BOX_SIG_PATTERN ) != NULL )
+        if( strstr( buffer, BOX_SIG_PATTERN ) != NULL )
         {
             smxgen_insert_sig( g, id, name, ftgt );
         }
@@ -930,9 +926,6 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
         sprintf( path_file, "%s/%s.h", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_H, path_file );
-        sprintf( path_file, "%s/%s_msg.h", path_tmp, name );
-        if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_MSG_H, path_file );
         fprintf( stdout, "(*) " );
         sprintf( path_file, "%s/%s_sig.h", path_tmp, name );
         smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file );
@@ -996,6 +989,7 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
     fclose( __src_file );
 
     smxgen_app_file( g, name, TPL_APP_MK, "Makefile" );
+    smxgen_app_file( g, name, TPL_APP_CONF_MK, "config.mk" );
     smxgen_app_file( g, name, TPL_APP_README, "README.md" );
     smxgen_app_file( g, name, TPL_APP_JSON, "app.json" );
     smxgen_app_file( g, name, TPL_APP_LOG, "app.zlog" );

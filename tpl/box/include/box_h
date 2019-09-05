@@ -15,7 +15,6 @@
  */
 
 #include "<box_name>_sig.h"
-#include "<box_name>_msg.h"
 
 #ifndef BOX_<box_name>_H
 #define BOX_<box_name>_H

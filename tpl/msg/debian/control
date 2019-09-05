@@ -1,11 +1,11 @@
-Package: <bin_name>-<maj_version>
+Package: libsmxmsg<msg_name>-<maj_version>
 Version: <version>
 Section: base
 Priority: optional
 Architecture: amd64
 Depends: libsmxrts-0.1 (>= 0.1.0-0)
 Maintainer: YOUR NAME <YOUR EMAIL>
-Description: Streamix Application '<app_name>'
- This is an application that was created with the coordination language Streamix.
+Description: Message handlers for the Streamix message type 'smx_msg_<msg_name>'
+ This is a message definition to be used in Streamix box implemnetations.
  .
  ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE

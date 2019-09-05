@@ -1,0 +1,22 @@
+# Streamix Message Definition `smx_msg_<msg_name>`
+
+This library provides message definitions for messages that are ...
+
+## Using the library
+
+When a `<msg_name>` message is used in a Streamix box implementation, the file
+`smx_msg_<msg_name>.h` must be added to the box implemntation header and the
+box implemntation must be compiled with `-lsmxmsg<msg_name>` (add this to the
+`EXT_LIBS` variable in the box Makefile).
+
+## Compiling and Installing
+
+A Makefile is provided that allows to
+ - compile the msg definition to a library `libsmxmsg<msg_name>` (`make`)
+ - create `deb` packages including the library and this document (`make dpkg`)
+ - manually install to the target folders (`sudo make install`)
+
+## Dependencies
+
+The message definition has the following dependencies:
+ - [libsmxrts](https://github.com/moiri/streamix-rts)

@@ -1,28 +1,6 @@
 SHELL := /bin/bash
 
-###############################################################################
-# START CUTOMIZATION HERE
-# Changes in this area should be enough to customize the building process.
-# If other changes are necessary, feel free to do so ;)
-###############################################################################
-
-# The version number of the application ($(VMAJ).$(VMIN).$(VREV))
-VMAJ = 0
-VMIN = 1
-VREV = 0
-
-# list the external libraries prefixed with -l
-EXT_LIBS =
-
-# list the external libraries directories prefixed with -L
-EXT_LIBS_DIR =
-
-# list the external include files prefixed with -I
-EXT_INCS_DIR =
-
-###############################################################################
-# END CUTOMIZATION HERE
-###############################################################################
+include config.mk
 
 APPNAME = <app_name>
 
@@ -75,8 +53,8 @@ LINK_FILE = $(LIBS) -lsmxrts \
 	-lzlog $(EXT_LIBS)
 
 CC = gcc
-CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\"
-DEBUG_FLAGS = -g -O0
+CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\" $(EXT_CFLAGS)
+DEBUG_FLAGS = -g -O0 -DLTTNG_UST_DEBUG_VALGRIND
 
 all: $(APPNAME)
 
@@ -93,7 +71,7 @@ $(APPNAME): $(SOURCES) $(INCLUDES) boximpl
 
 boximpl: $(BOXES) setboxpaths
 $(BOXES):
-	$(MAKE) -C $@
+	$(MAKE) -C $@ $(MAKECMDGOALS)
 
 setboxpaths:
 	$(eval LIBS_A = $(wildcard $(BOXIMPL)/lib/*.a))

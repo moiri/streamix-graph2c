@@ -43,4 +43,4 @@ In order set up test the following steps must be taken:
 
 The box has the following dependencies:
  - [libsmxrts](https://github.com/moiri/streamix-rts)
- - [libxml2](http://xmlsoft.org/)
+ - [libbson](http://mongoc.org/libbson/current/index.html)

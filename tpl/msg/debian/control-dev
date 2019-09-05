@@ -1,0 +1,10 @@
+Package: libsmxmsg<msg_name>-dev
+Version: <version>
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: libsmxmsg<msg_name>-<maj_version> (>= <version>), libsmxrts-dev (>= 0.1.0-0)
+Maintainer: YOUR NAME <YOUR EMAIL>
+Description: Development Package of 'libsmxmsg<msg_name>'
+ This is the development package of the library 'libsmxmsg<msg_name>'. This library
+ contains the message handler definitions of the Streamix message 'smx_msg_<msg_name>'.

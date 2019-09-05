@@ -1,0 +1,56 @@
+/**
+ * @author  ADD AUTHOR NAME
+ * @file    smx_msg_<msg_name>.h
+ *
+ * This file holds custom definitions for the streamix message smx_msg_<msg_name>.
+ *
+ * ADD DESCRITPTION HERE
+ */
+
+#include <stdio.h>
+
+#ifndef SMX_MSG_<msg_name>_H
+#define SMX_MSG_<msg_name>_H
+
+/** ::smx_data_<msg_name>_s */
+typedef struct smx_data_<msg_name>_s smx_data_<msg_name>_t;
+
+/**
+ * The <msg_name> message data structure.
+ */
+struct smx_data_<msg_name>_s
+{
+    // ADD MESSAGE FIELDS
+};
+
+/**
+ * The custom copy function to perform a copy of the <msg_name> message data.
+ *
+ * @param data
+ *  A void pointer to the data structure.
+ * @param size
+ *  The size of the data.
+ * @return
+ *  A void pointer to the copied data.
+ */
+void* smx_data_<msg_name>_copy( void* data, size_t size );
+
+/**
+ * The custom destroy function to destroy the data inside a <msg_name> message.
+ *
+ * @param data
+ *  A void pointer to the data to be freed.
+ */
+void smx_data_<msg_name>_destroy( void* data );
+
+/**
+ * The custom unpack function for the <msg_name> message payload.
+ *
+ * @param data
+ *  A void pointer to the message payload.
+ * @return
+ *  A void pointer to the unpacked message payload.
+ */
+void* smx_data_<msg_name>_unpack( void* data );
+
+#endif /* SMX_MSG_<msg_name>_H */

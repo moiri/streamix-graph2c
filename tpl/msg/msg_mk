@@ -2,15 +2,15 @@ SHELL := /bin/bash
 
 include config.mk
 
-LIBNAME = lib<lib_name>
+LIBNAME = libsmxmsg<msg_name>
 
 LIB_VERSION = $(VMAJ).$(VMIN)
 UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
 DEBIAN_REVISION = 0
 VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
-BOXNAME = <box_name>
-VBOXNAME = $(BOXNAME)-$(LIB_VERSION)
+MSGNAME = smx_msg_<msg_name>
+VMSGNAME = $(MSGNAME)-$(LIB_VERSION)
 SONAME = $(LIBNAME)-$(LIB_VERSION).so.$(VREV)
 ANAME = $(LIBNAME)-$(LIB_VERSION).a
 
@@ -27,8 +27,7 @@ DPKGS = $(DPKG_DIR)/$(LIBNAME)_$(VERSION)_amd64 \
 
 TGT_INCLUDE = /opt/smx/include
 TGT_LIB = /opt/smx/lib
-TGT_DOC = /opt/smx/doc/boxes
-TGT_CONF = /opt/smx/conf/boxes
+TGT_DOC = /opt/smx/doc/msgs
 
 STATLIB = $(LOC_LIB_DIR)/$(LIBNAME).a
 DYNLIB = $(LOC_LIB_DIR)/$(LIBNAME).so
@@ -50,7 +49,7 @@ LINK_FILE = -lsmxrts \
 	-lbson $(EXT_LIBS)
 
 CFLAGS = -Wall -fPIC $(EXT_CFLAGS)
-DEBUG_FLAGS = -g -O0 -DLTTNG_UST_DEBUG_VALGRIND
+DEBUG_FLAGS = -g -O0
 
 CC = gcc
 
@@ -81,8 +80,7 @@ install:
 	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/$(SONAME)
 	ln -sf $(ANAME) $(TGT_LIB)/$(LIBNAME).a
 	ln -sf $(SONAME) $(TGT_LIB)/$(LIBNAME).so
-	cp -a README.md $(TGT_DOC)/$(VBOXNAME).md
-	cp -a box.json $(TGT_CONF)/$(VBOXNAME).json
+	cp -a README.md $(TGT_DOC)/$(VMSGNAME).md
 
 uninstall:
 	rm $(addprefix $(TGT_INCLUDE)/,$(notdir $(wildcard $(INCLUDES))))
@@ -90,8 +88,7 @@ uninstall:
 	rm $(TGT_LIB)/$(LIBNAME).so
 	rm $(TGT_LIB)/$(ANAME)
 	rm $(TGT_LIB)/$(SONAME)
-	rm $(TGT_DOC)/$(VBOXNAME).md
-	rm $(TGT_CONF)/$(VBOXNAME).json
+	rm $(TGT_DOC)/$(VMSGNAME).md
 
 clean:
 	rm -rf $(LOC_OBJ_DIR)
@@ -108,9 +105,7 @@ $(DPKGS):
 	ln -sf $(ANAME) $@$(TGT_LIB)/$(LIBNAME).a
 	ln -sf $(SONAME) $@$(TGT_LIB)/$(LIBNAME).so
 	mkdir -p $@$(TGT_DOC)
-	cp README.md $@$(TGT_DOC)/$(VBOXNAME).md
-	mkdir -p $@$(TGT_CONF)
-	cp box.json $@$(TGT_CONF)/$(VBOXNAME).json
+	cp README.md $@$(TGT_DOC)/$(VMSGNAME).md
 	mkdir -p $@/$(DPKG_TGT)
 	@if [[ $@ == *-dev ]]; then \
 		mkdir -p $@$(TGT_INCLUDE); \
