@@ -27,6 +27,7 @@ DPKGS = $(DPKG_DIR)/$(LIBNAME)_$(VERSION)_amd64 \
 
 TGT_INCLUDE = /opt/smx/include
 TGT_LIB = /opt/smx/lib
+TGT_LIB_E = \/opt\/smx\/lib
 TGT_DOC = /opt/smx/doc/boxes
 TGT_CONF = /opt/smx/conf/boxes
 
@@ -102,15 +103,6 @@ doc:
 
 dpkg: $(DPKGS)
 $(DPKGS):
-	mkdir -p $@$(TGT_LIB)
-	cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/$(SONAME)
-	cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/$(ANAME)
-	ln -sf $(ANAME) $@$(TGT_LIB)/$(LIBNAME).a
-	ln -sf $(SONAME) $@$(TGT_LIB)/$(LIBNAME).so
-	mkdir -p $@$(TGT_DOC)
-	cp README.md $@$(TGT_DOC)/$(VBOXNAME).md
-	mkdir -p $@$(TGT_CONF)
-	cp box.json $@$(TGT_CONF)/$(VBOXNAME).json
 	mkdir -p $@/$(DPKG_TGT)
 	@if [[ $@ == *-dev ]]; then \
 		mkdir -p $@$(TGT_INCLUDE); \
@@ -118,7 +110,26 @@ $(DPKGS):
 		echo "cp $(LOC_INC_DIR)/* $@$(TGT_INCLUDE)/."; \
 		cp $(DPKG_CTL_DIR)/control-dev $@/$(DPKG_TGT)/control; \
 	else \
+		mkdir -p $@$(TGT_LIB); \
+		cp $(LOC_LIB_DIR)/$(LIBNAME).so $@$(TGT_LIB)/$(SONAME); \
+		cp $(LOC_LIB_DIR)/$(LIBNAME).a $@$(TGT_LIB)/$(ANAME); \
+		mkdir -p $@$(TGT_DOC); \
+		cp README.md $@$(TGT_DOC)/$(VBOXNAME).md; \
+		mkdir -p $@$(TGT_CONF); \
+		cp box.json $@$(TGT_CONF)/$(VBOXNAME).json; \
 		cp $(DPKG_CTL_DIR)/control $@/$(DPKG_TGT)/control; \
+		cp $(DPKG_CTL_DIR)/postinst $@/$(DPKG_TGT)/postinst; \
+		sed -i 's/<tgt_dir>/$(TGT_LIB_E)/g' $@/$(DPKG_TGT)/postinst; \
+		sed -i 's/<soname>/$(SONAME)/g' $@/$(DPKG_TGT)/postinst; \
+		sed -i 's/<aname>/$(ANAME)/g' $@/$(DPKG_TGT)/postinst; \
+		sed -i 's/<libname>/$(LIBNAME)/g' $@/$(DPKG_TGT)/postinst; \
+		sed -i 's/<lnname>/$(VLIBNAME)/g' $@/$(DPKG_TGT)/postinst; \
+		cp $(DPKG_CTL_DIR)/postrm $@/$(DPKG_TGT)/postrm; \
+		sed -i 's/<tgt_dir>/$(TGT_LIB_E)/g' $@/$(DPKG_TGT)/postrm; \
+		sed -i 's/<aname>/$(ANAME)/g' $@/$(DPKG_TGT)/postrm; \
+		sed -i 's/<libname>/$(LIBNAME)/g' $@/$(DPKG_TGT)/postrm; \
+		sed -i 's/<lnname>/$(VLIBNAME)/g' $@/$(DPKG_TGT)/postrm; \
+		cp $(DPKG_CTL_DIR)/triggers $@/$(DPKG_TGT)/triggers; \
 	fi
 	sed -i 's/<version>/$(VERSION)/g' $@/$(DPKG_TGT)/control
 	sed -i 's/<maj_version>/$(LIB_VERSION)/g' $@/$(DPKG_TGT)/control

@@ -3,7 +3,7 @@ Version: <version>
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: libsmxrts-0.1 (>= 0.1.0-0)
+Depends: libsmxrts-0.2 (>= 0.2.0-0)
 Maintainer: YOUR NAME <YOUR EMAIL>
 Description: Streamix Application '<app_name>'
  This is an application that was created with the coordination language Streamix.

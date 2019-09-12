@@ -3,7 +3,7 @@ Version: <version>
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: lib<lib_name>-<maj_version> (>= <version>), libsmxrts-dev (>= 0.1.0-0)
+Depends: lib<lib_name>-<maj_version> (>= <version>), libsmxrts-dev (>= 0.2.0-0)
 Maintainer: YOUR NAME <YOUR EMAIL>
 Description: Development Package of 'lib<lib_name>'
  This is the development package of the library 'lib<lib_name>'. This library
