@@ -45,10 +45,11 @@ INCLUDES_DIR = -I$(LOC_INC_DIR) \
 			   -I. $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
+	-L/usr/lib/x86_64-linux-gnu
 	-L$(TGT_LIB) $(EXT_LIBS_DIR)
 
 LINK_FILE = -lsmxrts \
-	-lbson $(EXT_LIBS)
+	-lbson-1.0 $(EXT_LIBS)
 
 CFLAGS = -Wall -fPIC $(EXT_CFLAGS)
 DEBUG_FLAGS = -g -O0 -DLTTNG_UST_DEBUG_VALGRIND
