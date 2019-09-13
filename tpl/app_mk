@@ -45,7 +45,6 @@ INCLUDES_DIR = -I/usr/local/ \
 	-I. $(BOX_INC_DIR) $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
-	-L/usr/lib/x86_64-linux-gnu \
 	-L/opt/smx/lib $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
 
 LINK_FILE = $(LIBS) -lsmxrts \
