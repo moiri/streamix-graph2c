@@ -390,28 +390,32 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
     struct timespec dtt;
     int net_cnt = igraph_vcount( g );
     const char* port_name = igraph_cattribute_EAS( g, GE_LABEL, eid );
-    int stt_idx, dtt_idx, ch_idx1, ch_idx2, ch_idx3, vid1, vid2;
+    int stt_idx, dtt_idx, ch_idx1, ch_idx2, ch_idx3, vid1, vid2, stt_id, dtt_id;
     stt.tv_sec = igraph_cattribute_EAN( g, GE_STS, eid );
     stt.tv_nsec = igraph_cattribute_EAN( g, GE_STNS, eid );
     dtt.tv_sec = igraph_cattribute_EAN( g, GE_DTS, eid );
     dtt.tv_nsec = igraph_cattribute_EAN( g, GE_DTNS, eid );
     // create timer instance
     stt_idx = smxgen_timer_is_duplicate( stt, tt, 2*edge_cnt );
+    stt_id = stt_idx + net_cnt;
     if( stt_idx < 0 ) {
-        stt_idx = net_cnt + *tt_vcnt;
+        stt_idx = *tt_vcnt;
+        stt_id = stt_idx + net_cnt;
         tt[stt_idx].tv_sec = stt.tv_sec;
         tt[stt_idx].tv_nsec = stt.tv_nsec;
-        cgen_net_create( ident, stt_idx, TEXT_TF, TEXT_TF, 3 );
-        cgen_net_init_tf( ident, stt_idx, stt.tv_sec, stt.tv_nsec );
+        cgen_net_create( ident, stt_id, TEXT_TF, TEXT_TF, 3 );
+        cgen_net_init_tf( ident, stt_id, stt.tv_sec, stt.tv_nsec );
         ( *tt_vcnt )++;
     }
     dtt_idx = smxgen_timer_is_duplicate( dtt, tt, 2*edge_cnt );
+    dtt_id = dtt_idx + net_cnt;
     if( dtt_idx < 0 ) {
-        dtt_idx = net_cnt + *tt_vcnt;
+        dtt_idx = *tt_vcnt;
+        dtt_id = dtt_idx + net_cnt;
         tt[dtt_idx].tv_sec = dtt.tv_sec;
         tt[dtt_idx].tv_nsec = dtt.tv_nsec;
-        cgen_net_create( ident, dtt_idx, TEXT_TF, TEXT_TF, 3 );
-        cgen_net_init_tf( ident, dtt_idx, dtt.tv_sec, dtt.tv_nsec );
+        cgen_net_create( ident, dtt_id, TEXT_TF, TEXT_TF, 3 );
+        cgen_net_init_tf( ident, dtt_id, dtt.tv_sec, dtt.tv_nsec );
         ( *tt_vcnt )++;
     }
     ch_idx1 = eid;
@@ -424,7 +428,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
-        cgen_connect_tf( ident, stt_idx, ch_idx1, ch_idx2, port_name );
+        cgen_connect_tf( ident, stt_id, ch_idx1, ch_idx2, port_name );
         ( *tt_ecnt )++;
     }
     else if( ( ( stt.tv_sec != 0 ) || ( stt.tv_nsec != 0 ) )
@@ -434,11 +438,11 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1, 2, 1, port_name );
         ( *tt_ecnt )++;
-        cgen_connect_tf( ident, stt_idx, ch_idx1, ch_idx2, port_name );
+        cgen_connect_tf( ident, stt_id, ch_idx1, ch_idx2, port_name );
         ch_idx3 = edge_cnt + *tt_ecnt;
         cgen_channel_create( ident, ch_idx3, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
-        cgen_connect_tf( ident, dtt_idx, ch_idx2, ch_idx3, port_name );
+        cgen_connect_tf( ident, dtt_id, ch_idx2, ch_idx3, port_name );
         ch_idx2 = ch_idx3;
         ( *tt_ecnt )++;
     }
@@ -448,7 +452,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 igraph_cattribute_EAN( g, GE_DSRC, eid ), 2, 1, port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), ch_len, port_name );
-        cgen_connect_tf( ident, stt_idx, ch_idx1, ch_idx2, port_name );
+        cgen_connect_tf( ident, stt_id, ch_idx1, ch_idx2, port_name );
         ( *tt_ecnt )++;
     }
     else if( ( dtt.tv_sec != 0 ) || ( dtt.tv_nsec != 0 ) ) {
@@ -458,7 +462,7 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
                 port_name );
         cgen_channel_create( ident, ch_idx2, 1,
                 igraph_cattribute_EAN( g, GE_DDST, eid ), 1, port_name );
-        cgen_connect_tf( ident, dtt_idx, ch_idx1, ch_idx2, port_name );
+        cgen_connect_tf( ident, dtt_id, ch_idx1, ch_idx2, port_name );
         ( *tt_ecnt )++;
     }
     else {
