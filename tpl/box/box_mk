@@ -45,7 +45,7 @@ INCLUDES_DIR = -I$(LOC_INC_DIR) \
 			   -I. $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
-	-L/usr/lib/x86_64-linux-gnu
+	-L/usr/lib/x86_64-linux-gnu \
 	-L$(TGT_LIB) $(EXT_LIBS_DIR)
 
 LINK_FILE = -lsmxrts \
