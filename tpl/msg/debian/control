@@ -3,7 +3,7 @@ Version: <version>
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: libsmxrts-0.1 (>= 0.1.0-0)
+Depends: libsmxrts-0.2 (>= 0.2.0-0)
 Maintainer: YOUR NAME <YOUR EMAIL>
 Description: Message handlers for the Streamix message type 'smx_msg_<msg_name>'
  This is a message definition to be used in Streamix box implemnetations.
