@@ -157,7 +157,7 @@ int main( int argc, char **argv )
     fclose( out_file );
 
     // GENERATE BOX HEADER AND TEMPLATE FILES
-    smxgen_tpl_box( &g, box_path );
+    smxgen_tpl_box( &g, box_path, build_path );
     smxgen_tpl_main( file_name, &g, build_path );
     fprintf( stdout, "\n" );
     fprintf( stdout, "  DO NOT MODIFY FILES MARKED BY (*)\n" );

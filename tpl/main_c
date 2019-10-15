@@ -16,6 +16,7 @@
 
 #include <unistd.h>
 #include "smxrts.h"
+#include "sig.h"
 <app_includes>
 
 #define JSON_APP_CONFIG_PATH "app.json"

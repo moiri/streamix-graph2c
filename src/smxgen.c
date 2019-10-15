@@ -159,11 +159,12 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
 
 /******************************************************************************/
 void smxgen_box_file_path( igraph_t* g, int id, const char* name,
-        const char* tpl_path, const char* tgt_path )
+        const char* tpl_path, const char* tgt_path, bool append )
 {
     FILE* ftgt;
+    const char* mode = append ? "a" : "w";
 
-    ftgt = fopen( tgt_path, "w" );
+    ftgt = fopen( tgt_path, mode );
 
     if( ftgt == NULL )
     {
@@ -171,7 +172,8 @@ void smxgen_box_file_path( igraph_t* g, int id, const char* name,
         return;
     }
     smxgen_box_file( g, id, name, tpl_path, ftgt );
-    fprintf( stdout, "created file '%s'\n", tgt_path );
+    if( !append )
+        fprintf( stdout, "created file '%s'\n", tgt_path );
     fclose( ftgt );
 }
 
@@ -834,7 +836,7 @@ int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
 }
 
 /******************************************************************************/
-void smxgen_tpl_box( igraph_t* g, char* box_path )
+void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -842,15 +844,19 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
     const char* name;
     int net_count = igraph_vcount( g );
     const char* names[net_count];
+    const char* names_all[net_count];
     char path_tmp[1000];
     char path_file[1000];
     char path[1000];
 
     for( idx = 0; idx < net_count; idx++ )
+    {
         names[idx] = NULL;
+        names_all[idx] = NULL;
+    }
     idx = 0;
 
-    // for all boxes
+    // for all non-external boxes
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
@@ -872,67 +878,92 @@ void smxgen_tpl_box( igraph_t* g, char* box_path )
         // create box Makefile
         sprintf( path_file, "%s/config.mk", path );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_CONF_MK, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_CONF_MK, path_file, false );
         sprintf( path_file, "%s/Makefile", path );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_MK, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_MK, path_file, false );
         // create box gitignore file
         sprintf( path_file, "%s/.gitignore", path );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_GITIGNORE, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_GITIGNORE, path_file, false );
         // create box config file
         sprintf( path_file, "%s/box.json", path );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_CONF, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_CONF, path_file, false );
         // create box README file
         sprintf( path_file, "%s/README.md", path );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_README, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_README, path_file, false );
         // create box package control files
         sprintf( path_tmp, "%s/%s", path, DIR_DPKG );
         mkdir( path_tmp, 0755 );
         sprintf( path_file, "%s/control", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
         sprintf( path_file, "%s/control-dev", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB_DEV, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB_DEV, path_file, false );
         // create test files
         sprintf( path_tmp, "%s/test", path );
         mkdir( path_tmp, 0755 );
         sprintf( path_file, "%s/Makefile", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MK, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MK, path_file, false );
         sprintf( path_file, "%s/test.c", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MAIN_C, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MAIN_C, path_file, false );
         sprintf( path_file, "%s/test.json", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_JSON, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_JSON, path_file, false );
         sprintf( path_file, "%s/test.zlog", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_ZLOG, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_ZLOG, path_file, false );
         sprintf( path_file, "%s/test_%s.c", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_C, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_C, path_file, false );
         sprintf( path_file, "%s/test_%s.h", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_H, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_H, path_file, false );
         // create box.c file
         sprintf( path_tmp, "%s/src", path );
         mkdir( path_tmp, 0755 );
         sprintf( path_file, "%s/%s.c", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_C, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_C, path_file, false );
         // create h files
         sprintf( path_tmp, "%s/include", path );
         mkdir( path_tmp, 0755 );
         sprintf( path_file, "%s/%s.h", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_H, path_file );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_H, path_file, false );
         fprintf( stdout, "(*) " );
         sprintf( path_file, "%s/%s_sig.h", path_tmp, name );
-        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file );
+        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file, false );
+        sprintf( path_file, "%s/sig.h", DIR_BUILD );
+        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file, false );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+
+    // for all boxes
+    idx = 0;
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    sprintf( path_file, "%s/sig.h", build_path );
+    fprintf( stdout, "(*) created file '%s'\n", path_file );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        // generate code to run boxes
+        vid = IGRAPH_VIT_GET( v_it );
+        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_duplicate( name, names_all, net_count )
+                || smxgen_net_is_type( g, vid, TEXT_CP )
+                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        names_all[idx++] = name;
+        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file, true );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );

@@ -9,6 +9,7 @@
 #define SMXGEN_H
 
 #include <igraph.h>
+#include <stdbool.h>
 
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
@@ -108,9 +109,10 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
  * @param name      name of a box
  * @param tpl_path  path to the template file
  * @param tgt_path  path to the target file
+ * @param append    if true abbend to file, if false create new file
  */
 void smxgen_box_file_path( igraph_t* g, int id, const char* name,
-        const char* tpl_path, const char* tgt_path );
+        const char* tpl_path, const char* tgt_path, bool append );
 
 /**
  * Checks wether a box name already exists
@@ -309,17 +311,18 @@ void smxgen_to_alnum( char* dst, const char* src );
  * Copies the box template files to the output and replaces the generic patterns
  * with concrete content.
  *
- * @param g         pointer to the dependency graph
- * @param box_path  path to the folder holding the box implementations
+ * @param g          pointer to the dependency graph
+ * @param box_path   path to the folder holding the box implementations
+ * @param build_path path to the build folder
  */
-void smxgen_tpl_box( igraph_t* g, char* box_path );
+void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path );
 
 /**
  * Copies the main c file to the output and replaces the generic patterns.
  *
- * @param name      the app name
- * @param g         pointer to the dependency graph
- * @param path      path to the build folder
+ * @param name       the app name
+ * @param g          pointer to the dependency graph
+ * @param build_path path to the build folder
  */
 void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path );
 
