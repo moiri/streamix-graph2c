@@ -1,5 +1,6 @@
                 , "<net_id>": {
                     "comment": "configuration for the net instance with id `<net_id>`",
                     "profiler": null,
+                    "type_filter": null,
                     "config": null
                 }

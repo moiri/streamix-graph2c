@@ -5,6 +5,7 @@
         "_default": {
             "comment": "fallback configuration for all nets",
             "profiler": false,
+            "type_filter": false,
             "config": {}
         }
         <box_configs>
