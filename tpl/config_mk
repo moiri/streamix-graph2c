@@ -11,6 +11,9 @@ VMAJ = 0
 VMIN = 1
 VREV = 0
 
+# the RTS library
+LIB_RTS = -lsmxrts
+
 # list the external libraries prefixed with -l
 EXT_LIBS =
 

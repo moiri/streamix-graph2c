@@ -47,7 +47,7 @@ INCLUDES_DIR = -I/usr/local/ \
 LINK_DIR = -L/usr/local/lib \
 	-L/opt/smx/lib $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
 
-LINK_FILE = $(LIBS) -lsmxrts \
+LINK_FILE = $(LIBS) $(LIB_RTS) \
 	-lpthread \
 	-lbson-1.0 \
 	-lzlog $(EXT_LIBS)
