@@ -14,13 +14,17 @@
 #define APP_VERSION "unknown"
 #endif
 
+#ifndef LIB_VERSION
+#define LIB_VERSION "unknown"
+#endif
+
 #include <unistd.h>
 #include "smxrts.h"
 <app_includes>
 #include "sig.h"
 
 #define JSON_APP_CONFIG_PATH "app.json"
-#define JSON_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" APP_VERSION ".json"
+#define JSON_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" LIB_VERSION ".json"
 
 int main( int argc, char **argv )
 {
