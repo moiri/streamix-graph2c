@@ -53,6 +53,9 @@ int <box_name>_init( void* h, void** state )
     if( *state == NULL )
         return -1;
 
+    SMX_LOG( h, notice, "using box '<box_name>' version: %s",
+            LIB_<box_name>_VERSION );
+
     // INITIALIZE THE STATE VARIABLE FIELDS
 
     return 0;
