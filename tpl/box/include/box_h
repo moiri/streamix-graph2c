@@ -65,6 +65,14 @@ int <box_name>( void* h, void* state );
 void <box_name>_cleanup( void* h, void* state );
 
 /**
+ * Get the current version of the library.
+ *
+ * @return
+ *  A version number string.
+ */
+const char* <box_name>_get_version();
+
+/**
  * The initialisation function of the net. This function is executed before the
  * net thread is started. All nets have to complete their initialisation before
  * any net thread is started. This function must initialise the state variable

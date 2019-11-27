@@ -10,6 +10,10 @@
 #include "test_<box_name>.h"
 #endif /* SMX_TESTING */
 
+#ifndef LIB_<box_name>_VERSION
+#define LIB_<box_name>_VERSION "undefined"
+#endif
+
 /******************************************************************************/
 int <box_name>( void* h, void* state )
 {
@@ -33,6 +37,12 @@ void <box_name>_cleanup( void* h, void* state )
     // FREE THE FIELDS OF THE STATE VARIABLE
 
     free( state );
+}
+
+/******************************************************************************/
+const char* <box_name>_get_version()
+{
+    return LIB_<box_name>_VERSION;
 }
 
 /******************************************************************************/
