@@ -832,15 +832,14 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
     const char* name;
     int net_count = igraph_vcount( g );
     const char* names[net_count];
-    const char* names_all[net_count];
     char path_tmp[1000];
     char path_file[1000];
     char path[1000];
+    ( void )( build_path );
 
     for( idx = 0; idx < net_count; idx++ )
     {
         names[idx] = NULL;
-        names_all[idx] = NULL;
     }
     idx = 0;
 
@@ -927,31 +926,6 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         fprintf( stdout, "(*) " );
         sprintf( path_file, "%s/%s_sig.h", path_tmp, name );
         smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file, false );
-        sprintf( path_file, "%s/sig.h", DIR_BUILD );
-        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file, false );
-        IGRAPH_VIT_NEXT( v_it );
-    }
-    igraph_vit_destroy( &v_it );
-    igraph_vs_destroy( &v_sel );
-
-    // for all boxes
-    idx = 0;
-    v_sel = igraph_vss_all();
-    igraph_vit_create( g, v_sel, &v_it );
-    sprintf( path_file, "%s/sig.h", build_path );
-    fprintf( stdout, "(*) created file '%s'\n", path_file );
-    while( !IGRAPH_VIT_END( v_it ) ) {
-        // generate code to run boxes
-        vid = IGRAPH_VIT_GET( v_it );
-        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_duplicate( name, names_all, net_count )
-                || smxgen_net_is_type( g, vid, TEXT_CP )
-                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-        names_all[idx++] = name;
-        smxgen_box_file_path( g, vid, name, TPL_BOX_SIG_H, path_file, true );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
