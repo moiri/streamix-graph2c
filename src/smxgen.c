@@ -358,14 +358,8 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
                     ch_len, port_name );
             // generate connection code for a channel and its connecting boxes
             igraph_edge( g, eid, &vid1, &vid2 );
-            cgen_connect( ident, eid, vid1,
-                    igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
-                    smxgen_get_port_name( g, eid, IGRAPH_OUT ),
-                    MODE_OUT, smxgen_net_is_type( g, vid1, TEXT_CP ) );
-            cgen_connect( ident, eid, vid2,
-                    igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
-                    smxgen_get_port_name( g, eid, IGRAPH_IN ),
-                    MODE_IN, smxgen_net_is_type( g, vid2, TEXT_CP ) );
+            cgen_connect( ident, eid, vid1, MODE_OUT );
+            cgen_connect( ident, eid, vid2, MODE_IN );
             if( smxgen_net_is_type( g, vid2, TEXT_CP ) )
                 cgen_connect_rn( ident, eid, vid2 );
             if( tt_type == TIME_TB ) {
@@ -471,14 +465,8 @@ void smxgen_network_create_timer( igraph_t* g, int ident, int eid, int edge_cnt,
         // there is a problem, one vertex should be time-triggered
     }
     igraph_edge( g, eid, &vid1, &vid2 );
-    cgen_connect( ident, ch_idx1, vid1,
-            igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
-            smxgen_get_port_name( g, eid, IGRAPH_OUT ), MODE_OUT,
-            smxgen_net_is_type( g, vid1, TEXT_CP ) );
-    cgen_connect( ident, ch_idx2, vid2,
-            igraph_cattribute_VAS( g, GV_IMPL, vid2 ),
-            smxgen_get_port_name( g, eid, IGRAPH_IN ), MODE_IN,
-            smxgen_net_is_type( g, vid2, TEXT_CP ) );
+    cgen_connect( ident, ch_idx1, vid1, MODE_OUT );
+    cgen_connect( ident, ch_idx2, vid2, MODE_IN );
     if( smxgen_net_is_type( g, vid2, TEXT_CP ) )
         cgen_connect_rn( ident, eid, vid2 );
 }

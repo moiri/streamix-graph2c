@@ -4,8 +4,7 @@
 void cgen_channel_create( int ident, int id, int dsrc, int ddst, int len,
         const char* name );
 void cgen_channel_destroy( int, int );
-void cgen_connect( int ident, int id_ch, int id_box, const char* box_name,
-        const char* ch_name, const char* mode, int is_sync );
+void cgen_connect( int ident, int id_ch, int id_box, const char* mode );
 void cgen_connect_guard( int, int, int, int );
 void cgen_connect_rn( int ident, int id_ch, int id_box );
 void cgen_connect_tf( int ident, int vid, int eid1, int eid2,
