@@ -1,10 +1,9 @@
 [global]
 default format = "[%d.%us] [%V] [%c] %m%n"
 [formats]
-profiler = "[%d(%Y-%m-%dT%H:%M:%S)] [%us] [%c] %m%n"
 debug = "[%d.%us] [%V] [%t] [%c] %m%n"
 [rules]
-#*.DEBUG    "log/debug.log"; debug
-#*.=INFO    "log/profiler.log"; profiler
-*.NOTICE   "log/<app_name>.log"
+#*.DEBUG   "/opt/smx/log/%d(%F).<app_name>.%p.debug.log",1GB * 5; debug
+*.NOTICE   "/opt/smx/log/%d(%F).<app_name>.%p.log",1MB * 5
+*.=NOTICE  >stdout
 *.WARN     >stderr
