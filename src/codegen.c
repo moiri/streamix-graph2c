@@ -30,7 +30,16 @@ void cgen_channel_destroy( int ident, int id )
 }
 
 /******************************************************************************/
-void cgen_connect( int ident, int id_ch, int id_box, const char* mode )
+void cgen_connect_name( int ident, int id_ch, int id_box, const char* box_name,
+        const char* ch_name, const char* mode )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_CONNECT( %d, %d, %s, %s, %s );\n", id_box,
+            id_ch, box_name, ch_name, mode );
+}
+
+/******************************************************************************/
+void cgen_connect_idx( int ident, int id_ch, int id_box, const char* mode )
 {
     cgen_ident( ident );
     cgen_print( "SMX_CONNECT_ARR( %d, %d, %s );\n", id_box,

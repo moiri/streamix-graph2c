@@ -125,6 +125,17 @@ void smxgen_box_file_path( igraph_t* g, int id, const char* name,
 int smxgen_box_is_duplicate( const char* name, const char** names, int len );
 
 /**
+ * Generate the code to conncet an edge to a vertex given a mode.
+ *
+ * @param g         pointer to the dependency graph
+ * @param ident     identation string
+ * @param eid       id of the graph edge
+ * @param vid       id of the vertex
+ * @param mode      the mode of the port
+ */
+void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode );
+
+/**
  * Checks whether a box is externally defined
  *
  * @param g     pointer to the dependency graph
