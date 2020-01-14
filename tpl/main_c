@@ -18,17 +18,28 @@
 #define LIB_VERSION "unknown"
 #endif
 
+#include <time.h>
 #include <unistd.h>
 #include "smxrts.h"
 <app_includes>
 
 #define JSON_APP_CONFIG_PATH "app.json"
 #define JSON_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" LIB_VERSION ".json"
+#define ENV_VAR "SMX_LOG_PREFIX"
 
 int main( int argc, char **argv )
 {
     int c;
     char* conf_file;
+    char env_time[100];
+    char env_var[200];
+    time_t now = time( NULL );
+    struct tm *local_time = localtime( &now );
+
+    strftime( env_time, sizeof( env_time ) - 1, "%FT%T", local_time );
+    sprintf( env_var, "%s=%s", ENV_VAR, env_time );
+
+    putenv( env_var );
 
     if( access( JSON_APP_CONFIG_PATH, F_OK ) != -1 )
         conf_file = JSON_APP_CONFIG_PATH;
