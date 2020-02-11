@@ -747,7 +747,7 @@ void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt )
     while( !IGRAPH_EIT_END( e_it ) ) {
         // generate port code
         eid = IGRAPH_EIT_GET( e_it );
-        port_name = smxgen_get_port_name( g, eid, IGRAPH_IN ),
+        port_name = smxgen_get_port_name( g, eid, IGRAPH_OUT ),
         sprintf( buffer, " *   - out %s (use SMX_CHANNEL_WRITE( h, %s, %s, msg ) to write)\n",
                 port_name, box_name, port_name );
         fputs( buffer, ftgt );
