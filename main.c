@@ -47,6 +47,7 @@ int main( int argc, char **argv )
     const char* src_file_name;
     char* build_path = NULL;
     char* box_path = NULL;
+    char* author = "TPF <tpf@humdek.unibe.ch>";
     char* path_sia;
     char* file_name;
     char* path_main;
@@ -66,6 +67,7 @@ int main( int argc, char **argv )
                 printf( "  -h            This message\n" );
                 printf( "  -v            Version\n" );
                 printf( "  -b 'path'     Path to store the generated box files\n" );
+                printf( "  -e 'author'   The author of the source (default: TPF <tpf@humdek.unibe.ch>)" );
                 printf( "  -p 'path'     Path to store the generated app files\n" );
                 printf( "  -f 'format'   Format of the graph either 'gml' or 'graphml'\n" );
                 return 0;
@@ -77,6 +79,9 @@ int main( int argc, char **argv )
                 break;
             case 'b':
                 box_path = optarg;
+                break;
+            case 'e':
+                author = optarg;
                 break;
             case 'f':
                 format = optarg;
@@ -157,6 +162,7 @@ int main( int argc, char **argv )
     fclose( out_file );
 
     // GENERATE BOX HEADER AND TEMPLATE FILES
+    igraph_cattribute_GAS_set( &g, "author", author );
     smxgen_tpl_box( &g, box_path, build_path );
     smxgen_tpl_main( file_name, &g, build_path );
     fprintf( stdout, "\n" );

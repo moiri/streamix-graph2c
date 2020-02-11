@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 include config.mk
 
+LIBNAME = lib<lib_name>
 LIB_VERSION = $(VMAJ).$(VMIN)
 UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
 DEBIAN_REVISION = 0

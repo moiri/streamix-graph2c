@@ -11,6 +11,7 @@
 #include <igraph.h>
 #include <stdbool.h>
 
+#define AUTHOR_PATTERN        "<author>"
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_CONF_PATTERN      "<box_configs>"

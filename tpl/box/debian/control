@@ -4,7 +4,7 @@ Maintainer: <author>
 Build-Depends: debhelper (>= 10)
 Standards-Version: 4.1.2
 Section: libs
-Homepage: <url>
+Homepage: http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-boxes/<box_name>
 
 Package: <lib_name>-dev
 Section: libdevel
@@ -22,5 +22,3 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Box implmentation of the Streamix box '<box_name>'
  This is a box implementation to be used in a network described with the
  coordination language Streamix.
- .
-<desc>

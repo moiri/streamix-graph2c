@@ -85,7 +85,7 @@ $(SIAGRAPH): $(PNSCGRAPH)
 	$(BIN_PATH)/smxsia -f $(FORMAT) -o $@ $^ $(GENPATH)/sia/*
 
 $(PNSCGRAPH) $(OUTSRC) $(OUTINC): $(OUTGRAPH)
-	$(BIN_PATH)/smxrtsp $^ -p $(GENPATH) -f $(FORMAT)
+	$(BIN_PATH)/smxrtsp $^ -p $(GENPATH) -f $(FORMAT) -e <author>
 
 $(OUTGRAPH): $(APPNAME).smx
 	$(BIN_PATH)/smxc -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^

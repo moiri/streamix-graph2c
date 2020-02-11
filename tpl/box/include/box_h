@@ -2,10 +2,13 @@
  * @author  <author>
  * @file    <box_name>.h
  *
- * <desc_60>
+ * This is a box implementation to be used in a network described with the
+ * coordination language Streamix.
  *
- * <desc>
- *
+ * ADD A DESCRIPTION HERE ...
+ */
+
+/*
  * Use this file to define the state structure as well as auxilary functions.
  * The state structure allows to keep persistent information during net
  * iterations.

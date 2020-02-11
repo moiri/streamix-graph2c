@@ -25,17 +25,3 @@ EXT_INCS_DIR =
 
 # define additional CFLAGS
 EXT_CFLAGS =
-
-# the name of the library
-LIBNAME = lib<lib_name>
-
-# the author of the library
-AUTHOR = Unknown Author <unknown.author@unknown>
-
-# the url to the main page of the box (usually the git repo)
-URL = http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-boxes/<box_name>
-
-# a more verbose description of the box. Always start with a space on each line.
-define DESC
- ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE
-endef

@@ -96,6 +96,8 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
         smxgen_replace( buffer, BOX_NAME_PATTERN, name );
+        smxgen_replace( buffer, AUTHOR_PATTERN,
+                igraph_cattribute_GAS( g, "author" ) );
         libname = malloc( strlen( name ) + 1 );
         smxgen_to_alnum( libname, name );
         smxgen_replace( buffer, BOX_LIB_PATTERN, libname );
@@ -957,7 +959,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
 }
 
 /******************************************************************************/
-void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
+void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path )
 {
     char file[1000];
     FILE* ftpl;
@@ -974,7 +976,7 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* path )
         return;
     }
 
-    sprintf( file, "%s/app.c", path );
+    sprintf( file, "%s/app.c", build_path );
     __src_file = fopen( file, "w" );
 
     if( __src_file == NULL )
