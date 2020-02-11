@@ -1,12 +1,22 @@
 # Streamix Box Implementation `<box_name>`
 
-This box implementation ...
+<desc_60>
+
+<desc>
 
 ## Configuration
 
 The following configuration options are possible:
 
-An example configuration can be found in `/opt/smx/conf/<box_name>.json`.
+An example configuration can be found in `/opt/smx/conf/<box_name>-<maj_version>.json`.
+
+## Triggers
+
+The box reacts to the following triggers on port PORT_NAME:
+
+## Events
+
+The box generates the following events on port PORT_NAME:
 
 ## Signature
 

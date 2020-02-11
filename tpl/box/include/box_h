@@ -1,10 +1,10 @@
 /**
- * @author  ADD AUTHOR NAME
+ * @author  <author>
  * @file    <box_name>.h
  *
- * This file holds custom definitions for the streamix box <box_name>.
+ * <desc_60>
  *
- * ADD DESCRITPTION HERE
+ * <desc>
  *
  * Use this file to define the state structure as well as auxilary functions.
  * The state structure allows to keep persistent information during net

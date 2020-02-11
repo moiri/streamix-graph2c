@@ -7,3 +7,5 @@ deb/*/usr
 deb/*/opt
 dpkg
 test/<box_name>
+
+.ycm_extra_conf.py

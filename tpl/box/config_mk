@@ -25,3 +25,33 @@ EXT_INCS_DIR =
 
 # define additional CFLAGS
 EXT_CFLAGS =
+
+# the name of the library
+LIBNAME = lib<lib_name>
+
+# the author of the library
+AUTHOR = Unknown Author <unknown.author@unknown>
+
+# the url to the main page of the box (usually the git repo)
+URL = http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-boxes/<box_name>
+
+# short title of no more than 60 characters of the box
+DESC_60 = Box implmentation of the Streamix box '<box_name>'
+
+# a more verbose description of the box. Always start with a space on each line.
+define DESC
+ This is a box implementation to be used in a network described with the
+ coordination language Streamix.
+ .
+ ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE
+endef
+
+# short title of no more than 60 characters describing the development package
+DESC_DVL_60 = Development Package of 'lib<lib_name>'
+
+# a more verbose description of the develpment package. Always start with a
+# space on each line.
+define DESC_DVL
+ This is the development package of the library 'lib<lib_name>'. This library
+ contains the box implemntation of the Streamix box '<box_name>'.
+endef
