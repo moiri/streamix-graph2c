@@ -1,12 +1,12 @@
-Source: <app_name><maj_version>
+Source: <bin_name><maj_version>
 Section: unknown
 Priority: optional
 Maintainer: <author>
 Build-Depends: debhelper (>= 10)
 Standards-Version: 4.1.2
-Homepage: <url>
+Homepage: http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-apps/<app_name>
 
-Package: <app_name><maj_version>
+Package: <bin_name><maj_version>
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Streamix Application '<app_name>'

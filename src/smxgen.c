@@ -47,6 +47,8 @@ void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
+        smxgen_replace( buffer, AUTHOR_PATTERN,
+                igraph_cattribute_GAS( g, "author" ) );
         smxgen_replace( buffer, APP_NAME_PATTERN, name );
         binname = malloc( strlen( name ) + 1 );
         smxgen_to_alnum( binname, name );
@@ -913,9 +915,12 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         sprintf( path_file, "%s/control", path_tmp );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
-        sprintf( path_file, "%s/control-dev", path_tmp );
+        sprintf( path_file, "%s/changelog", path_tmp );
         if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB_DEV, path_file, false );
+            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
+        sprintf( path_file, "%s/copyright", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
         // create test files
         sprintf( path_tmp, "%s/test", path );
         mkdir( path_tmp, 0755 );
@@ -1019,6 +1024,10 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path )
     smxgen_app_file( g, name, TPL_APP_GITIGNORE, ".gitignore" );
     mkdir( DIR_DPKG, 0755 );
     sprintf( file, "%s/control", DIR_DPKG );
+    smxgen_app_file( g, name, TPL_APP_DEB, file );
+    sprintf( file, "%s/changelog", DIR_DPKG );
+    smxgen_app_file( g, name, TPL_APP_DEB, file );
+    sprintf( file, "%s/copyright", DIR_DPKG );
     smxgen_app_file( g, name, TPL_APP_DEB, file );
     mkdir( DIR_LOG, 0755 );
 }

@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: smxappgaze-0.1
-Source: <url://example.com>
+Upstream-Name: <bin_name><maj_version>
+Source: http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-apps/<app_name>
 
 Files: *
 Copyright: <date_y> <author>

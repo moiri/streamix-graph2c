@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: <lib_name><maj_version>
-Source: <url>
+Source: http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-boxes/<box_name>
 
 Files: *
 Copyright: <date_y> <author>

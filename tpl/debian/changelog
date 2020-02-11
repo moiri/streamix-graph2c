@@ -1,4 +1,4 @@
-<app_name><maj_version> (<version>) bionic; urgency=medium
+<bin_name><maj_version> (<version>) bionic; urgency=medium
 
   * Initial release
 
