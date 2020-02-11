@@ -1,11 +1,13 @@
-Package: <bin_name>-<maj_version>
-Version: <version>
-Section: base
+Source: <app_name><maj_version>
+Section: unknown
 Priority: optional
-Architecture: amd64
-Depends: libsmxrts-0.2 (>= 0.2.0-0)
-Maintainer: YOUR NAME <YOUR EMAIL>
+Maintainer: <author>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: <url>
+
+Package: <app_name><maj_version>
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Streamix Application '<app_name>'
  This is an application that was created with the coordination language Streamix.
- .
- ADD A DESCRIPTION HERE, ALWAYS STARTING WITH A SPACE ON EACH LINE
