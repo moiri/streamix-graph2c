@@ -1,6 +1,7 @@
 # Streamix Box Implementation `<box_name>`
 
-<desc_60>
+This is a box implementation to be used in a network described with the
+coordination language Streamix.
 
 <desc>
 
@@ -8,7 +9,8 @@
 
 The following configuration options are possible:
 
-An example configuration can be found in `/opt/smx/conf/<box_name>-<maj_version>.json`.
+An example configuration can be found in
+`/opt/smx/conf/<box_name>-<maj_version>.json`.
 
 ## Triggers
 
@@ -34,7 +36,8 @@ with `-l<lib_name>` (add this to the `EXT_LIBS` variable in the app Makefile).
 
 A Makefile is provided that allows to
  - compile the box implementation to a library `lib<lib_name>` (`make`)
- - create `deb` packages including the library, this document, and the default configuration file (`make dpkg`)
+ - create `deb` packages including the library, this document, and the default
+   configuration file (`make dpkg`)
  - manually install to the target folders (`sudo make install`)
 
 ## Testing
@@ -42,8 +45,11 @@ A Makefile is provided that allows to
 The folder `test` contains a testing environment.
 In order set up test the following steps must be taken:
  1. Add test data to the node `test_data` in the configuration file `test.json`.
- 2. Describe the data conversion from JSON data to Streamix messages in the function `<box_name>_in_data_conversion()` of the file `test_<box_name>.c`.
- 3. Describe the data conversion from a Streamix messages to JSON data and evaluate the result in the function `<box_name>_out_data_conversion()` of the file `test_<box_name>.c`.
+ 2. Describe the data conversion from JSON data to Streamix messages in the
+    function `<box_name>_in_data_conversion()` of the file `test_<box_name>.c`.
+ 3. Describe the data conversion from a Streamix messages to JSON data and
+    evaluate the result in the function `<box_name>_out_data_conversion()` of
+    the file `test_<box_name>.c`.
  4. Compile the program with the command `make`.
  5. Run the test with either of the following commands
    - `./<box_name>`

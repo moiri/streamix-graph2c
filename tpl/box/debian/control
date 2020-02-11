@@ -11,12 +11,16 @@ Section: libdevel
 Architecture: any
 Multi-Arch: same
 Depends: <lib_name><maj_version> (= ${binary:Version}), ${misc:Depends}
-Description: <desc_dvl_60>
-<desc_dvl>
+Description: Development Package of 'lib<lib_name>'
+ This is the development package of the library 'lib<lib_name>'. This library
+ contains the box implemntation of the Streamix box '<box_name>'.
 
 Package: <lib_name><maj_version>
 Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <desc_60>
+Description: Box implmentation of the Streamix box '<box_name>'
+ This is a box implementation to be used in a network described with the
+ coordination language Streamix.
+ .
 <desc>
