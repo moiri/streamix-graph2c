@@ -1019,6 +1019,39 @@ int smxgen_ptree( igraph_t* g, char* src_path, const char* tgt_path )
 }
 
 /******************************************************************************/
+int smxgen_cp_file( const char* src, const char* tgt )
+{
+    char ch;
+    FILE *source, *target;
+
+    // return if item exists
+    if( access( tgt, F_OK ) == 0 )
+        return 0;
+
+    source = fopen( src, "r" );
+    if( source == NULL )
+    {
+        return -1;
+    }
+
+    target = fopen( tgt, "w" );
+    if( target == NULL )
+    {
+        return -1;
+    }
+
+    while( ( ch = fgetc( source ) ) != EOF )
+        fputc(ch, target);
+
+    fclose(source);
+    fclose(target);
+
+    fprintf( stdout, "created file '%s'\n", tgt );
+
+    return 0;
+}
+
+/******************************************************************************/
 void smxgen_tpl_main( igraph_t* g, char* build_path )
 {
     char path_tmp[1000];
@@ -1076,18 +1109,30 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     mkdir( DIR_LOG, 0755 );
     sprintf( path_tmp, "%s/tpl", build_path );
     mkdir( path_tmp, 0755 );
+
     sprintf( file, "%s/Makefile", path_tmp );
     smxgen_app_file( g, TPL_APP_MK, file );
+    smxgen_cp_file( file, "Makefile" );
+
     sprintf( file, "%s/config.mk", path_tmp );
     smxgen_app_file( g, TPL_APP_CONF_MK, file );
+    smxgen_cp_file( file, "config.mk" );
+
     sprintf( file, "%s/README.md", path_tmp );
     smxgen_app_file( g, TPL_APP_README, file );
+    smxgen_cp_file( file, "README.md" );
+
     sprintf( file, "%s/app.json", path_tmp );
     smxgen_app_file( g, TPL_APP_JSON, file );
+    smxgen_cp_file( file, "app.json" );
+
     sprintf( file, "%s/app.zlog", path_tmp );
     smxgen_app_file( g, TPL_APP_LOG, file );
+    smxgen_cp_file( file, "app.zlog" );
+
     sprintf( file, "%s/.gitignore", path_tmp );
     smxgen_app_file( g, TPL_APP_GITIGNORE, file );
+    smxgen_cp_file( file, ".gitignore" );
 
     sprintf( path_tmp, "%s/tpl/debian", build_path );
     mkdir( path_tmp, 0755 );
