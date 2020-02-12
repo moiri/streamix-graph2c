@@ -163,8 +163,9 @@ int main( int argc, char **argv )
 
     // GENERATE BOX HEADER AND TEMPLATE FILES
     igraph_cattribute_GAS_set( &g, "author", author );
+    igraph_cattribute_GAS_set( &g, "name", file_name );
     smxgen_tpl_box( &g, box_path, build_path );
-    smxgen_tpl_main( file_name, &g, build_path );
+    smxgen_tpl_main( &g, build_path );
     fprintf( stdout, "\n" );
     fprintf( stdout, "  DO NOT MODIFY FILES MARKED BY (*)\n" );
     fprintf( stdout, "\n" );

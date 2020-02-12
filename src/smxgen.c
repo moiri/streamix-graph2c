@@ -14,17 +14,19 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <fts.h>
 
 extern FILE* __src_file;
 
 /******************************************************************************/
-void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
+void smxgen_app_file( igraph_t* g, const char* tpl_path,
         const char* tgt_path )
 {
     FILE* ftpl;
     FILE* ftgt;
     char buffer[BUFFER_SIZE];
     char* binname;
+    const char* name = igraph_cattribute_GAS( g, "name" );
 
     // return if item exists
     if( access( tgt_path, F_OK ) == 0 )
@@ -62,7 +64,7 @@ void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
             fputs( buffer, ftgt );
     }
 
-    fprintf( stdout, "created file '%s'\n", tgt_path );
+    fprintf( stdout, "(*) created file '%s'\n", tgt_path );
 
     fclose( ftgt );
 
@@ -964,8 +966,55 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
 }
 
 /******************************************************************************/
-void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path )
+int smxgen_ptree( igraph_t* g, char* src_path, const char* tgt_path )
 {
+    FTS* ftsp;
+    FTSENT* p;
+    FTSENT* chp;
+    int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
+    int pathlen = strlen( src_path );
+    char* path;
+    char tmp_path[1000];
+    char* paths[] = { src_path, NULL };
+
+    if( ( ftsp = fts_open( paths, fts_options, NULL ) ) == NULL )
+    {
+        return -1;
+    }
+    chp = fts_children( ftsp, 0 );
+    if( chp == NULL )
+    {
+        return 0;
+    }
+
+    while( ( p = fts_read( ftsp ) ) != NULL )
+    {
+        switch( p->fts_info ) {
+            case FTS_D:
+                if( p->fts_level > 0 )
+                {
+                    path = p->fts_path + pathlen + 1;
+                    sprintf( tmp_path, "%s/%s", tgt_path, path );
+                    mkdir( tmp_path, 0755 );
+                }
+                break;
+            case FTS_F:
+                path = p->fts_path + pathlen + 1;
+                sprintf( tmp_path, "%s/%s", tgt_path, path );
+                smxgen_app_file( g, p->fts_path, tmp_path );
+                break;
+            default:
+                break;
+        }
+    }
+    fts_close(ftsp);
+    return 0;
+}
+
+/******************************************************************************/
+void smxgen_tpl_main( igraph_t* g, char* build_path )
+{
+    char path_tmp[1000];
     char file[1000];
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
@@ -991,7 +1040,8 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path )
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
-        smxgen_replace( buffer, APP_NAME_PATTERN, name );
+        smxgen_replace( buffer, APP_NAME_PATTERN,
+                igraph_cattribute_GAS( g, "name" ) );
         if( strstr( buffer, APP_NW_PATTERN ) != NULL )
         {
             smxgen_network_create( g, ident, &tt_vcnt, &tt_ecnt );
@@ -1016,18 +1066,23 @@ void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path )
 
     fclose( __src_file );
 
-    smxgen_app_file( g, name, TPL_APP_MK, "Makefile" );
-    smxgen_app_file( g, name, TPL_APP_CONF_MK, "config.mk" );
-    smxgen_app_file( g, name, TPL_APP_README, "README.md" );
-    smxgen_app_file( g, name, TPL_APP_JSON, "app.json" );
-    smxgen_app_file( g, name, TPL_APP_LOG, "app.zlog" );
-    smxgen_app_file( g, name, TPL_APP_GITIGNORE, ".gitignore" );
-    mkdir( DIR_DPKG, 0755 );
-    sprintf( file, "%s/control", DIR_DPKG );
-    smxgen_app_file( g, name, TPL_APP_DEB, file );
-    sprintf( file, "%s/changelog", DIR_DPKG );
-    smxgen_app_file( g, name, TPL_APP_DEB, file );
-    sprintf( file, "%s/copyright", DIR_DPKG );
-    smxgen_app_file( g, name, TPL_APP_DEB, file );
     mkdir( DIR_LOG, 0755 );
+    sprintf( path_tmp, "%s/tpl", build_path );
+    mkdir( path_tmp, 0755 );
+    sprintf( file, "%s/Makefile", path_tmp );
+    smxgen_app_file( g, TPL_APP_MK, file );
+    sprintf( file, "%s/config.mk", path_tmp );
+    smxgen_app_file( g, TPL_APP_CONF_MK, file );
+    sprintf( file, "%s/README.md", path_tmp );
+    smxgen_app_file( g, TPL_APP_README, file );
+    sprintf( file, "%s/app.json", path_tmp );
+    smxgen_app_file( g, TPL_APP_JSON, file );
+    sprintf( file, "%s/app.zlog", path_tmp );
+    smxgen_app_file( g, TPL_APP_LOG, file );
+    sprintf( file, "%s/.gitignore", path_tmp );
+    smxgen_app_file( g, TPL_APP_GITIGNORE, file );
+
+    sprintf( path_tmp, "%s/tpl/debian", build_path );
+    mkdir( path_tmp, 0755 );
+    smxgen_ptree( g, TPL_PATH_APP_DPKG, path_tmp );
 }

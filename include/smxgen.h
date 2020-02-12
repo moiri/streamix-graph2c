@@ -42,17 +42,18 @@
 #define OUTDEGREE_PATTERN     "<out_degree>"
 
 #define TPL_PATH            "/opt/smx/tpl"
-#define TPL_APP_GITIGNORE   TPL_PATH "/_gitignore"
-#define TPL_APP_README      TPL_PATH "/README_md"
-#define TPL_APP_MK          TPL_PATH "/app_mk"
-#define TPL_APP_CONF_MK     TPL_PATH "/config_mk"
-#define TPL_APP_DEB         TPL_PATH "/debian/control"
-#define TPL_APP_JSON        TPL_PATH "/app_json"
-#define TPL_IMPL_JSON       TPL_PATH "/tpl_impl_json"
-#define TPL_NET_JSON        TPL_PATH "/tpl_net_json"
-#define TPL_INST_JSON       TPL_PATH "/tpl_inst_json"
-#define TPL_APP_LOG         TPL_PATH "/app_zlog"
-#define TPL_APP_MAIN        TPL_PATH "/main_c"
+#define TPL_PATH_APP        TPL_PATH "/app"
+#define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
+#define TPL_APP_GITIGNORE   TPL_PATH_APP "/_gitignore"
+#define TPL_APP_README      TPL_PATH_APP "/README_md"
+#define TPL_APP_MK          TPL_PATH_APP "/app_mk"
+#define TPL_APP_CONF_MK     TPL_PATH_APP "/config_mk"
+#define TPL_APP_JSON        TPL_PATH_APP "/app_json"
+#define TPL_IMPL_JSON       TPL_PATH_APP "/tpl_impl_json"
+#define TPL_NET_JSON        TPL_PATH_APP "/tpl_net_json"
+#define TPL_INST_JSON       TPL_PATH_APP "/tpl_inst_json"
+#define TPL_APP_LOG         TPL_PATH_APP "/app_zlog"
+#define TPL_APP_MAIN        TPL_PATH_APP "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
 #define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/_gitignore"
 #define TPL_BOX_CONF        TPL_BOX_PATH "/box_json"
@@ -82,12 +83,10 @@
  * target file.
  *
  * @param g         pointer to the dependency graph
- * @param name      name of the app
  * @param tpl_path  path to the template file
  * @param tgt_path  path to the target file
  */
-void smxgen_app_file( igraph_t* g, const char* name, const char* tpl_path,
-        const char* tgt_path );
+void smxgen_app_file( igraph_t* g, const char* tpl_path, const char* tgt_path );
 
 /**
  * Read a box template file, replace the generic patterns and insert it to the
@@ -332,10 +331,9 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path );
 /**
  * Copies the main c file to the output and replaces the generic patterns.
  *
- * @param name       the app name
  * @param g          pointer to the dependency graph
  * @param build_path path to the build folder
  */
-void smxgen_tpl_main( const char* name, igraph_t* g, char* build_path );
+void smxgen_tpl_main( igraph_t* g, char* build_path );
 
 #endif /* SMXGEN_H */
