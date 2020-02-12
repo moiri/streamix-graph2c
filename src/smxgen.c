@@ -697,11 +697,18 @@ void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
             continue;
         }
         ids[idx++] = vid;
-        smxgen_conf_file( g, vid, impl, net, TPL_INST_JSON, ftgt );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
     igraph_vs_destroy( &v_sel );
+
+    if( idx > 1 )
+    {
+        for( i = 0; i < idx; i++ )
+        {
+            smxgen_conf_file( g, ids[i], impl, net, TPL_INST_JSON, ftgt );
+        }
+    }
 }
 
 /******************************************************************************/
