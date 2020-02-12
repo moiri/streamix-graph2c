@@ -89,6 +89,20 @@
 void smxgen_app_file( igraph_t* g, const char* tpl_path, const char* tgt_path );
 
 /**
+ * Traverse a directory tree and apply smxgen_app_file() on each file.
+ *
+ * @param g
+ *  a pointer to the dependency graph
+ * @param src_path
+ *  the path to the source directory
+ * @param tgt_path
+ *  the path to the target directory
+ * @return
+ *  0 on success, -1 on failure.
+ */
+int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path );
+
+/**
  * Read a box template file, replace the generic patterns and insert it to the
  * target file.
  *
@@ -125,6 +139,25 @@ void smxgen_box_file_path( igraph_t* g, int id, const char* name,
 int smxgen_box_is_duplicate( const char* name, const char** names, int len );
 
 /**
+ * Generic wrapper file to replace instance or net tpl configuration files.
+ *
+ * @param g
+ *  A pointer to the depedency graph
+ * @param id
+ *  The id of the net
+ * @param impl
+ *  The name of the box implementation
+ * @param net
+ *  The name of the net
+ * @param tpl_path
+ *  The path to the source tpl file
+ * @param ftgt
+ *  A file pointer to the target file
+ */
+void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
+        const char* tpl_path, FILE* ftgt );
+
+/**
  * Generate the code to conncet an edge to a vertex given a mode.
  *
  * @param g         pointer to the dependency graph
@@ -136,30 +169,16 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len );
 void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode );
 
 /**
- * Checks whether a box is externally defined
+ * Copy a file
  *
- * @param g     pointer to the dependency graph
- * @param vid   id of a vertex of the dependency graph
- * @return      1 if the box is externally defined, 0 otherwise
+ * @param src
+ *  The source file path
+ * @param tgt
+ *  The target file path
+ * @return
+ *  0 on success, -1 on failure
  */
-int smxgen_net_is_extern( igraph_t* g, int vid );
-
-/**
- * @brief checks whether a net is a certain type of net
- *
- * @param g     pointer to the dependency graph
- * @param vid   id of a vertex of the dependency graph
- * @param type  type string to check against
- * @return      1 if the type matches, 0 otherwise
- */
-int smxgen_net_is_type( igraph_t* g, int vid, const char* type );
-
-/**
- * Generates the include in the main file.
- *
- * @param g     pointer to the dependency graph
- */
-void smxgen_main_includes( igraph_t* g );
+int smxgen_cp_file( const char* src, const char* tgt );
 
 /**
  * Get the name of a port given the edge id and the mode of the port.
@@ -170,6 +189,58 @@ void smxgen_main_includes( igraph_t* g );
  * @return      the name of the port or NULL
  */
 const char* smxgen_get_port_name( igraph_t* g, int eid, int mode );
+
+/**
+ * Insert the box configurations to the configuration file.
+ *
+ * @param g         pointer to the dependency graph
+ * @param ftgt      file descriptor to the target file
+ */
+void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt );
+
+/**
+ * Insert the net configurations to the implementation configuration entry.
+ *
+ * @param g         pointer to the dependency graph
+ * @param ftgt      file descriptor to the target file
+ * @param impl      the name of the implementation
+ */
+void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl );
+
+/**
+ * Insert the net instance configurations to the net configuration entry.
+ *
+ * @param g         pointer to the dependency graph
+ * @param ftgt      file descriptor to the target file
+ * @param impl      the name of the implementation
+ * @param net       the name of the net
+ */
+void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
+        const char* net );
+
+/**
+ * Insert port templates to the target file.
+ *
+ * @param g         pointer to the dependency graph
+ * @param id        id of a box
+ * @param mode      the port direction
+ * @param name      name of a box
+ * @param tpl_path  path to the template file
+ * @param ftgt      file descriptor to the target file
+ * @return          the number of generated ports
+ */
+int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
+        const char* name, const char* tpl_path, FILE* ftgt );
+
+/**
+ * Insert the box signature to the target file.
+ *
+ * @param g        pointer to the dependency graph
+ * @param id       id of the box
+ * @param box_name name of the box
+ * @param ftgt     file descriptor to the target file
+ */
+void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt );
 
 /**
  * Generate the smx network of the application.
@@ -225,56 +296,30 @@ void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt );
 void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt );
 
 /**
- * Insert the box configurations to the configuration file.
+ * Checks whether a box is externally defined
  *
- * @param g         pointer to the dependency graph
- * @param ftgt      file descriptor to the target file
+ * @param g     pointer to the dependency graph
+ * @param vid   id of a vertex of the dependency graph
+ * @return      1 if the box is externally defined, 0 otherwise
  */
-void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt );
+int smxgen_net_is_extern( igraph_t* g, int vid );
 
 /**
- * Insert the net configurations to the implementation configuration entry.
+ * @brief checks whether a net is a certain type of net
  *
- * @param g         pointer to the dependency graph
- * @param ftgt      file descriptor to the target file
- * @param impl      the name of the implementation
+ * @param g     pointer to the dependency graph
+ * @param vid   id of a vertex of the dependency graph
+ * @param type  type string to check against
+ * @return      1 if the type matches, 0 otherwise
  */
-void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl );
+int smxgen_net_is_type( igraph_t* g, int vid, const char* type );
 
 /**
- * Insert the net instance configurations to the net configuration entry.
+ * Generates the include in the main file.
  *
- * @param g         pointer to the dependency graph
- * @param ftgt      file descriptor to the target file
- * @param impl      the name of the implementation
- * @param net       the name of the net
+ * @param g     pointer to the dependency graph
  */
-void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
-        const char* net );
-
-/**
- * Insert port templates to the target file.
- *
- * @param g         pointer to the dependency graph
- * @param id        id of a box
- * @param mode      the port direction
- * @param name      name of a box
- * @param tpl_path  path to the template file
- * @param ftgt      file descriptor to the target file
- * @return          the number of generated ports
- */
-int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
-        const char* name, const char* tpl_path, FILE* ftgt );
-
-/**
- * Insert the box signature to the target file.
- *
- * @param g        pointer to the dependency graph
- * @param id       id of the box
- * @param box_name name of the box
- * @param ftgt     file descriptor to the target file
- */
-void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt );
+void smxgen_main_includes( igraph_t* g );
 
 /**
  * Read a port template file, replace the generic patterns and insert it to the

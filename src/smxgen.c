@@ -71,6 +71,52 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
 }
 
 /******************************************************************************/
+int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path )
+{
+    FTS* ftsp;
+    FTSENT* p;
+    FTSENT* chp;
+    int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
+    int pathlen = strlen( src_path );
+    char* path;
+    char tmp_path[1000];
+    char* paths[] = { src_path, NULL };
+
+    if( ( ftsp = fts_open( paths, fts_options, NULL ) ) == NULL )
+    {
+        return -1;
+    }
+    chp = fts_children( ftsp, 0 );
+    if( chp == NULL )
+    {
+        return 0;
+    }
+
+    while( ( p = fts_read( ftsp ) ) != NULL )
+    {
+        switch( p->fts_info ) {
+            case FTS_D:
+                if( p->fts_level > 0 )
+                {
+                    path = p->fts_path + pathlen + 1;
+                    sprintf( tmp_path, "%s/%s", tgt_path, path );
+                    mkdir( tmp_path, 0755 );
+                }
+                break;
+            case FTS_F:
+                path = p->fts_path + pathlen + 1;
+                sprintf( tmp_path, "%s/%s", tgt_path, path );
+                smxgen_app_file( g, p->fts_path, tmp_path );
+                break;
+            default:
+                break;
+        }
+    }
+    fts_close(ftsp);
+    return 0;
+}
+
+/******************************************************************************/
 void smxgen_box_file( igraph_t* g, int id, const char* name,
         const char* tpl_path, FILE* ftgt )
 {
@@ -264,50 +310,36 @@ void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode )
 }
 
 /******************************************************************************/
-int smxgen_net_is_extern( igraph_t* g, int vid )
+int smxgen_cp_file( const char* src, const char* tgt )
 {
-    return igraph_cattribute_VAN( g, GV_EXT, vid );
-}
+    char ch;
+    FILE *source, *target;
 
-/******************************************************************************/
-int smxgen_net_is_type( igraph_t* g, int vid, const char* type )
-{
-    const char* name = igraph_cattribute_VAS( g, GV_LABEL, vid );
-    if( strcmp( name , type ) == 0 )
-        return 1;
-    return 0;
-}
+    // return if item exists
+    if( access( tgt, F_OK ) == 0 )
+        return 0;
 
-/******************************************************************************/
-void smxgen_main_includes( igraph_t* g )
-{
-    igraph_vs_t v_sel;
-    igraph_vit_t v_it;
-    int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    const char* box_names[net_count];
-    const char* box_name;
-
-    for( i=0; i<net_count; i++ )
-        box_names[i] = NULL;
-    // for all boxes in the scope
-    v_sel = igraph_vss_all();
-    igraph_vit_create( g, v_sel, &v_it );
-    while( !IGRAPH_VIT_END( v_it ) ) {
-        vid = IGRAPH_VIT_GET( v_it );
-        // store name of vertex to avoid duplicates
-        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_duplicate( box_name, box_names, net_count )
-                || smxgen_net_is_type( g, vid, TEXT_CP )
-                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-        cgen_include_local( box_name );
-        box_names[idx++] = box_name;
-        IGRAPH_VIT_NEXT( v_it );
+    source = fopen( src, "r" );
+    if( source == NULL )
+    {
+        return -1;
     }
-    igraph_vit_destroy( &v_it );
-    igraph_vs_destroy( &v_sel );
+
+    target = fopen( tgt, "w" );
+    if( target == NULL )
+    {
+        return -1;
+    }
+
+    while( ( ch = fgetc( source ) ) != EOF )
+        fputc(ch, target);
+
+    fclose(source);
+    fclose(target);
+
+    fprintf( stdout, "created file '%s'\n", tgt );
+
+    return 0;
 }
 
 /******************************************************************************/
@@ -321,6 +353,181 @@ const char* smxgen_get_port_name( igraph_t* g, int eid, int mode )
     if( strcmp( name, TEXT_NULL ) == 0 )
         name = igraph_cattribute_EAS( g, GE_LABEL, eid );
     return name;
+}
+
+/******************************************************************************/
+void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx = 0, net_count = igraph_vcount( g ), i;
+    const char* names[net_count];
+    const char* name;
+
+    for( i=0; i<net_count; i++ )
+        names[i] = NULL;
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid = IGRAPH_VIT_GET( v_it );
+        // store name of vertex to avoid duplicates
+        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_duplicate( name, names, net_count ) )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        names[idx++] = name;
+        smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_JSON, ftgt );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
+void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx = 0, net_count = igraph_vcount( g ), i;
+    const char* names[net_count];
+    const char* name;
+
+    for( i=0; i<net_count; i++ )
+        names[i] = NULL;
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid = IGRAPH_VIT_GET( v_it );
+        // store name of vertex to avoid duplicates
+        name = igraph_cattribute_VAS( g, GV_LABEL, vid );
+        if( strcmp( impl, igraph_cattribute_VAS( g, GV_IMPL, vid ) ) != 0 )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+
+        if( smxgen_box_is_duplicate( name, names, net_count ) )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        names[idx++] = name;
+        smxgen_conf_file( g, vid, impl, name, TPL_NET_JSON, ftgt );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
+void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
+        const char* net )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx = 0, net_count = igraph_vcount( g ), i;
+    int ids[net_count];
+
+    for( i=0; i<net_count; i++ )
+        ids[i] = -1;
+    // for all boxes in the scope
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid = IGRAPH_VIT_GET( v_it );
+        // store name of vertex to avoid duplicates
+        if( strcmp( impl, igraph_cattribute_VAS( g, GV_IMPL, vid ) ) != 0 )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        if( strcmp( net, igraph_cattribute_VAS( g, GV_LABEL, vid ) ) != 0 )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+
+        if( smxgen_box_is_duplicate_id( vid, ids, net_count ) )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        ids[idx++] = vid;
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+
+    if( idx > 1 )
+    {
+        for( i = 0; i < idx; i++ )
+        {
+            smxgen_conf_file( g, ids[i], impl, net, TPL_INST_JSON, ftgt );
+        }
+    }
+}
+
+/******************************************************************************/
+int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
+    const char* name, const char* tpl_path, FILE* ftgt )
+{
+    int eid, cnt = 0;
+    const char* mode_str = ( mode == IGRAPH_IN ) ? MODE_IN : MODE_OUT;
+    igraph_es_t e_sel;
+    igraph_eit_t e_it;
+
+    igraph_es_incident( &e_sel, id, mode );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate port code
+        eid = IGRAPH_EIT_GET( e_it );
+        smxgen_port_file( eid, name, smxgen_get_port_name( g, eid, mode ),
+                mode_str, tpl_path, ftgt );
+        IGRAPH_EIT_NEXT( e_it );
+        cnt++;
+    }
+    igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
+    return cnt;
+}
+
+/******************************************************************************/
+void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt )
+{
+    int eid;
+    char buffer[BUFFER_SIZE];
+    const char* port_name;
+    igraph_es_t e_sel;
+    igraph_eit_t e_it;
+
+    igraph_es_incident( &e_sel, id, IGRAPH_IN );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate port code
+        eid = IGRAPH_EIT_GET( e_it );
+        port_name = smxgen_get_port_name( g, eid, IGRAPH_IN ),
+        sprintf( buffer, " *   - in %s (use SMX_CHANNEL_READ( h, %s, %s ) to read)\n",
+                port_name, box_name, port_name );
+        fputs( buffer, ftgt );
+        IGRAPH_EIT_NEXT( e_it );
+    }
+    igraph_es_incident( &e_sel, id, IGRAPH_OUT );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate port code
+        eid = IGRAPH_EIT_GET( e_it );
+        port_name = smxgen_get_port_name( g, eid, IGRAPH_OUT ),
+        sprintf( buffer, " *   - out %s (use SMX_CHANNEL_WRITE( h, %s, %s, msg ) to write)\n",
+                port_name, box_name, port_name );
+        fputs( buffer, ftgt );
+        IGRAPH_EIT_NEXT( e_it );
+    }
+    igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
 }
 
 /******************************************************************************/
@@ -596,178 +803,50 @@ void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt )
 }
 
 /******************************************************************************/
-void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt )
+int smxgen_net_is_extern( igraph_t* g, int vid )
+{
+    return igraph_cattribute_VAN( g, GV_EXT, vid );
+}
+
+/******************************************************************************/
+int smxgen_net_is_type( igraph_t* g, int vid, const char* type )
+{
+    const char* name = igraph_cattribute_VAS( g, GV_LABEL, vid );
+    if( strcmp( name , type ) == 0 )
+        return 1;
+    return 0;
+}
+
+/******************************************************************************/
+void smxgen_main_includes( igraph_t* g )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
     int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    const char* names[net_count];
-    const char* name;
+    const char* box_names[net_count];
+    const char* box_name;
 
     for( i=0; i<net_count; i++ )
-        names[i] = NULL;
+        box_names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
         vid = IGRAPH_VIT_GET( v_it );
         // store name of vertex to avoid duplicates
-        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
-        if( smxgen_box_is_duplicate( name, names, net_count ) )
-        {
+        box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_duplicate( box_name, box_names, net_count )
+                || smxgen_net_is_type( g, vid, TEXT_CP )
+                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
             continue;
         }
-        names[idx++] = name;
-        smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_JSON, ftgt );
+        cgen_include_local( box_name );
+        box_names[idx++] = box_name;
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
     igraph_vs_destroy( &v_sel );
-}
-
-/******************************************************************************/
-void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl )
-{
-    igraph_vs_t v_sel;
-    igraph_vit_t v_it;
-    int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    const char* names[net_count];
-    const char* name;
-
-    for( i=0; i<net_count; i++ )
-        names[i] = NULL;
-    // for all boxes in the scope
-    v_sel = igraph_vss_all();
-    igraph_vit_create( g, v_sel, &v_it );
-    while( !IGRAPH_VIT_END( v_it ) ) {
-        vid = IGRAPH_VIT_GET( v_it );
-        // store name of vertex to avoid duplicates
-        name = igraph_cattribute_VAS( g, GV_LABEL, vid );
-        if( strcmp( impl, igraph_cattribute_VAS( g, GV_IMPL, vid ) ) != 0 )
-        {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-
-        if( smxgen_box_is_duplicate( name, names, net_count ) )
-        {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-        names[idx++] = name;
-        smxgen_conf_file( g, vid, impl, name, TPL_NET_JSON, ftgt );
-        IGRAPH_VIT_NEXT( v_it );
-    }
-    igraph_vit_destroy( &v_it );
-    igraph_vs_destroy( &v_sel );
-}
-
-/******************************************************************************/
-void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
-        const char* net )
-{
-    igraph_vs_t v_sel;
-    igraph_vit_t v_it;
-    int vid, idx = 0, net_count = igraph_vcount( g ), i;
-    int ids[net_count];
-
-    for( i=0; i<net_count; i++ )
-        ids[i] = -1;
-    // for all boxes in the scope
-    v_sel = igraph_vss_all();
-    igraph_vit_create( g, v_sel, &v_it );
-    while( !IGRAPH_VIT_END( v_it ) ) {
-        vid = IGRAPH_VIT_GET( v_it );
-        // store name of vertex to avoid duplicates
-        if( strcmp( impl, igraph_cattribute_VAS( g, GV_IMPL, vid ) ) != 0 )
-        {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-        if( strcmp( net, igraph_cattribute_VAS( g, GV_LABEL, vid ) ) != 0 )
-        {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-
-        if( smxgen_box_is_duplicate_id( vid, ids, net_count ) )
-        {
-            IGRAPH_VIT_NEXT( v_it );
-            continue;
-        }
-        ids[idx++] = vid;
-        IGRAPH_VIT_NEXT( v_it );
-    }
-    igraph_vit_destroy( &v_it );
-    igraph_vs_destroy( &v_sel );
-
-    if( idx > 1 )
-    {
-        for( i = 0; i < idx; i++ )
-        {
-            smxgen_conf_file( g, ids[i], impl, net, TPL_INST_JSON, ftgt );
-        }
-    }
-}
-
-/******************************************************************************/
-int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
-    const char* name, const char* tpl_path, FILE* ftgt )
-{
-    int eid, cnt = 0;
-    const char* mode_str = ( mode == IGRAPH_IN ) ? MODE_IN : MODE_OUT;
-    igraph_es_t e_sel;
-    igraph_eit_t e_it;
-
-    igraph_es_incident( &e_sel, id, mode );
-    igraph_eit_create( g, e_sel, &e_it );
-    while( !IGRAPH_EIT_END( e_it ) ) {
-        // generate port code
-        eid = IGRAPH_EIT_GET( e_it );
-        smxgen_port_file( eid, name, smxgen_get_port_name( g, eid, mode ),
-                mode_str, tpl_path, ftgt );
-        IGRAPH_EIT_NEXT( e_it );
-        cnt++;
-    }
-    igraph_eit_destroy( &e_it );
-    igraph_es_destroy( &e_sel );
-    return cnt;
-}
-
-/******************************************************************************/
-void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt )
-{
-    int eid;
-    char buffer[BUFFER_SIZE];
-    const char* port_name;
-    igraph_es_t e_sel;
-    igraph_eit_t e_it;
-
-    igraph_es_incident( &e_sel, id, IGRAPH_IN );
-    igraph_eit_create( g, e_sel, &e_it );
-    while( !IGRAPH_EIT_END( e_it ) ) {
-        // generate port code
-        eid = IGRAPH_EIT_GET( e_it );
-        port_name = smxgen_get_port_name( g, eid, IGRAPH_IN ),
-        sprintf( buffer, " *   - in %s (use SMX_CHANNEL_READ( h, %s, %s ) to read)\n",
-                port_name, box_name, port_name );
-        fputs( buffer, ftgt );
-        IGRAPH_EIT_NEXT( e_it );
-    }
-    igraph_es_incident( &e_sel, id, IGRAPH_OUT );
-    igraph_eit_create( g, e_sel, &e_it );
-    while( !IGRAPH_EIT_END( e_it ) ) {
-        // generate port code
-        eid = IGRAPH_EIT_GET( e_it );
-        port_name = smxgen_get_port_name( g, eid, IGRAPH_OUT ),
-        sprintf( buffer, " *   - out %s (use SMX_CHANNEL_WRITE( h, %s, %s, msg ) to write)\n",
-                port_name, box_name, port_name );
-        fputs( buffer, ftgt );
-        IGRAPH_EIT_NEXT( e_it );
-    }
-    igraph_eit_destroy( &e_it );
-    igraph_es_destroy( &e_sel );
 }
 
 /******************************************************************************/
@@ -834,6 +913,18 @@ void smxgen_replace( char* str, const char* old_word, const char* new_word )
 }
 
 /******************************************************************************/
+int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
+        int len )
+{
+    int i;
+    for( i=0; i<len; i++ )
+        if( ( tt_elem.tv_sec == tt[i].tv_sec )
+                && ( tt_elem.tv_nsec == tt[i].tv_nsec ) )
+            return i;
+    return -1;
+}
+
+/******************************************************************************/
 void smxgen_to_alnum( char* dst, const char* src )
 {
     unsigned long i = 0, c = 0;
@@ -846,18 +937,6 @@ void smxgen_to_alnum( char* dst, const char* src )
         }
     }
     dst[c] = '\0';
-}
-
-/******************************************************************************/
-int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
-        int len )
-{
-    int i;
-    for( i=0; i<len; i++ )
-        if( ( tt_elem.tv_sec == tt[i].tv_sec )
-                && ( tt_elem.tv_nsec == tt[i].tv_nsec ) )
-            return i;
-    return -1;
 }
 
 /******************************************************************************/
@@ -973,85 +1052,6 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
 }
 
 /******************************************************************************/
-int smxgen_ptree( igraph_t* g, char* src_path, const char* tgt_path )
-{
-    FTS* ftsp;
-    FTSENT* p;
-    FTSENT* chp;
-    int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
-    int pathlen = strlen( src_path );
-    char* path;
-    char tmp_path[1000];
-    char* paths[] = { src_path, NULL };
-
-    if( ( ftsp = fts_open( paths, fts_options, NULL ) ) == NULL )
-    {
-        return -1;
-    }
-    chp = fts_children( ftsp, 0 );
-    if( chp == NULL )
-    {
-        return 0;
-    }
-
-    while( ( p = fts_read( ftsp ) ) != NULL )
-    {
-        switch( p->fts_info ) {
-            case FTS_D:
-                if( p->fts_level > 0 )
-                {
-                    path = p->fts_path + pathlen + 1;
-                    sprintf( tmp_path, "%s/%s", tgt_path, path );
-                    mkdir( tmp_path, 0755 );
-                }
-                break;
-            case FTS_F:
-                path = p->fts_path + pathlen + 1;
-                sprintf( tmp_path, "%s/%s", tgt_path, path );
-                smxgen_app_file( g, p->fts_path, tmp_path );
-                break;
-            default:
-                break;
-        }
-    }
-    fts_close(ftsp);
-    return 0;
-}
-
-/******************************************************************************/
-int smxgen_cp_file( const char* src, const char* tgt )
-{
-    char ch;
-    FILE *source, *target;
-
-    // return if item exists
-    if( access( tgt, F_OK ) == 0 )
-        return 0;
-
-    source = fopen( src, "r" );
-    if( source == NULL )
-    {
-        return -1;
-    }
-
-    target = fopen( tgt, "w" );
-    if( target == NULL )
-    {
-        return -1;
-    }
-
-    while( ( ch = fgetc( source ) ) != EOF )
-        fputc(ch, target);
-
-    fclose(source);
-    fclose(target);
-
-    fprintf( stdout, "created file '%s'\n", tgt );
-
-    return 0;
-}
-
-/******************************************************************************/
 void smxgen_tpl_main( igraph_t* g, char* build_path )
 {
     char path_tmp[1000];
@@ -1136,5 +1136,5 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
 
     sprintf( path_tmp, "%s/tpl/debian", build_path );
     mkdir( path_tmp, 0755 );
-    smxgen_ptree( g, TPL_PATH_APP_DPKG, path_tmp );
+    smxgen_app_file_tree( g, TPL_PATH_APP_DPKG, path_tmp );
 }
