@@ -59,7 +59,7 @@ int main( int argc, char **argv )
     int c;
     igraph_i_set_attribute_table( &igraph_cattribute_table );
 
-    while( ( c = getopt( argc, argv, "hvb:p:f:" ) ) != -1 )
+    while( ( c = getopt( argc, argv, "hvb:e:p:f:" ) ) != -1 )
         switch( c ) {
             case 'h':
                 printf( "Usage:\n  %s [OPTION...] FILE\n\n", argv[0] );
