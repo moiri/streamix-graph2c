@@ -288,6 +288,54 @@ void smxgen_box_file_path( igraph_t* g, int id, const char* name,
 }
 
 /******************************************************************************/
+int smxgen_box_file_tree( igraph_t* g, int id, const char* name,
+        char* src_path, const char* tgt_path )
+{
+    FTS* ftsp;
+    FTSENT* p;
+    FTSENT* chp;
+    int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
+    int pathlen = strlen( src_path );
+    char* path;
+    char tmp_path[1000];
+    char* paths[] = { src_path, NULL };
+
+    if( ( ftsp = fts_open( paths, fts_options, NULL ) ) == NULL )
+    {
+        return -1;
+    }
+    chp = fts_children( ftsp, 0 );
+    if( chp == NULL )
+    {
+        return 0;
+    }
+
+    while( ( p = fts_read( ftsp ) ) != NULL )
+    {
+        switch( p->fts_info ) {
+            case FTS_D:
+                if( p->fts_level > 0 )
+                {
+                    path = p->fts_path + pathlen + 1;
+                    sprintf( tmp_path, "%s/%s", tgt_path, path );
+                    mkdir( tmp_path, 0755 );
+                }
+                break;
+            case FTS_F:
+                path = p->fts_path + pathlen + 1;
+                sprintf( tmp_path, "%s/%s", tgt_path, path );
+                smxgen_box_file_path( g, id, name, p->fts_path, tmp_path,
+                        false );
+                break;
+            default:
+                break;
+        }
+    }
+    fts_close(ftsp);
+    return 0;
+}
+
+/******************************************************************************/
 int smxgen_box_is_duplicate( const char* name, const char** names, int len )
 {
     int i;
@@ -1056,17 +1104,11 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_README, path_file, false );
         // create box package control files
-        sprintf( path_tmp, "%s/%s", path, DIR_DPKG );
+        sprintf( path_tmp, "%s/tpl", build_path );
         mkdir( path_tmp, 0755 );
-        sprintf( path_file, "%s/control", path_tmp );
-        if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
-        sprintf( path_file, "%s/changelog", path_tmp );
-        if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
-        sprintf( path_file, "%s/copyright", path_tmp );
-        if( access( path_file, F_OK ) < 0 )
-            smxgen_box_file_path( g, vid, name, TPL_BOX_DEB, path_file, false );
+        sprintf( path_tmp, "%s/tpl/debian", build_path );
+        mkdir( path_tmp, 0755 );
+        smxgen_box_file_tree( g, vid, name, TPL_BOX_DPKG, path_tmp );
         // create test files
         sprintf( path_tmp, "%s/test", path );
         mkdir( path_tmp, 0755 );

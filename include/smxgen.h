@@ -63,8 +63,7 @@
 #define TPL_BOX_MK          TPL_BOX_PATH "/box_mk"
 #define TPL_BOX_CONF_MK     TPL_BOX_PATH "/config_mk"
 #define TPL_BOX_README      TPL_BOX_PATH "/README_md"
-#define TPL_BOX_DEB         TPL_BOX_PATH "/debian/control"
-#define TPL_BOX_DEB_DEV     TPL_BOX_PATH "/debian/control-dev"
+#define TPL_BOX_DPKG        TPL_BOX_PATH "/debian"
 #define TPL_BOX_C           TPL_BOX_PATH "/src/box_c"
 #define TPL_BOX_H           TPL_BOX_PATH "/include/box_h"
 #define TPL_BOX_SIG_H       TPL_BOX_PATH "/include/box_sig_h"
@@ -130,6 +129,23 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
  */
 void smxgen_box_file_path( igraph_t* g, int id, const char* name,
         const char* tpl_path, const char* tgt_path, bool append );
+
+/**
+ * Traverse a directory tree and apply smxgen_box_file_path() on each file.
+ *
+ * @param g
+ *  a pointer to the dependency graph
+ * @param id        id of a box
+ * @param name      name of a box
+ * @param src_path
+ *  the path to the source directory
+ * @param tgt_path
+ *  the path to the target directory
+ * @return
+ *  0 on success, -1 on failure.
+ */
+int smxgen_box_file_tree( igraph_t* g, int id, const char* name,
+        char* src_path, const char* tgt_path );
 
 /**
  * Checks wether a box name already exists
