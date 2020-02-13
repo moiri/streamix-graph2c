@@ -1116,9 +1116,9 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_README, path_file, false );
         // create box package control files
-        sprintf( path_tmp, "%s/tpl", build_path );
+        sprintf( path_tmp, "%s/tpl", path );
         mkdir( path_tmp, 0755 );
-        sprintf( path_tmp, "%s/tpl/debian", build_path );
+        sprintf( path_tmp, "%s/tpl/debian", path );
         mkdir( path_tmp, 0755 );
         smxgen_box_file_tree( g, vid, name, TPL_BOX_DPKG, path_tmp );
         // create test files
