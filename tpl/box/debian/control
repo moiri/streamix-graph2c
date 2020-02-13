@@ -1,4 +1,4 @@
-Source: <lib_name><maj_version>
+Source: lib<lib_name><maj_version>
 Priority: optional
 Maintainer: <author>
 Build-Depends: debhelper (>= 10)
@@ -6,16 +6,16 @@ Standards-Version: 4.1.2
 Section: libs
 Homepage: http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-boxes/<box_name>
 
-Package: <lib_name>-dev
+Package: lib<lib_name>-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: <lib_name><maj_version> (= ${binary:Version}), ${misc:Depends}
+Depends: lib<lib_name><maj_version> (= ${binary:Version}), ${misc:Depends}
 Description: Development Package of 'lib<lib_name>'
  This is the development package of the library 'lib<lib_name>'. This library
  contains the box implemntation of the Streamix box '<box_name>'.
 
-Package: <lib_name><maj_version>
+Package: lib<lib_name><maj_version>
 Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}
