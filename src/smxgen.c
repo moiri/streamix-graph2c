@@ -81,6 +81,11 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
     char buffer[BUFFER_SIZE];
     char* binname;
     const char* name = igraph_cattribute_GAS( g, "name" );
+    time_t t = time( NULL );
+    struct tm tm = *localtime( &t );
+    char year[10];
+
+    sprintf( year, "%d", tm.tm_year );
 
     // return if item exists
     if( access( tgt_path, F_OK ) == 0 )
@@ -103,6 +108,7 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
+        smxgen_replace( buffer, YEAR_PATTERN, year );
         smxgen_replace( buffer, AUTHOR_PATTERN,
                 igraph_cattribute_GAS( g, "author" ) );
         smxgen_replace( buffer, APP_NAME_PATTERN, name );
@@ -186,6 +192,11 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     char outdeg[10];
     igraph_vs_t v_cp;
     igraph_vector_t indegree, outdegree;
+    time_t t = time( NULL );
+    struct tm tm = *localtime( &t );
+    char year[10];
+
+    sprintf( year, "%d", tm.tm_year );
     igraph_vs_1( &v_cp, id );
     igraph_vector_init( &indegree, 1 );
     igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
@@ -203,6 +214,7 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
+        smxgen_replace( buffer, YEAR_PATTERN, year );
         smxgen_replace( buffer, BOX_NAME_PATTERN, name );
         smxgen_replace( buffer, AUTHOR_PATTERN,
                 igraph_cattribute_GAS( g, "author" ) );

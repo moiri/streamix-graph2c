@@ -11,6 +11,7 @@
 #include <igraph.h>
 #include <stdbool.h>
 
+#define YEAR_PATTERN          "<date_y>"
 #define AUTHOR_PATTERN        "<author>"
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"

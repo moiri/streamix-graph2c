@@ -28,4 +28,4 @@ EXT_INCS_DIR =
 EXT_CFLAGS =
 
 # the name of the library
-LIBNAME = lib<lib_name>
+LIBNAME = <lib_name>

@@ -71,8 +71,8 @@ VMIN=$(gawk 'match($0, /VMIN = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VREV=$(gawk 'match($0, /VREV = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VDEB=$(gawk 'match($0, /VDEB = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 LIBNAME=$(gawk 'match($0, /LIBNAME = (.+)/, a) {print a[1]}' $path/config.mk)
+LIBNAME=lib$LIBNAME
 DATE_R=$(date -R | sed -e 's/[\/&]/\\&/g')
-DATE_Y=$(date +%Y | sed -e 's/[\/&]/\\&/g')
 
 # Create Branches
 
@@ -100,9 +100,6 @@ do
     fi
     echo "changing file $file"
 
-    echo "replacing libname"
-    sed -i "s/<lib_name>/$LIBNAME/g" $file
-
     echo "replacing maj_version"
     sed -i "s/<maj_version>/$VMAJ.$VMIN/g" $file
 
@@ -111,9 +108,6 @@ do
 
     echo "replacing date_r: $DATE_R"
     sed -i "s/<date_r>/$DATE_R/g" $file
-
-    echo "replacing date_y: $DATE_Y"
-    sed -i "s/<date_y>/$DATE_Y/g" $file
 done
 
 # Generate Manpages with Doxygen
