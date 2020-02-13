@@ -26,6 +26,7 @@ The script performs the following tasks:
  2. Create and checkout a new upstream branch (it is called maj.min).
  3. Create a new packeting branch (it is called debian/maj.min).
  4. Generate all required debian files.
+ 5. Add and commit the new files to the release branch.
 
 Options:
 -h, --help                    display this usage message and exit
@@ -68,6 +69,7 @@ path=$directory
 VMAJ=$(gawk 'match($0, /VMAJ = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VMIN=$(gawk 'match($0, /VMIN = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VREV=$(gawk 'match($0, /VREV = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
+VDEB=$(gawk 'match($0, /VDEB = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 LIBNAME=$(gawk 'match($0, /LIBNAME = (.+)/, a) {print a[1]}' $path/config.mk)
 DATE_R=$(date -R | sed -e 's/[\/&]/\\&/g')
 DATE_Y=$(date +%Y | sed -e 's/[\/&]/\\&/g')
@@ -81,6 +83,7 @@ git -C $path branch $branch_p
 
 # Copy Debian Templates
 
+rm -rf $path/debian
 cp -R $path/tpl/debian $path/debian
 mv $path/debian/install $path/debian/$LIBNAME$VMAJ.$VMIN.install
 mv $path/debian/install-dev $path/debian/$LIBNAME-dev.install
@@ -88,7 +91,9 @@ mv $path/debian/docs $path/debian/$LIBNAME$VMAJ.$VMIN.docs
 
 # Fill Debian Templates with Meaningful Information
 
-for file in $path/debian/*
+files=$(find $path/debian -type f -exec echo "{}" \;)
+
+for file in $files
 do
     if [ -d "$file" ]; then
         continue
@@ -96,13 +101,13 @@ do
     echo "changing file $file"
 
     echo "replacing libname"
-    sed -i "s/<libname>/$LIBNAME/g" $file
+    sed -i "s/<lib_name>/$LIBNAME/g" $file
 
     echo "replacing maj_version"
     sed -i "s/<maj_version>/$VMAJ.$VMIN/g" $file
 
     echo "replacing version"
-    sed -i "s/<version>/$VMAJ.$VMIN.$VREV-0/g" $file
+    sed -i "s/<version>/$VMAJ.$VMIN.$VREV-$VDEB/g" $file
 
     echo "replacing date_r: $DATE_R"
     sed -i "s/<date_r>/$DATE_R/g" $file
@@ -112,5 +117,16 @@ do
 done
 
 # Generate Manpages with Doxygen
+if test -f "$path/tpl/.doxygen"
+then
+    cp $path/tpl/.doxygen $path/.doxygen
+    echo "replacing version"
+    sed -i "s/<version>/$VMAJ.$VMIN.$VREV/g" $path/.doxygen
+    echo "replacing libname"
+    sed -i "s/<lib_name>/$LIBNAME/g" $path/.doxygen
 
-( cd $path && doxygen .doxygen )
+    ( cd $path && doxygen .doxygen )
+fi
+
+git add .
+git commit -m "Create package files for new release"
