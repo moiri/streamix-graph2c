@@ -19,6 +19,60 @@
 extern FILE* __src_file;
 
 /******************************************************************************/
+void smxgen_read_dep( const char* libname, char* dep )
+{
+    char link[1000];
+    char buf[1000];
+    ssize_t buf_size;
+    sprintf( link, "%s/lib%s.so", LIB_PATH, libname );
+    buf_size = readlink( link, buf, 1000 );
+    buf[buf_size] = '\0';
+    sprintf( dep, " -l%s%s", libname, buf + strlen( libname ) + 7 );
+}
+
+/******************************************************************************/
+void smxgen_get_box_deps( igraph_t* g, char* deps )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx;
+    const char* name;
+    int net_count = igraph_vcount( g );
+    const char* names[net_count];
+    char libname[1000];
+    char dep[1000];
+
+    for( idx = 0; idx < net_count; idx++ )
+    {
+        names[idx] = NULL;
+    }
+    idx = 0;
+
+    // for all non-external boxes
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        // generate code to run boxes
+        vid = IGRAPH_VIT_GET( v_it );
+        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        smxgen_to_alnum( libname, name );
+        if( smxgen_box_is_duplicate( name, names, net_count )
+                || !smxgen_net_is_extern( g, vid )
+                || smxgen_net_is_type( g, vid, TEXT_CP )
+                || smxgen_net_is_type( g, vid, TEXT_TF ) ) {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        names[idx++] = name;
+        smxgen_read_dep( libname, dep );
+        strcat( deps, dep );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
 void smxgen_app_file( igraph_t* g, const char* tpl_path,
         const char* tgt_path )
 {
@@ -52,6 +106,10 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
         smxgen_replace( buffer, AUTHOR_PATTERN,
                 igraph_cattribute_GAS( g, "author" ) );
         smxgen_replace( buffer, APP_NAME_PATTERN, name );
+        smxgen_replace( buffer, APP_DEP_PATTERN,
+                igraph_cattribute_GAS( g, "deps" ) );
+        smxgen_replace( buffer, APP_RTS_DEP_PATTERN,
+                igraph_cattribute_GAS( g, "rts_dep" ) );
         binname = malloc( strlen( name ) + 1 );
         smxgen_to_alnum( binname, name );
         smxgen_replace( buffer, BIN_NAME_PATTERN, binname );
@@ -1056,6 +1114,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
 {
     char path_tmp[1000];
     char file[1000];
+    char deps[1000] = "";
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     int tt_vcnt = 0;
@@ -1069,6 +1128,11 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
         fprintf( stderr, "cannot open source file '%s'\n", TPL_APP_MAIN );
         return;
     }
+
+    smxgen_get_box_deps( g, deps );
+    igraph_cattribute_GAS_set( g, "deps", deps );
+    smxgen_read_dep( "smxrts", deps );
+    igraph_cattribute_GAS_set( g, "rts_dep", deps );
 
     sprintf( file, "%s/app.c", build_path );
     __src_file = fopen( file, "w" );

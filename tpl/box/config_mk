@@ -10,9 +10,10 @@
 VMAJ = 0
 VMIN = 1
 VREV = 0
+VDEB = 1
 
 # the RTS library
-LIB_RTS = -lsmxrts
+LIB_RTS =<rts_dependency>
 
 # list the external libraries prefixed with -l
 EXT_LIBS =
@@ -25,3 +26,6 @@ EXT_INCS_DIR =
 
 # define additional CFLAGS
 EXT_CFLAGS =
+
+# the name of the library
+LIBNAME = lib<lib_name>

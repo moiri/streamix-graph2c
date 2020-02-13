@@ -12,10 +12,10 @@ VMIN = 1
 VREV = 0
 
 # the RTS library
-LIB_RTS = -lsmxrts
+LIB_RTS =<rts_dependency>
 
 # list the external libraries prefixed with -l
-EXT_LIBS =
+EXT_LIBS =<box_dependencies>
 
 # list the external libraries directories prefixed with -L
 EXT_LIBS_DIR =

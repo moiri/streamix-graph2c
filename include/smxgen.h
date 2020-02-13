@@ -14,6 +14,8 @@
 #define AUTHOR_PATTERN        "<author>"
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
+#define APP_DEP_PATTERN       "<box_dependencies>"
+#define APP_RTS_DEP_PATTERN   "<rts_dependency>"
 #define APP_CONF_PATTERN      "<box_configs>"
 #define APP_CONF_NET_PATTERN  "<net_configs>"
 #define APP_CONF_INST_PATTERN "<net_inst_configs>"
@@ -41,6 +43,7 @@
 #define INDEGREE_PATTERN      "<in_degree>"
 #define OUTDEGREE_PATTERN     "<out_degree>"
 
+#define LIB_PATH            "/opt/smx/lib"
 #define TPL_PATH            "/opt/smx/tpl"
 #define TPL_PATH_APP        TPL_PATH "/app"
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
