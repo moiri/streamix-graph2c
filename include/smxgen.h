@@ -60,6 +60,7 @@
 #define TPL_APP_MAIN        TPL_PATH_APP "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
 #define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/_gitignore"
+#define TPL_BOX_DOXYGEN     TPL_BOX_PATH "/_doxygen"
 #define TPL_BOX_CONF        TPL_BOX_PATH "/box_json"
 #define TPL_BOX_MK          TPL_BOX_PATH "/box_mk"
 #define TPL_BOX_CONF_MK     TPL_BOX_PATH "/config_mk"
