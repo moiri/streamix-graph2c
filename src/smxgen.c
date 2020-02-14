@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <fts.h>
+#include <errno.h>
 
 extern FILE* __src_file;
 
@@ -998,8 +999,17 @@ void smxgen_read_dep( const char* libname, char* dep )
     ssize_t buf_size;
     sprintf( link, "%s/lib%s.so", LIB_PATH, libname );
     buf_size = readlink( link, buf, 1000 );
-    buf[buf_size] = '\0';
-    sprintf( dep, " -l%s-%s", libname, buf + strlen( libname ) + 7 );
+    if( buf_size < 0 )
+    {
+        printf( "failed to parse version number of library '%s': '%s'\n", link,
+                strerror( errno ) );
+        sprintf( dep, " -l%s", libname );
+    }
+    else
+    {
+        buf[buf_size] = '\0';
+        sprintf( dep, " -l%s-%s", libname, buf + strlen( libname ) + 7 );
+    }
 }
 
 /******************************************************************************/
