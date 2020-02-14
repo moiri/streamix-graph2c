@@ -21,8 +21,8 @@ LOC_LIB_DIR = lib
 
 TGT_INCLUDE = $(DESTDIR)/usr/include/smx
 TGT_LIB = $(DESTDIR)/usr/lib/x86_64-linux-gnu
-TGT_DOC = $(DESTDIR)/usr/share/doc/smx/boxes
-TGT_CONF = $(DESTDIR)/usr/etc/smx/boxes
+TGT_DOC = $(DESTDIR)/usr/share/doc/$(LLIBNAME)$(LIB_VERSION)
+TGT_CONF = $(DESTDIR)/etc/smx/$(LLIBNAME)$(LIB_VERSION)
 
 STATLIB = $(LOC_LIB_DIR)/$(LLIBNAME).a
 DYNLIB = $(LOC_LIB_DIR)/$(LLIBNAME).so
@@ -75,16 +75,16 @@ install:
 	cp -a $(LOC_LIB_DIR)/$(LLIBNAME).so $(TGT_LIB)/$(SONAME)
 	ln -sf $(SONAME) $(TGT_LIB)/$(VLIBNAME).so
 	ln -sf $(SONAME) $(TGT_LIB)/$(LLIBNAME).so
-	cp -a README.md $(TGT_DOC)/$(VBOXNAME).md
-	cp -a box.json $(TGT_CONF)/$(VBOXNAME).json
+	cp -a README.md $(TGT_DOC)/README.md
+	cp -a box.json $(TGT_CONF)/box.json
 
 uninstall:
 	rm $(addprefix $(TGT_INCLUDE)/,$(notdir $(wildcard $(INCLUDES))))
 	rm $(TGT_LIB)/$(LLIBNAME).so
 	rm $(TGT_LIB)/$(VLIBNAME).so
 	rm $(TGT_LIB)/$(SONAME)
-	rm $(TGT_DOC)/$(VBOXNAME).md
-	rm $(TGT_CONF)/$(VBOXNAME).json
+	rm -rf $(TGT_DOC)
+	rm -rf $(TGT_CONF)
 
 clean:
 	rm -rf $(LOC_OBJ_DIR)
