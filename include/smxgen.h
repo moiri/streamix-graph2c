@@ -16,7 +16,7 @@
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_DEP_PATTERN       "<box_dependencies>"
-#define APP_RTS_DEP_PATTERN   "<rts_dependency>"
+#define RTS_DEP_PATTERN       "<rts_dependency>"
 #define APP_CONF_PATTERN      "<box_configs>"
 #define APP_CONF_NET_PATTERN  "<net_configs>"
 #define APP_CONF_INST_PATTERN "<net_inst_configs>"
@@ -44,7 +44,7 @@
 #define INDEGREE_PATTERN      "<in_degree>"
 #define OUTDEGREE_PATTERN     "<out_degree>"
 
-#define LIB_PATH            "/opt/smx/lib"
+#define LIB_PATH            "/usr/lib/x86_64-linux-gnu"
 #define TPL_PATH            "/opt/smx/tpl"
 #define TPL_PATH_APP        TPL_PATH "/app"
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
@@ -201,6 +201,11 @@ void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode );
 int smxgen_cp_file( const char* src, const char* tgt );
 
 /**
+ *
+ */
+void smxgen_get_box_deps( igraph_t* g, char* deps );
+
+/**
  * Get the name of a port given the edge id and the mode of the port.
  *
  * @param g     pointer to the dependency graph
@@ -209,6 +214,14 @@ int smxgen_cp_file( const char* src, const char* tgt );
  * @return      the name of the port or NULL
  */
 const char* smxgen_get_port_name( igraph_t* g, int eid, int mode );
+
+/**
+ * Get the curren year as string.
+ *
+ * @param year
+ *  An allocated output buffer to store the year.
+ */
+void smxgen_get_year_str( char* year );
 
 /**
  * Insert the box configurations to the configuration file.
@@ -354,6 +367,11 @@ void smxgen_main_includes( igraph_t* g );
  */
 void smxgen_port_file( int eid, const char* box_name, const char* port_name,
         const char* port_mode, const char* tpl_path, FILE* ftgt );
+
+/**
+ *
+ */
+void smxgen_read_dep( const char* libname, char* dep );
 
 /**
  * Replace all occurrences of a given a word in string.

@@ -31,6 +31,7 @@ The script performs the following tasks:
 Options:
 -h, --help                    display this usage message and exit
 -C, --directory [DIRECTORY]   specify the path where to execute the script
+-d, --doxygen                 use doxygen to generate manpages
 -v, --verbose                 generate more output on what is going on
 
 EOF
@@ -40,6 +41,7 @@ EOF
 
 directory="."
 verbose=0
+doxygen=0
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
@@ -51,6 +53,9 @@ while [ $# -gt 0 ] ; do
             ;;
         -v|--verbose)
             verbose=1
+            ;;
+        -d|--doxygen)
+        doxygen=1
             ;;
         -*)
             usage "Unknown option '$1'"
@@ -111,7 +116,7 @@ do
 done
 
 # Generate Manpages with Doxygen
-if test -f "$path/tpl/.doxygen"
+if [test -f "$path/tpl/.doxygen"] && [ $doxygen -ne 0 ]
 then
     cp $path/tpl/.doxygen $path/.doxygen
     echo "replacing version"

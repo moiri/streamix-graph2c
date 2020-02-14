@@ -5,6 +5,8 @@ Source: http://phhum-a209-cp.unibe.ch:10012/SMX/SMX-boxes/<box_name>
 Files: *
 Copyright: <date_y> <author>
 License: Propriatary
+ Propriatary software developped by the TPF for the institute of sport science
+ in the university of Bern.
 
 Files: debian/*
 Copyright: <date_y> <author>

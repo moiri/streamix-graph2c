@@ -89,6 +89,7 @@ fi
 
 git -C $path merge $tag
 
-gbp dch --git-author --release --auto --debian-branch=$branch_p
+gbp dch --git-author --release --debian-branch=$branch_p --upstream-tag='v%(version)s'
 git commit -m "Release $tag" debian/changelog
 gbp buildpackage --git-export-dir=dpkg --git-pristine-tar --git-pristine-tar-commit --git-upstream-tag='v%(version)s' --git-debian-branch=$branch_p --git-submodules -uc -us
+git -C $path checkout master

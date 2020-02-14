@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 include config.mk
 
-LIBNAME = lib$(LIBNAME)
+LLIBNAME = lib$(LIBNAME)
 LIB_VERSION = $(VMAJ).$(VMIN)
 UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
 DEBIAN_REVISION = $(VDEB)
@@ -10,28 +10,22 @@ VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
 BOXNAME = <box_name>
 VBOXNAME = $(BOXNAME)-$(LIB_VERSION)
-VLIBNAME = $(LIBNAME)-$(LIB_VERSION)
-SONAME = $(LIBNAME).so.$(LIB_VERSION)
-ANAME = $(LIBNAME).a
+VLIBNAME = $(LLIBNAME)-$(LIB_VERSION)
+SONAME = $(LLIBNAME).so.$(LIB_VERSION)
+ANAME = $(LLIBNAME).a
 
 LOC_INC_DIR = include
 LOC_SRC_DIR = src
 LOC_OBJ_DIR = obj
 LOC_LIB_DIR = lib
 
-DPKG_DIR = dpkg
-DPKG_CTL_DIR = debian
-DPKG_TGT = DEBIAN
-DPKGS = $(DPKG_DIR)/$(LIBNAME)_$(VERSION)_amd64 \
-	   $(DPKG_DIR)/$(LIBNAME)_amd64-dev
-
 TGT_INCLUDE = $(DESTDIR)/usr/include/smx
 TGT_LIB = $(DESTDIR)/usr/lib/x86_64-linux-gnu
 TGT_DOC = $(DESTDIR)/usr/share/doc/smx/boxes
 TGT_CONF = $(DESTDIR)/usr/etc/smx/boxes
 
-STATLIB = $(LOC_LIB_DIR)/$(LIBNAME).a
-DYNLIB = $(LOC_LIB_DIR)/$(LIBNAME).so
+STATLIB = $(LOC_LIB_DIR)/$(LLIBNAME).a
+DYNLIB = $(LOC_LIB_DIR)/$(LLIBNAME).so
 
 SOURCES = $(wildcard $(LOC_SRC_DIR)/*.c)
 OBJECTS := $(patsubst $(LOC_SRC_DIR)/%.c, $(LOC_OBJ_DIR)/%.o, $(SOURCES))
@@ -47,7 +41,8 @@ LINK_DIR = -L/usr/local/lib \
 	-L$(TGT_LIB) $(EXT_LIBS_DIR)
 
 LINK_FILE = $(LIB_RTS) \
-	-lbson-1.0 $(EXT_LIBS)
+	-lzlog-1.2 \
+	$(EXT_LIBS)
 
 CFLAGS = -Wall -fPIC $(EXT_CFLAGS) -DLIB_$(BOXNAME)_VERSION=\"$(UPSTREAM_VERSION)\"
 DEBUG_FLAGS = -g -O0 -DLTTNG_UST_DEBUG_VALGRIND
@@ -77,15 +72,15 @@ $(LOC_OBJ_DIR)/%.o: $(LOC_SRC_DIR)/%.c $(INCLUDES)
 install:
 	mkdir -p $(TGT_LIB) $(TGT_INCLUDE) $(TGT_DOC) $(TGT_CONF)
 	cp -a $(LOC_INC_DIR)/*.h $(TGT_INCLUDE)/.
-	cp -a $(LOC_LIB_DIR)/$(LIBNAME).so $(TGT_LIB)/$(SONAME)
+	cp -a $(LOC_LIB_DIR)/$(LLIBNAME).so $(TGT_LIB)/$(SONAME)
 	ln -sf $(SONAME) $(TGT_LIB)/$(VLIBNAME).so
-	ln -sf $(SONAME) $(TGT_LIB)/$(LIBNAME).so
+	ln -sf $(SONAME) $(TGT_LIB)/$(LLIBNAME).so
 	cp -a README.md $(TGT_DOC)/$(VBOXNAME).md
 	cp -a box.json $(TGT_CONF)/$(VBOXNAME).json
 
 uninstall:
 	rm $(addprefix $(TGT_INCLUDE)/,$(notdir $(wildcard $(INCLUDES))))
-	rm $(TGT_LIB)/$(LIBNAME).so
+	rm $(TGT_LIB)/$(LLIBNAME).so
 	rm $(TGT_LIB)/$(VLIBNAME).so
 	rm $(TGT_LIB)/$(SONAME)
 	rm $(TGT_DOC)/$(VBOXNAME).md
