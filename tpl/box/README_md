@@ -10,7 +10,8 @@ ADD A DESCRIPTION HERE ...
 The following configuration options are possible:
 
 An example configuration can be found in
-`/opt/smx/conf/<box_name>-<maj_version>.json`.
+`/etc/smx/lib<lib_name>__version__/box.json`
+where `__version__` stands for the version number (major.minor) of the box.
 
 ## Triggers
 
@@ -54,9 +55,3 @@ In order set up test the following steps must be taken:
  5. Run the test with either of the following commands
    - `./<box_name>`
    - `make run`.
-
-## Dependencies
-
-The box has the following dependencies:
- - [libsmxrts](https://github.com/moiri/streamix-rts)
- - [libbson](http://mongoc.org/libbson/current/index.html)
