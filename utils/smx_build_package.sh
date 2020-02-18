@@ -17,21 +17,38 @@ usage() {
     cat << EOF
 
 Usage: $PROGNAME [OPTION ...]
-Automatically prepare a new package using the current version of a box.
+Depending on the current version of a box, do one of the following
+ - create a new debian package
+ - update an existing debian package
 
 The version number given in the file 'config.mk' is used.
+IMPOTANT: when updating a package you MUST fix the version number in the
+changelog. Currently a wrong number is generated.
 
-The script performs the following tasks:
+When creating a new debian package the followng tasks are berformed:
  1. Get the current version number.
- 2. Create and checkout a new upstream branch (it is called maj.min).
- 3. Create a new packeting branch (it is called debian/maj.min.rev).
+ 2. Create a new packeting branch (it is called debian/maj.min.rev).
+ 3. Create and checkout a new upstream branch (it is called maj.min).
  4. Generate all required debian files.
  5. Add and commit the new files to the release branch.
  6. Create a tag with the current version.
- 7. Checkout the packeting branch (debian/maj.min).
- 8. Merge with the tag created in 3.
+ 7. Checkout the packeting branch (debian/maj.min.rev).
+ 8. Merge with the tag created in 6.
  9. Update debian/changelog.
  10. Build the package.
+
+When updating a debian package the followng tasks are berformed:
+ 1. Get the current version number.
+ 2. Create a new packeting branch (it is called debian/maj.min.rev).
+ 3. Checkout the upstream branch (it is called maj.min).
+ 4. Merge head (before switching to upstream branch) into upstream branch.
+ 5. Generate manpages.
+ 6. Add and commit the changed files to the release branch.
+ 7. Create a tag with the current version.
+ 8. Checkout the packeting branch (debian/maj.min.rev).
+ 9. Merge with the tag created in 6.
+ 10. Update debian/changelog.
+ 11. Build the package.
 
 Options:
 -h, --help                    display this usage message and exit
@@ -135,7 +152,7 @@ else
     # Rename pristine-tar branch
     if ! git -C $path branch -m $pristine_branch_v $pristine_branch; then
         echo "Branch $pristine_branch_v does not exist on working directory $path, aborting"
-        exit 0
+        exit 1
     fi
 fi
 
@@ -170,8 +187,11 @@ fi
 git -C $path merge $tag
 
 # Generate changelog and commit changes
-gbp dch --git-author --release --debian-branch=$branch_p --upstream-branch=$branch --upstream-tag='v%(version)s'
-git commit -m "Release $tag" debian/changelog
+gbp dch --git-author --release --debian-branch=$branch_p --upstream-tag='v%(version)s'
+
+if ! git commit -m "Release $tag" debian/changelog; then
+    echo "No changes to initial changelog, using default"
+fi
 
 # Build the package
 gbp buildpackage --git-export-dir=dpkg --git-pristine-tar --git-pristine-tar-commit --git-upstream-tag='v%(version)s' --git-debian-branch=$branch_p --git-submodules -uc -us
