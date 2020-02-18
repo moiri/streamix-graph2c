@@ -1,0 +1,2 @@
+app.json etc/smx/<bin_name><maj_version>
+app.zlog etc/smx/<bin_name><maj_version>

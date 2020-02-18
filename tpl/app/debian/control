@@ -1,5 +1,5 @@
 Source: <bin_name><maj_version>
-Section: unknown
+Section: science
 Priority: optional
 Maintainer: <author>
 Build-Depends: debhelper (>= 10)
@@ -10,4 +10,5 @@ Package: <bin_name><maj_version>
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Streamix Application '<app_name>'
- This is an application that was created with the coordination language Streamix.
+ This is an application that was created with the coordination language
+ Streamix.
