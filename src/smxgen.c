@@ -58,6 +58,8 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
         smxgen_replace( buffer, APP_NAME_PATTERN, name );
         smxgen_replace( buffer, APP_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "deps" ) );
+        smxgen_replace( buffer, APP_REL_PATTERN,
+                igraph_cattribute_GAS( g, "rels" ) );
         smxgen_replace( buffer, RTS_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "rts_dep" ) );
         binname = malloc( strlen( name ) + 1 );
@@ -405,7 +407,7 @@ int smxgen_cp_file( const char* src, const char* tgt )
 }
 
 /******************************************************************************/
-void smxgen_get_box_deps( igraph_t* g, char* deps )
+void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -415,6 +417,7 @@ void smxgen_get_box_deps( igraph_t* g, char* deps )
     const char* names[net_count];
     char libname[1000];
     char dep[1000];
+    bool first = true;
 
     for( idx = 0; idx < net_count; idx++ )
     {
@@ -440,6 +443,20 @@ void smxgen_get_box_deps( igraph_t* g, char* deps )
         names[idx++] = name;
         smxgen_read_dep( libname, dep );
         strcat( deps, dep );
+        if( rels != NULL )
+        {
+            smxgen_read_dep( libname, dep );
+            if( first )
+            {
+                first = false;
+            }
+            else
+            {
+                strcat( rels, ", " );
+            }
+            strcat( rels, dep + 3 ); // trim ' -l'
+            strcat( rels, "(3)" );
+        }
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -1191,6 +1208,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     char path_tmp[1000];
     char file[1000];
     char deps[1000] = "";
+    char rels[1000] = "";
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     int tt_vcnt = 0;
@@ -1205,8 +1223,9 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
         return;
     }
 
-    smxgen_get_box_deps( g, deps );
+    smxgen_get_box_deps( g, deps, rels );
     igraph_cattribute_GAS_set( g, "deps", deps );
+    igraph_cattribute_GAS_set( g, "rels", rels );
 
     sprintf( file, "%s/app.c", build_path );
     __src_file = fopen( file, "w" );

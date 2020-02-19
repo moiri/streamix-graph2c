@@ -10,6 +10,7 @@
 VMAJ = 0
 VMIN = 1
 VREV = 0
+VDEB = 1
 
 # the RTS library
 LIB_RTS =<rts_dependency>
@@ -25,3 +26,6 @@ EXT_INCS_DIR =
 
 # define additional CFLAGS
 EXT_CFLAGS =
+
+# the name of the application
+APPNAME = <app_name>

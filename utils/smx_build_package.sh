@@ -17,7 +17,8 @@ usage() {
     cat << EOF
 
 Usage: $PROGNAME [OPTION ...]
-Depending on the current version of a box, do one of the following
+Depending on the current version of the Streamix software to build, do one of
+the following:
  - create a new debian package
  - update an existing debian package
 
@@ -42,7 +43,7 @@ When updating a debian package the followng tasks are berformed:
  2. Create a new packeting branch (it is called debian/maj.min.rev).
  3. Checkout the upstream branch (it is called maj.min).
  4. Merge head (before switching to upstream branch) into upstream branch.
- 5. Generate manpages.
+ 5. Generate manpages (if a library package is built).
  6. Add and commit the changed files to the release branch.
  7. Create a tag with the current version.
  8. Checkout the packeting branch (debian/maj.min.rev).
@@ -54,7 +55,7 @@ Options:
 -h, --help                    display this usage message and exit
 -C, --directory [DIRECTORY]   specify the path where to execute the script
 -d, --doxygen                 do not generate manpages with doxygen
--v, --verbose                 generate more output on what is going on
+-l, --library                 build a library file instead of a binary
 
 EOF
 
@@ -62,9 +63,9 @@ EOF
 }
 
 directory="."
-verbose=0
 doxygen=1
 new=0
+library=0
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
@@ -77,8 +78,8 @@ while [ $# -gt 0 ] ; do
         -d|--doxygen)
             doxygen=0
             ;;
-        -v|--verbose)
-            verbose=1
+        -l|--library)
+            library=1
             ;;
         -*)
             usage "Unknown option '$1'"
@@ -97,8 +98,12 @@ VMAJ=$(gawk 'match($0, /VMAJ = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VMIN=$(gawk 'match($0, /VMIN = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VREV=$(gawk 'match($0, /VREV = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
 VDEB=$(gawk 'match($0, /VDEB = ([0-9]+)/, a) {print a[1]}' $path/config.mk)
-LIBNAME=$(gawk 'match($0, /LIBNAME = (.+)/, a) {print a[1]}' $path/config.mk)
-LIBNAME=lib$LIBNAME
+if [ $library -ne 0 ]; then
+    LIBNAME=$(gawk 'match($0, /LIBNAME = (.+)/, a) {print a[1]}' $path/config.mk)
+    LIBNAME=lib$LIBNAME
+else
+    APPNAME=$(gawk 'match($0, /APPNAME = (.+)/, a) {print a[1]}' $path/config.mk)
+fi
 DATE_R=$(date -R | sed -e 's/[\/&]/\\&/g')
 
 # Define branch and tag names
@@ -107,6 +112,12 @@ branch_p=debian/$branch.$VREV
 tag=v$branch.$VREV
 pristine_branch=pristine-tar
 pristine_branch_v=${pristine_branch}_$branch
+
+# Only execute the script if the repo is clean
+if ! [ -z "$(git status --porcelain)" ]; then
+    echo "Working directory $path has uncommitted changes, aborting"
+    exit 1
+fi
 
 # Check if a package must be updated or a new package is required
 if ! git -C $path show-ref --verify --quiet refs/heads/$branch; then
@@ -122,9 +133,14 @@ if [ $new -ne 0 ]; then
     # Copy Debian Templates
     rm -rf $path/debian
     cp -R $path/tpl/debian $path/debian
-    mv $path/debian/install $path/debian/$LIBNAME$VMAJ.$VMIN.install
-    mv $path/debian/install-dev $path/debian/$LIBNAME-dev.install
-    mv $path/debian/docs $path/debian/$LIBNAME$VMAJ.$VMIN.docs
+    if [ $library -ne 0 ]
+    then
+        mv $path/debian/install $path/debian/$LIBNAME$VMAJ.$VMIN.install
+        mv $path/debian/install-dev $path/debian/$LIBNAME-dev.install
+        mv $path/debian/docs $path/debian/$LIBNAME$VMAJ.$VMIN.docs
+    else
+        mv $path/debian/manpage $path/debian/$APPNAME-$VMAJ.$VMIN.1
+    fi
 
     # Fill Debian Templates with Meaningful Information
     files=$(find $path/debian -type f -exec echo "{}" \;)
@@ -157,7 +173,7 @@ else
 fi
 
 # Generate Manpages with Doxygen
-if [ -f "$path/tpl/.doxygen" ] && [ $doxygen -ne 0 ]
+if [ -f "$path/tpl/.doxygen" ] && [ $doxygen -ne 0 ] && [ $library -ne 0 ]
 then
     cp $path/tpl/.doxygen $path/.doxygen
     echo "replacing version"
@@ -171,7 +187,9 @@ fi
 
 # Commit changes to upstream branch
 git add .
-git commit -m "Create package files for new release $tag"
+if ! git commit -m "Create package files for new release $tag"; then
+    echo "No changes to package files, using default"
+fi
 
 # Create version tag
 if ! git -C $path tag $tag; then

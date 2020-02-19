@@ -1,0 +1,32 @@
+.\" Manpage for <app_name>.
+.\" Contact tpf@humdek.unibe.ch to correct errors or typos.
+.TH man 8 "06 May 2010" "<maj_version>" "<app_name> man page"
+.SH NAME
+<app_name> \- A Streamix application
+.SH SYNOPSIS
+<app_name> [OPTION...]
+.SH DESCRIPTION
+This is an application that was created with the coordination language Streamix.
+.SH OPTIONS
+.TP
+.B -h
+Prints program usage information and exits successfully.
+.TP
+.B -v
+Prints the program version and exits successfully.
+.TP
+.BI -c " FILE"
+Configuration file to be passed to the application.
+.br
+If no file is specified the application falls back to:
+.RS
+1. 'app.json' in the application root
+.br
+2. 'app.json' in /etc/smx/<app_name>-<maj_version>
+.RE
+.SH SEE ALSO
+<box_relations>
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+<author>

@@ -2,29 +2,23 @@ SHELL := /bin/bash
 
 include config.mk
 
-APPNAME = <app_name>
-
 LIB_VERSION = $(VMAJ).$(VMIN)
 UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
-DEBIAN_REVISION = 0
+DEBIAN_REVISION = $(VDEB)
 VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
 VAPPNAME = $(APPNAME)-$(LIB_VERSION)
 
-DPKG_DIR = dpkg
-DPKG_CTL_DIR = debian
-DPKG_TGT = DEBIAN
-DPKGS = $(DPKG_DIR)/$(APPNAME)_$(VERSION)_amd64
-TGT_BIN = /opt/smx/bin
-TGT_DOC = /opt/smx/doc/apps
-TGT_CONF = /opt/smx/conf/apps
+TGT_INCLUDE = $(DESTDIR)/usr/include/smx
+TGT_LIB = $(DESTDIR)/usr/lib/x86_64-linux-gnu
+TGT_BIN = $(DESTDIR)/usr/bin
+TGT_DOC = $(DESTDIR)/usr/share/doc/$(APPNAME)$(LIB_VERSION)
+TGT_CONF = $(DESTDIR)/etc/smx/$(VAPPNAME)
 
 GENPATH = build
 BOXIMPL = boxes/*
 BOXES = $(wildcard $(BOXIMPL))
 FORMAT = graphml
-
-BIN_PATH = /opt/smx/bin
 
 OUTGRAPH_NAME = $(APPNAME).$(FORMAT)
 SIAGRAPH_NAME = sia_$(APPNAME).$(FORMAT)
@@ -39,13 +33,13 @@ SOURCES = $(OUTSRC)
 
 INCLUDES = $(wildcard $(BOXIMPL)/include/*.h)
 
-INCLUDES_DIR = -I/usr/local/ \
-	-I/opt/smx/include \
-	-I/usr/include/libbson-1.0 \
-	-I. $(BOX_INC_DIR) $(EXT_INCS_DIR)
+INCLUDES_DIR = -I/usr/local \
+			   -I/usr/include/libbson-1.0 \
+			   -I$(TGT_INCLUDE) \
+			   -I. $(BOX_INC_DIR) $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
-	-L/opt/smx/lib $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
+	-L$(TGT_LIB) $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
 
 LINK_FILE = $(LIBS) $(LIB_RTS) \
 	-lpthread \
@@ -82,16 +76,16 @@ setboxpaths:
 	$(eval BOX_LIB_DIR = $(patsubst %, -L%, $(BOX_LIB_DIR_RAW)))
 
 $(SIAGRAPH): $(PNSCGRAPH)
-	$(BIN_PATH)/smxsia -f $(FORMAT) -o $@ $^ $(GENPATH)/sia/*
+	$(TGT_BIN)/smxsia -f $(FORMAT) -o $@ $^ $(GENPATH)/sia/*
 
 $(PNSCGRAPH) $(OUTSRC) $(OUTINC): $(OUTGRAPH)
-	$(BIN_PATH)/smxrtsp $^ -p $(GENPATH) -f $(FORMAT) -e "<author>"
+	$(TGT_BIN)/smxrtsp $^ -p $(GENPATH) -f $(FORMAT) -e "<author>"
 
 $(OUTGRAPH): $(APPNAME).smx
-	$(BIN_PATH)/smxc -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^
+	$(TGT_BIN)/smxc -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^
 
 
-.PHONY: clean run clean_run valgrind boximpl $(BOXIMPL) setboxpaths dpkg $(DPKGS) install uninstall
+.PHONY: clean run clean_run test valgrind boximpl $(BOXIMPL) setboxpaths install uninstall
 
 clean: clean_run
 	rm -rf $(GENPATH)
@@ -118,29 +112,12 @@ install:
 	mkdir -p (TGT_BIN) $(TGT_DOC) $(TGT_CONF)
 	cp -a $(APPNAME) $(TGT_BIN)/$(VAPPNAME)
 	ln -sf $(VAPPNAME) $(TGT_BIN)/$(APPNAME)
-	cp -a README.md $(TGT_DOC)/$(VAPPNAME).md
-	cp -a app.json $(TGT_CONF)/$(VAPPNAME).json
+	cp -a README.md $(TGT_DOC)/README.md
+	cp -a app.json $(TGT_CONF)/app.json
+	cp -a zlog.json $(TGT_CONF)/zlog.json
 
 uninstall:
 	rm $(TGT_BIN)/$(APPNAME)
 	rm $(TGT_BIN)/$(VAPPNAME)
-	rm $(TGT_DOC)/$(VAPPNAME).md
-	rm $(TGT_CONF)/$(VAPPNAME).json
-
-dpkg: $(DPKGS)
-$(DPKGS):
-	mkdir -p $@$(TGT_BIN)
-	cp $(APPNAME) $@$(TGT_BIN)/$(VAPPNAME)
-	ln -sf $(VAPPNAME) $@$(TGT_BIN)/$(APPNAME)
-	mkdir -p $@$(TGT_DOC)
-	cp README.md $@$(TGT_DOC)/$(VAPPNAME).md
-	mkdir -p $@$(TGT_CONF)
-	cp app.json $@$(TGT_CONF)/$(VAPPNAME).json
-	mkdir -p $@/$(DPKG_TGT)
-	cp $(DPKG_CTL_DIR)/control $@/$(DPKG_TGT)/control
-	sed -i 's/<version>/$(VERSION)/g' $@/$(DPKG_TGT)/control
-	sed -i 's/<maj_version>/$(LIB_VERSION)/g' $@/$(DPKG_TGT)/control
-	dpkg-deb -b $@
-
-dpkg-clean:
-	rm -rf $(DPKG_DIR)
+	rm -rf $(TGT_DOC)
+	rm -rf $(TGT_CONF)

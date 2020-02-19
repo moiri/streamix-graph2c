@@ -16,6 +16,7 @@
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_DEP_PATTERN       "<box_dependencies>"
+#define APP_REL_PATTERN       "<box_relations>"
 #define RTS_DEP_PATTERN       "<rts_dependency>"
 #define APP_CONF_PATTERN      "<box_configs>"
 #define APP_CONF_NET_PATTERN  "<net_configs>"
@@ -204,7 +205,7 @@ int smxgen_cp_file( const char* src, const char* tgt );
 /**
  *
  */
-void smxgen_get_box_deps( igraph_t* g, char* deps );
+void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels );
 
 /**
  * Get the name of a port given the edge id and the mode of the port.
