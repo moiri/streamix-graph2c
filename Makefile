@@ -6,6 +6,7 @@ LOC_SRC_DIR = src
 SIA_LANG_DIR = streamix-sia-lang
 
 TARGET_PATH = /opt/smx
+TGT_BIN = /usr/bin
 
 SOURCES = main.c \
 		  $(LOC_SRC_DIR)/* \
@@ -42,10 +43,11 @@ $(PROJECT): $(SOURCES) $(INCLUDES)
 .PHONY: clean install
 
 install:
-	mkdir -p $(TARGET_PATH)/bin
+	mkdir -p $(TGT_BIN)
 	mkdir -p $(TARGET_PATH)/tpl
-	cp -a $(PROJECT) $(TARGET_PATH)/bin/.
+	cp -a $(PROJECT) $(TGT_BIN)/.
 	cp -a tpl $(TARGET_PATH)/
+	cp utils/*.sh $(TGT_BIN)/.
 
 clean:
 	rm -f $(PROJECT)
