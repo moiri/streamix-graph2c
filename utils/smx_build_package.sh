@@ -103,8 +103,10 @@ if [ $library -ne 0 ]; then
     LIBNAME=lib$LIBNAME
 else
     APPNAME=$(gawk 'match($0, /APPNAME = (.+)/, a) {print a[1]}' $path/config.mk)
+    BINNAME=$(echo $APPNAME | tr -cd [:alnum:])
 fi
 DATE_R=$(date -R | sed -e 's/[\/&]/\\&/g')
+DATE_M=$(date "+%d %B %Y" | sed -e 's/[\/&]/\\&/g')
 
 # Define branch and tag names
 branch=$VMAJ.$VMIN
@@ -132,14 +134,16 @@ if [ $new -ne 0 ]; then
 
     # Copy Debian Templates
     rm -rf $path/debian
-    cp -R $path/tpl/debian $path/debian
     if [ $library -ne 0 ]
     then
+        cp -R $path/tpl/debian $path/debian
         mv $path/debian/install $path/debian/$LIBNAME$VMAJ.$VMIN.install
         mv $path/debian/install-dev $path/debian/$LIBNAME-dev.install
         mv $path/debian/docs $path/debian/$LIBNAME$VMAJ.$VMIN.docs
     else
+        cp -R $path/build/tpl/debian $path/debian
         mv $path/debian/manpage $path/debian/$APPNAME-$VMAJ.$VMIN.1
+        ( cd $path && echo "debian/$APPNAME-$VMAJ.$VMIN.1" > debian/$BINNAME$VMAJ.$VMIN.manpages )
     fi
 
     # Fill Debian Templates with Meaningful Information
@@ -160,6 +164,9 @@ if [ $new -ne 0 ]; then
 
         echo "replacing date_r: $DATE_R"
         sed -i "s/<date_r>/$DATE_R/g" $file
+
+        echo "replacing date_r: $DATE_M"
+        sed -i "s/<date_m>/$DATE_M/g" $file
     done
 else
     head=$(git rev-parse HEAD)

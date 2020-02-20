@@ -26,7 +26,6 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
     FILE* ftpl;
     FILE* ftgt;
     char buffer[BUFFER_SIZE];
-    char* binname;
     const char* name = igraph_cattribute_GAS( g, "name" );
     char year[10];
     smxgen_get_year_str( year );
@@ -62,10 +61,8 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
                 igraph_cattribute_GAS( g, "rels" ) );
         smxgen_replace( buffer, RTS_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "rts_dep" ) );
-        binname = malloc( strlen( name ) + 1 );
-        smxgen_to_alnum( binname, name );
-        smxgen_replace( buffer, BIN_NAME_PATTERN, binname );
-        free( binname );
+        smxgen_replace( buffer, BIN_NAME_PATTERN,
+                igraph_cattribute_GAS( g, "binname" ) );
         if( strstr( buffer, APP_CONF_PATTERN ) != NULL )
         {
             smxgen_insert_conf_impl( g, ftgt );
@@ -445,7 +442,6 @@ void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels )
         strcat( deps, dep );
         if( rels != NULL )
         {
-            smxgen_read_dep( libname, dep );
             if( first )
             {
                 first = false;
@@ -454,8 +450,8 @@ void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels )
             {
                 strcat( rels, ", " );
             }
-            strcat( rels, dep + 3 ); // trim ' -l'
-            strcat( rels, "(3)" );
+            strcat( rels, name ); // trim ' -l'
+            strcat( rels, ".h(3)" );
         }
         IGRAPH_VIT_NEXT( v_it );
     }
@@ -694,7 +690,8 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
         igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
         igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
         cgen_net_init( ident, vid1, VECTOR( indegree )[0],
-                VECTOR( outdegree )[0] );
+                VECTOR( outdegree )[0],
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
         if( smxgen_net_is_type( g, vid1, TEXT_CP ) )
             cgen_net_init_rn( ident, vid1 );
         igraph_vs_destroy( &v_cp );
@@ -1209,6 +1206,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     char file[1000];
     char deps[1000] = "";
     char rels[1000] = "";
+    char binname[1000] = "";
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     int tt_vcnt = 0;
@@ -1226,6 +1224,8 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     smxgen_get_box_deps( g, deps, rels );
     igraph_cattribute_GAS_set( g, "deps", deps );
     igraph_cattribute_GAS_set( g, "rels", rels );
+    smxgen_to_alnum( binname, igraph_cattribute_GAS( g, "name" ) );
+    igraph_cattribute_GAS_set( g, "binname", binname );
 
     sprintf( file, "%s/app.c", build_path );
     __src_file = fopen( file, "w" );
@@ -1237,8 +1237,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
-        smxgen_replace( buffer, APP_NAME_PATTERN,
-                igraph_cattribute_GAS( g, "name" ) );
+        smxgen_replace( buffer, BIN_NAME_PATTERN, binname );
         if( strstr( buffer, APP_NW_PATTERN ) != NULL )
         {
             smxgen_network_create( g, ident, &tt_vcnt, &tt_ecnt );

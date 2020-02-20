@@ -61,7 +61,8 @@ configuration is used which matches with
  4. any net instance (`_nets._default`)
 
 An example configuration of this application can be found in
-`/opt/smx/conf/<app_name>.json`.
+`/etc/smx/<app_name>-__version__/app.json` where `__version__` stand for the
+version number (major.minor) of the application.
 
 ## Network
 

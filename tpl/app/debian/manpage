@@ -1,6 +1,6 @@
 .\" Manpage for <app_name>.
 .\" Contact tpf@humdek.unibe.ch to correct errors or typos.
-.TH man 8 "06 May 2010" "<maj_version>" "<app_name> man page"
+.TH man 1 "<data_m>" "<maj_version>" "<app_name> man page"
 .SH NAME
 <app_name> \- A Streamix application
 .SH SYNOPSIS
@@ -22,7 +22,7 @@ If no file is specified the application falls back to:
 .RS
 1. 'app.json' in the application root
 .br
-2. 'app.json' in /etc/smx/<app_name>-<maj_version>
+2. 'app.json' in /etc/smx/<bin_name><maj_version>
 .RE
 .SH SEE ALSO
 <box_relations>

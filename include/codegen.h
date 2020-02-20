@@ -13,7 +13,8 @@ void cgen_connect_tf( int ident, int vid, int eid1, int eid2,
         const char* ch_name );
 void cgen_ident( int );
 void cgen_include_local( const char* );
-void cgen_net_init( int, int, int, int );
+void cgen_net_init( int ident, int id, int indegree, int outdegree,
+        const char* box_name );
 void cgen_net_init_profiler( int ident, int id );
 void cgen_net_init_rn( int ident, int id );
 void cgen_net_init_tf( int ident, int id, int sec, int nsec );

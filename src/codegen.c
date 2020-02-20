@@ -83,11 +83,12 @@ void cgen_include_local( const char* file )
 }
 
 /******************************************************************************/
-void cgen_net_init( int ident, int id, int indegree, int outdegree )
+void cgen_net_init( int ident, int id, int indegree, int outdegree,
+        const char* box_name )
 {
     cgen_ident( ident );
-    cgen_print( "SMX_NET_INIT( %d, %d, %d );\n", id, indegree,
-            outdegree );
+    cgen_print( "SMX_NET_INIT( %d, %d, %d, %s );\n", id, indegree,
+            outdegree, box_name );
 }
 
 /******************************************************************************/

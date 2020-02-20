@@ -8,12 +8,13 @@ DEBIAN_REVISION = $(VDEB)
 VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 
 VAPPNAME = $(APPNAME)-$(LIB_VERSION)
+VPKGNAME = <bin_name>$(LIB_VERSION)
 
 TGT_INCLUDE = $(DESTDIR)/usr/include/smx
 TGT_LIB = $(DESTDIR)/usr/lib/x86_64-linux-gnu
 TGT_BIN = $(DESTDIR)/usr/bin
-TGT_DOC = $(DESTDIR)/usr/share/doc/$(APPNAME)$(LIB_VERSION)
-TGT_CONF = $(DESTDIR)/etc/smx/$(VAPPNAME)
+TGT_DOC = $(DESTDIR)/usr/share/doc/$(VPKGNAME)
+TGT_CONF = $(DESTDIR)/etc/smx/$(VPKGNAME)
 
 GENPATH = build
 BOXIMPL = boxes/*
@@ -85,7 +86,7 @@ $(OUTGRAPH): $(APPNAME).smx
 	$(TGT_BIN)/smxc -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^
 
 
-.PHONY: clean run clean_run test valgrind boximpl $(BOXIMPL) setboxpaths install uninstall
+.PHONY: clean run clean_run valgrind boximpl $(BOXIMPL) setboxpaths install uninstall
 
 clean: clean_run
 	rm -rf $(GENPATH)
@@ -102,22 +103,17 @@ clean_run:
 run:
 	./$(APPNAME)
 
-test: clean_run run
-	./test.sh
-
 valgrind:
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(APPNAME)
 
 install:
-	mkdir -p (TGT_BIN) $(TGT_DOC) $(TGT_CONF)
+	mkdir -p $(TGT_BIN) $(TGT_DOC) $(TGT_CONF)
 	cp -a $(APPNAME) $(TGT_BIN)/$(VAPPNAME)
-	ln -sf $(VAPPNAME) $(TGT_BIN)/$(APPNAME)
 	cp -a README.md $(TGT_DOC)/README.md
 	cp -a app.json $(TGT_CONF)/app.json
-	cp -a zlog.json $(TGT_CONF)/zlog.json
+	cp -a app.zlog $(TGT_CONF)/app.zlog
 
 uninstall:
-	rm $(TGT_BIN)/$(APPNAME)
 	rm $(TGT_BIN)/$(VAPPNAME)
 	rm -rf $(TGT_DOC)
 	rm -rf $(TGT_CONF)

@@ -24,7 +24,7 @@
 <app_includes>
 
 #define JSON_APP_CONFIG_PATH "app.json"
-#define JSON_OPT_CONFIG_PATH "/opt/smx/conf/apps/<app_name>_" LIB_VERSION ".json"
+#define JSON_OPT_CONFIG_PATH "/etc/smx/<bin_name>" LIB_VERSION "/app.json"
 #define ENV_VAR "SMX_LOG_PREFIX"
 
 int main( int argc, char **argv )
