@@ -13,12 +13,12 @@ Multi-Arch: same
 Depends: lib<lib_name><maj_version> (= ${binary:Version}), ${misc:Depends}
 Description: Development Package of 'lib<lib_name>'
  This is the development package of the library 'lib<lib_name>'. This library
- contains the box implemntation of the Streamix box '<box_name>'.
+ contains the box implementation of the Streamix box '<box_name>'.
 
 Package: lib<lib_name><maj_version>
 Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Box implmentation of the Streamix box '<box_name>'
+Description: Box implementation of the Streamix box '<box_name>'
  This is a box implementation to be used in a network described with the
  coordination language Streamix.
