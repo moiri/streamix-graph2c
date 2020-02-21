@@ -18,13 +18,15 @@
 #ifndef BOX_<box_name>_SIG_H
 #define BOX_<box_name>_SIG_H
 
+/** The static indegree of the box */
 #define SMX_INDEGREE_<box_name> <in_degree>
+/** The static outdegree of the box */
 #define SMX_OUTDEGREE_<box_name> <out_degree>
 
-/** #enum ports_<box_name>_in_e */
+/** #ports_<box_name>_in_e */
 typedef enum ports_<box_name>_in_e ports_<box_name>_in_t;
 
-/** #enum ports_<box_name>_out_e */
+/** #ports_<box_name>_out_e */
 typedef enum ports_<box_name>_out_e ports_<box_name>_out_t;
 
 /**
