@@ -1,8 +1,8 @@
 <app_name>
 <app_name>.log
-*_sig.h
 
 build
 dot
 out
 log
+dpkg
