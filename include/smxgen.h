@@ -11,6 +11,11 @@
 #include <igraph.h>
 #include <stdbool.h>
 
+#define PATH_INCLUDE_PATTERN  "<include_path>"
+#define PATH_LIB_PATTERN      "<lib_path>"
+#define PATH_BIN_PATTERN      "<bin_path>"
+#define PATH_DOC_PATTERN      "<doc_path>"
+#define PATH_CONF_PATTERN     "<conf_path>"
 #define YEAR_PATTERN          "<date_y>"
 #define AUTHOR_PATTERN        "<author>"
 #define APP_NAME_PATTERN      "<app_name>"
@@ -45,8 +50,13 @@
 #define INDEGREE_PATTERN      "<in_degree>"
 #define OUTDEGREE_PATTERN     "<out_degree>"
 
-#define LIB_PATH            "/usr/lib/x86_64-linux-gnu"
+#define TPL_INCLUDE_PATH    "/usr/include/smx"
+#define TPL_LIB_PATH        "/usr/lib/x86_64-linux-gnu"
+#define TPL_BIN_PATH        "/usr/bin"
+#define TPL_DOC_PATH        "/usr/share/doc"
+#define TPL_CONF_PATH       "/etc/smx"
 #define TPL_PATH            "/opt/smx/tpl"
+
 #define TPL_PATH_APP        TPL_PATH "/app"
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
 #define TPL_APP_GITIGNORE   TPL_PATH_APP "/_gitignore"
@@ -383,6 +393,14 @@ void smxgen_read_dep( const char* libname, char* dep );
  * @param new_word  the replacing word
  */
 void smxgen_replace( char* str, const char* old_word, const char* new_word );
+
+/**
+ * Replace all path patterns
+ *
+ * @param buffer
+ *  pointer to the current line buffer
+ */
+void smxgen_replace_path( char* buffer );
 
 /**
  * Checks wether a timer with the same settings already exists

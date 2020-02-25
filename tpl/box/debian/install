@@ -1,2 +1,2 @@
 usr/lib/*/lib*.so*
-box.json etc/smx/lib<lib_name><maj_version>
+box.json <conf_path>/lib<lib_name><maj_version>

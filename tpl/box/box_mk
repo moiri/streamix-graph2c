@@ -19,10 +19,10 @@ LOC_SRC_DIR = src
 LOC_OBJ_DIR = obj
 LOC_LIB_DIR = lib
 
-TGT_INCLUDE = $(DESTDIR)/usr/include/smx
-TGT_LIB = $(DESTDIR)/usr/lib/x86_64-linux-gnu
-TGT_DOC = $(DESTDIR)/usr/share/doc/$(LLIBNAME)$(LIB_VERSION)
-TGT_CONF = $(DESTDIR)/etc/smx/$(LLIBNAME)$(LIB_VERSION)
+TGT_INCLUDE = $(DESTDIR)<include_path>
+TGT_LIB = $(DESTDIR)<lib_path>
+TGT_DOC = $(DESTDIR)<doc_path>/$(LLIBNAME)$(LIB_VERSION)
+TGT_CONF = $(DESTDIR)<conf_path>/$(LLIBNAME)$(LIB_VERSION)
 
 STATLIB = $(LOC_LIB_DIR)/$(LLIBNAME).a
 DYNLIB = $(LOC_LIB_DIR)/$(LLIBNAME).so

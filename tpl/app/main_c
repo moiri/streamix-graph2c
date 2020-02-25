@@ -23,14 +23,18 @@
 #include "smxrts.h"
 <app_includes>
 
+#define LOG_APP_CONFIG_PATH "app.zlog"
+#define LOG_SYS_CONFIG_PATH "<conf_path>/<bin_name>" LIB_VERSION "/" LOG_APP_CONFIG_PATH
+#define LOG_GLOBAL_CONFIG_PATH "<conf_path>/default.zlog"
 #define JSON_APP_CONFIG_PATH "app.json"
-#define JSON_OPT_CONFIG_PATH "/etc/smx/<bin_name>" LIB_VERSION "/app.json"
+#define JSON_SYS_CONFIG_PATH "<conf_path>/<bin_name>" LIB_VERSION "/" JSON_APP_CONFIG_PATH
 #define ENV_VAR "SMX_LOG_PREFIX"
 
 int main( int argc, char **argv )
 {
     int c;
-    char* conf_file;
+    char* app_conf_file = NULL;
+    char* log_conf_file = NULL;
     char env_time[100];
     char env_var[200];
     time_t now = time( NULL );
@@ -41,10 +45,19 @@ int main( int argc, char **argv )
 
     putenv( env_var );
 
+    if( access( LOG_APP_CONFIG_PATH, F_OK ) != -1 )
+        log_conf_file = LOG_APP_CONFIG_PATH;
+    else if( access( LOG_SYS_CONFIG_PATH, F_OK ) != -1 )
+        log_conf_file = LOG_SYS_CONFIG_PATH;
+    else if( access( LOG_GLOBAL_CONFIG_PATH, F_OK ) != -1 )
+        log_conf_file = LOG_GLOBAL_CONFIG_PATH;
+    else
+        fprintf( stderr, "warning: no default log config file found\n" );
+
     if( access( JSON_APP_CONFIG_PATH, F_OK ) != -1 )
-        conf_file = JSON_APP_CONFIG_PATH;
-    else if( access( JSON_OPT_CONFIG_PATH, F_OK ) != -1 )
-        conf_file = JSON_OPT_CONFIG_PATH;
+        app_conf_file = JSON_APP_CONFIG_PATH;
+    else if( access( JSON_SYS_CONFIG_PATH, F_OK ) != -1 )
+        app_conf_file = JSON_SYS_CONFIG_PATH;
     else
         fprintf( stderr, "warning: no default app config file found\n" );
 
@@ -55,16 +68,24 @@ int main( int argc, char **argv )
                 printf( "Options:\n" );
                 printf( "  -h            This message.\n" );
                 printf( "  -v            The version of the application.\n" );
-                printf( "  -c 'FILE'     Configuration file to be passed to the application.\n" );
+                printf( "  -c 'FILE'     App configuration file to be passed to the application.\n" );
                 printf( "                If no file is specified the application falls back to:\n" );
                 printf( "                 1. '%s' in the application root\n", JSON_APP_CONFIG_PATH );
-                printf( "                 2. '%s'\n", JSON_OPT_CONFIG_PATH );
+                printf( "                 2. '%s'\n", JSON_SYS_CONFIG_PATH );
+                printf( "  -l 'FILE'     Log configuration file to be passed to the application.\n" );
+                printf( "                If no file is specified the application falls back to:\n" );
+                printf( "                 1. '%s' in the application root\n", LOG_APP_CONFIG_PATH );
+                printf( "                 2. '%s'\n", LOG_SYS_CONFIG_PATH );
+                printf( "                 3. '%s'\n", LOG_GLOBAL_CONFIG_PATH );
                 return 0;
             case 'v':
                 printf( "%s v%s\n", argv[0], APP_VERSION );
                 return 0;
             case 'c':
-                conf_file = optarg;
+                app_conf_file = optarg;
+                break;
+            case 'l':
+                log_conf_file = optarg;
                 break;
             case '?':
                 if( optopt == 'c' )
@@ -78,7 +99,7 @@ int main( int argc, char **argv )
                 abort();
         }
 
-    smx_rts_t* rts = smx_program_init( conf_file );
+    smx_rts_t* rts = smx_program_init( app_conf_file, log_conf_file );
 
     <smx_network>
 

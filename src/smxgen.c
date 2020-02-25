@@ -51,6 +51,7 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
+        smxgen_replace_path( buffer );
         smxgen_replace( buffer, YEAR_PATTERN, year );
         smxgen_replace( buffer, AUTHOR_PATTERN,
                 igraph_cattribute_GAS( g, "author" ) );
@@ -155,6 +156,7 @@ void smxgen_box_file( igraph_t* g, int id, const char* name,
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
+        smxgen_replace_path( buffer );
         smxgen_replace( buffer, RTS_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "rts_dep" ) );
         smxgen_replace( buffer, YEAR_PATTERN, year );
@@ -1011,7 +1013,7 @@ void smxgen_read_dep( const char* libname, char* dep )
     char link[1000];
     char buf[1000];
     ssize_t buf_size;
-    sprintf( link, "%s/lib%s.so", LIB_PATH, libname );
+    sprintf( link, "%s/lib%s.so", TPL_LIB_PATH, libname );
     buf_size = readlink( link, buf, 1000 );
     if( buf_size < 0 )
     {
@@ -1057,6 +1059,16 @@ void smxgen_replace( char* str, const char* old_word, const char* new_word )
         // oldword found index.
         strcat( str, temp + index + owlen );
     }
+}
+
+/******************************************************************************/
+void smxgen_replace_path( char* buffer )
+{
+    smxgen_replace( buffer, PATH_INCLUDE_PATTERN, TPL_INCLUDE_PATH );
+    smxgen_replace( buffer, PATH_LIB_PATTERN, TPL_LIB_PATH );
+    smxgen_replace( buffer, PATH_BIN_PATTERN, TPL_BIN_PATH );
+    smxgen_replace( buffer, PATH_DOC_PATTERN, TPL_DOC_PATH );
+    smxgen_replace( buffer, PATH_CONF_PATTERN, TPL_CONF_PATH );
 }
 
 /******************************************************************************/
@@ -1237,6 +1249,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
+        smxgen_replace_path( buffer );
         smxgen_replace( buffer, BIN_NAME_PATTERN, binname );
         if( strstr( buffer, APP_NW_PATTERN ) != NULL )
         {

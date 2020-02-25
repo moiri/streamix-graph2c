@@ -10,11 +10,11 @@ VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
 VAPPNAME = $(APPNAME)-$(LIB_VERSION)
 VPKGNAME = <bin_name>$(LIB_VERSION)
 
-TGT_INCLUDE = $(DESTDIR)/usr/include/smx
-TGT_LIB = $(DESTDIR)/usr/lib/x86_64-linux-gnu
-TGT_BIN = $(DESTDIR)/usr/bin
-TGT_DOC = $(DESTDIR)/usr/share/doc/$(VPKGNAME)
-TGT_CONF = $(DESTDIR)/etc/smx/$(VPKGNAME)
+TGT_INCLUDE = $(DESTDIR)<include_path>
+TGT_LIB = $(DESTDIR)<lib_path>
+TGT_BIN = $(DESTDIR)<bin_path>
+TGT_DOC = $(DESTDIR)<doc_path>/$(VPKGNAME)
+TGT_CONF = $(DESTDIR)<conf_path>/$(VPKGNAME)
 
 GENPATH = build
 BOXIMPL = boxes/*
