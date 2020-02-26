@@ -126,6 +126,9 @@ if ! git -C $path show-ref --verify --quiet refs/heads/$branch; then
     new=1
 fi
 
+# Create master tag
+git -C $path tag $tag-master
+
 # Create build branch
 git -C $path branch $branch_p
 if [ $new -ne 0 ]; then
