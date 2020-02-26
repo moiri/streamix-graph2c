@@ -127,7 +127,9 @@ if ! git -C $path show-ref --verify --quiet refs/heads/$branch; then
 fi
 
 # Create master tag
-git -C $path tag $tag-master
+if ! git -C $path tag $tag-master; then
+    echo "Master tag already exists, continuing"
+fi
 
 # Create build branch
 git -C $path branch $branch_p
