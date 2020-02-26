@@ -1,2 +1,3 @@
-usr/lib/*/lib*.so*
+usr/lib/*/lib<lib_name>.so.<maj_version>
+usr/lib/*/lib<lib_name>-<maj_version>.so
 box.json <conf_path>/lib<lib_name><maj_version>
