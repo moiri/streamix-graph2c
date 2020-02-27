@@ -47,7 +47,8 @@ install:
 	mkdir -p $(TARGET_PATH)/tpl
 	cp -a $(PROJECT) $(TGT_BIN)/.
 	cp -a tpl $(TARGET_PATH)/
-	cp utils/*.sh $(TGT_BIN)/.
+	cp utils/smx*.sh $(TGT_BIN)/.
+	cp utils/smx*.py $(TGT_BIN)/.
 
 clean:
 	rm -f $(PROJECT)
