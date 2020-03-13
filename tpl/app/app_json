@@ -1,5 +1,5 @@
 {
-    "_name": "<app_name>",
+    "_name": "<app_name>-<maj_version>",
     "_nets": {
         "_default": {
             "comment": "fallback configuration for all nets",
