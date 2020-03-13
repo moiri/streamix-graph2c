@@ -1,0 +1,11 @@
+[global]
+default format = "[%d.%us] [%V] [%c] %m%n"
+[levels]
+EVENT = 50, LOG_INFO
+[formats]
+debug = "[%d.%us] [%V] [%t] [%c] %m%n"
+[rules]
+*.DEBUG    "%d(%Y-%m-%d_%H-%M-%S)_%p_debug.log"; debug
+*.=NOTICE  >stdout
+*.=EVENT   >stdout
+*.WARN     >stderr

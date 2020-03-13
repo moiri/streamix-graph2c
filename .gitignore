@@ -32,6 +32,6 @@
 # Debug files
 *.dSYM/
 
-test
+
 graph2c
 smxrtsp

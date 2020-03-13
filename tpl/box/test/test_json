@@ -1,0 +1,22 @@
+{
+    "_name": "test",
+    "_log": "test.zlog",
+    "_nets": {
+        "_default": {
+            "comment": "fallback configuration for all nets",
+            "profiler": false,
+            "config": {
+                "test_data": {
+                    "in": {
+                        "_default": null
+                        <box_ports_in_conf>
+                    },
+                    "out": {
+                        "_default": null
+                        <box_ports_out_conf>
+                    }
+                }
+            }
+        }
+    }
+}

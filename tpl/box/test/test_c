@@ -1,0 +1,60 @@
+/**
+ * @author  ADD YOUR NAME
+ *
+ * The implementation of the streamix box <box_name> test functionality.
+ */
+
+#include "smxrts.h"
+#include "<box_name>_sig.h"
+#include "test_<box_name>.h"
+
+/******************************************************************************/
+smx_msg_t* <box_name>_in_data_conversion( void* h, const bson_value_t* data,
+        ports_<box_name>_in_t idx )
+{
+    if( data == NULL )
+        return NULL;
+
+    // CHANGE THE FOLLOWING VARIABLES TO SUIT YOUR NEEDS
+
+    void* msg_data = NULL;
+    size_t size = 0;
+    void* copy = NULL;
+    void* destroy = NULL;
+    void* unpack = NULL;
+
+    // CHANGE THE CASES IN THE FOLLOWING SWITCH STATEMENT TO SUIT YOUR NEEDS
+
+    switch( idx )
+    {
+        <box_ports_in_case>
+        default:
+        break;
+    }
+
+    return SMX_MSG_CREATE( h, msg_data, size, copy, destroy, unpack );
+}
+
+/******************************************************************************/
+int <box_name>_out_data_conversion( void* h, const bson_value_t* data,
+        ports_<box_name>_out_t idx, smx_msg_t* msg )
+{
+    if( data == NULL )
+        return -1;
+
+    // CHANGE THE FOLLOWING VARIABLES TO SUIT YOUR NEEDS
+
+    void* msg_data = SMX_MSG_UNPACK( msg );
+    (void)(msg_data); // This is just here to prevent a warning.
+
+    // CHANGE THE CASES IN THE FOLLOWING SWITCH STATEMENT TO SUIT YOUR NEEDS
+
+    switch( idx )
+    {
+        <box_ports_out_case>
+        default:
+        break;
+    }
+
+    return 0;
+}
