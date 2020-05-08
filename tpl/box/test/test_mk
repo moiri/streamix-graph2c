@@ -8,8 +8,8 @@ BOXNAME = <box_name>
 LOC_INC_DIR = ../include
 LOC_SRC_DIR = ../src
 
-TGT_INCLUDE = /opt/smx/include
-TGT_LIB = /opt/smx/lib
+TGT_INCLUDE = <include_path>
+TGT_LIB = <lib_path>
 
 SOURCES = $(wildcard $(LOC_SRC_DIR)/*.c) $(wildcard ./*.c)
 
@@ -24,10 +24,10 @@ INCLUDES_DIR = -I$(LOC_INC_DIR) \
 LINK_DIR = -L/usr/local/lib \
 	-L$(TGT_LIB) $(EXT_LIBS_DIR)
 
-LINK_FILE = -lsmxrts \
+LINK_FILE = $(LIB_RTS) \
 	-lpthread \
-	-lzlog \
-	-lbson $(EXT_LIBS)
+	-lbson-1.0 \
+	-lzlog $(EXT_LIBS)
 
 CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\" -DSMX_TESTING
 DEBUG_FLAGS = -g -O0
