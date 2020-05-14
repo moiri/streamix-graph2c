@@ -5,6 +5,9 @@
         "_default": {
             "comment": "fallback configuration for all nets",
             "profiler": false,
+            "type_filter": true,
+            "dyn_conf_port": null,
+            "dyn_conf_timeout": null,
             "config": {
                 "test_data": {
                     "in": {
