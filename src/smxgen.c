@@ -1172,6 +1172,9 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         // create test files
         sprintf( path_tmp, "%s/test", path );
         mkdir( path_tmp, 0755 );
+        sprintf( path_file, "%s/.gitignore", path_tmp );
+        if( access( path_file, F_OK ) < 0 )
+            smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_GI, path_file, false );
         sprintf( path_file, "%s/Makefile", path_tmp );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_MK, path_file, false );
@@ -1190,6 +1193,8 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         sprintf( path_file, "%s/test_%s.h", path_tmp, name );
         if( access( path_file, F_OK ) < 0 )
             smxgen_box_file_path( g, vid, name, TPL_BOX_TEST_H, path_file, false );
+        sprintf( path_tmp, "%s/test/log", path );
+        mkdir( path_tmp, 0755 );
         // create box.c file
         sprintf( path_tmp, "%s/src", path );
         mkdir( path_tmp, 0755 );

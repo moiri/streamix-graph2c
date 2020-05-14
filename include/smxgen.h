@@ -82,6 +82,7 @@
 #define TPL_BOX_SIG_H       TPL_BOX_PATH "/include/box_sig_h"
 #define TPL_BOX_SIG_PORT    TPL_BOX_PATH "/include/tpl_port_sig_h"
 #define TPL_BOX_TEST_PATH   TPL_BOX_PATH "/test"
+#define TPL_BOX_TEST_GI     TPL_BOX_TEST_PATH "/_gitignore"
 #define TPL_BOX_TEST_MK     TPL_BOX_TEST_PATH "/test_mk"
 #define TPL_BOX_TEST_H      TPL_BOX_TEST_PATH "/test_h"
 #define TPL_BOX_TEST_C      TPL_BOX_TEST_PATH "/test_c"
