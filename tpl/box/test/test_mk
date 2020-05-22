@@ -50,3 +50,6 @@ clean:
 
 run:
 	./$(BOXNAME)
+
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(BOXNAME)
