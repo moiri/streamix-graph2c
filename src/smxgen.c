@@ -349,7 +349,8 @@ void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
 }
 
 /******************************************************************************/
-void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode )
+void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode,
+        bool is_dyn )
 {
     const char* mode_str = MODE_OUT;
     const char* dyn_str = GE_DYNSRC;
@@ -358,12 +359,13 @@ void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode )
         mode_str = MODE_IN;
         dyn_str = GE_DYNDST;
     }
-    if( smxgen_net_is_type( g, vid, TEXT_CP )
-            || igraph_cattribute_EAN( g, dyn_str, eid ) )
+    bool is_dyn_attr = ( smxgen_net_is_type( g, vid, TEXT_CP )
+            || igraph_cattribute_EAN( g, dyn_str, eid ) );
+    if( is_dyn && is_dyn_attr )
     {
         cgen_connect_idx( ident, eid, vid, mode_str );
     }
-    else
+    else if( !is_dyn && !is_dyn_attr )
     {
         cgen_connect_name( ident, eid, vid,
                     igraph_cattribute_VAS( g, GV_IMPL, vid ),
@@ -721,10 +723,42 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
                     igraph_cattribute_EAN( g, GE_DSRC, eid ),
                     igraph_cattribute_EAN( g, GE_DDST, eid ),
                     ch_len, port_name );
+        }
+        IGRAPH_EIT_NEXT( e_it );
+    }
+    igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
+
+    // connect static channels
+    e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate channel creation code
+        eid = IGRAPH_EIT_GET( e_it );
+        tt_type = igraph_cattribute_EAN( g, GE_TYPE, eid );
+        if( tt_type != TIME_TT ) {
             // generate connection code for a channel and its connecting boxes
             igraph_edge( g, eid, &vid1, &vid2 );
-            smxgen_connect( g, ident, eid, vid1, IGRAPH_OUT );
-            smxgen_connect( g, ident, eid, vid2, IGRAPH_IN );
+            smxgen_connect( g, ident, eid, vid1, IGRAPH_OUT, false );
+            smxgen_connect( g, ident, eid, vid2, IGRAPH_IN, false );
+        }
+        IGRAPH_EIT_NEXT( e_it );
+    }
+    igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
+
+    // connect dynamic channels
+    e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate channel creation code
+        eid = IGRAPH_EIT_GET( e_it );
+        tt_type = igraph_cattribute_EAN( g, GE_TYPE, eid );
+        if( tt_type != TIME_TT ) {
+            // generate connection code for a channel and its connecting boxes
+            igraph_edge( g, eid, &vid1, &vid2 );
+            smxgen_connect( g, ident, eid, vid1, IGRAPH_OUT, true );
+            smxgen_connect( g, ident, eid, vid2, IGRAPH_IN, true );
             if( smxgen_net_is_type( g, vid2, TEXT_CP ) )
                 cgen_connect_rn( ident, eid, vid2 );
             if( tt_type == TIME_TB ) {
@@ -737,6 +771,8 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
+
+
     // init all timers
     for( i = 0; i < *tt_vcnt; i++ ) {
         cgen_net_finalize_tf( ident, i + net_cnt );

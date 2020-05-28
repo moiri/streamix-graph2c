@@ -198,8 +198,11 @@ void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
  * @param eid       id of the graph edge
  * @param vid       id of the vertex
  * @param mode      the mode of the port
+ * @param is_dyn    flag to indicate wether to conect a dynamic (true) or a
+ *                  static (false) port.
  */
-void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode );
+void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode,
+        bool is_dyn );
 
 /**
  * Copy a file
