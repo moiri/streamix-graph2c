@@ -230,15 +230,15 @@ gbp buildpackage --git-export-dir=dpkg --git-pristine-tar --git-pristine-tar-com
 git -C $path branch -m $pristine_branch $pristine_branch_v
 
 # Push new branches
-git -C checkout $pristine_branch_v
-git -C push --set-upstream origin $pristine_branch_v
-git -C checkout $branch
-git -C push --set-upstream origin $branch
-git -C checkout $branch_p
-git -C push --set-upstream origin $branch_p
+git -C $path checkout $pristine_branch_v
+git -C $path push --set-upstream origin $pristine_branch_v
+git -C $path checkout $branch
+git -C $path push --set-upstream origin $branch
+git -C $path checkout $branch_p
+git -C $path push --set-upstream origin $branch_p
 
 # Push new tags
-git -C push --tags
+git -C $path push --tags
 
 # Checkout master
 git -C $path checkout master
