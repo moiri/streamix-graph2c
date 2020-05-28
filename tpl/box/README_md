@@ -41,6 +41,60 @@ A Makefile is provided that allows to
    configuration file (`make dpkg`)
  - manually install to the target folders (`sudo make install`)
 
+## Building a Debian Package
+
+The following dependencies are required to build a debian package:
+
+```sh
+sudo apt install git-buildpackage
+sudo apt install git debhelper
+```
+
+Make sure to have the `-dev`-packages of all message library dependencies of
+this Streamix box implementation installed.
+
+Run the following command to build a debian package from the current version.
+Make sure you are on the master branch and the box version in the file
+`config.mk` is set correctly.
+
+```sh
+smx_build_lib_package.sh
+```
+
+Not that this script will create several branches and tags as well as
+generating the debian changelog. To build a package from a debian branch first
+checkout the branch of the version you want to build and then run the following
+command:
+
+```sh
+gbp buildpackage --git-export-dir=dpkg --git-upstream-tag='v%(version)s' --git-debian-branch=$(git rev-parse --abbrev-ref HEAD) --git-submodules -uc -us
+```
+
+For ease of use this command is wrapped by the script
+
+```sh
+smx_gbp_buildpackage.sh
+```
+
+## Reproducing the Source with pristine-tar
+
+Every version can be reproduced with `pristine-tar`.
+First rename the pristine-tar branch of the target version (e.g. version 0.5.1`):
+
+```sh
+git branch -m pristine-tar_0.5 pristine-tar
+```
+
+Then generate the source. Note that the name of the output file must match the
+name of the files in the pristine-tar branch.
+
+```sh
+pristine-tar checkout <lib_name>__pkg_version__.orig.tar.gz
+```
+
+where `__pkg_version__` is of the form `major.minor_major.minor.revision`. With
+our example from above this results in `<lib_name>0.5_0.5.1.orig.tar.gz`.
+
 ## Testing
 
 The folder `test` contains a testing environment.
