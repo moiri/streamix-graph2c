@@ -42,6 +42,12 @@ def main():
     for e in g.es:
         if( e['len'] > 1 ):
             e['label'] += "[" + str(int(e['len'])) + "]"
+        if( e['dsrc'] ):
+            e['color'] = '#ff0000';
+        if( e['ddst'] ):
+            e['color'] = '#0000ff';
+        if( e['dsrc'] and e['ddst'] ):
+            e['color'] = '#ff00ff';
     x = args.x;
     y = args.y;
     box = args.s/2 + 10;
