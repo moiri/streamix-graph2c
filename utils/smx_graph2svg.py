@@ -14,7 +14,7 @@ import igraph.vendor.texttable
 import os
 
 sys.settrace
-parser = argparse.ArgumentParser('This script allows to convert a igraph graphml file to an image')
+parser = argparse.ArgumentParser(description='This script allows to convert a igraph graphml file to an image')
 # parser.add_argument( '-p', '--plot', action='store_true', help='plot the graph of the folded system' )
 parser.add_argument( '-f', metavar="FORMAT", dest='format', choices=['graphml', 'gml'], default='graphml', help='set the format of the input graph (default: graphml)' )
 parser.add_argument( '-l', metavar="LAYOUT", dest='layout', choices=['circle', 'drl', 'fr', 'kk', 'lgl', 'random'], default='kk', help='set the layout of the plotted graph (default: kk)' )

@@ -16,7 +16,7 @@ import fileinput
 import textwrap
 
 sys.settrace
-parser = argparse.ArgumentParser('Prepare a box implementation from template files')
+parser = argparse.ArgumentParser(description='Prepare a box implementation from template files')
 parser.add_argument( '-t', '--tpl', metavar="PATH", dest='tpl', default='/opt/smx/tpl/box', help='path to the streamix template folder' )
 args = parser.parse_args()
 
