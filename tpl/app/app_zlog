@@ -1,5 +1,6 @@
 [global]
 default format = "[%d.%us] [%V] [%c] %m%n"
+rotate lock file = /tmp/zlog.lock
 [levels]
 EVENT = 50, LOG_INFO
 [formats]
