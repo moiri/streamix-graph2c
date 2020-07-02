@@ -28,7 +28,9 @@
 #define LOG_GLOBAL_CONFIG_PATH "<conf_path>/default.zlog"
 #define JSON_APP_CONFIG_PATH "app.json"
 #define JSON_SYS_CONFIG_PATH "<conf_path>/<bin_name>" LIB_VERSION "/" JSON_APP_CONFIG_PATH
-#define ENV_VAR "SMX_LOG_PREFIX"
+#define ENV_VAR_SMX "SMX_LOG_PREFIX"
+#define ENV_VAR_ZLOG "ZLOG_PROFILE_ERROR"
+#define ZLOG_PATH "/var/log/smx"
 
 int main( int argc, char **argv )
 {
@@ -41,9 +43,13 @@ int main( int argc, char **argv )
     struct tm *local_time = localtime( &now );
 
     strftime( env_time, sizeof( env_time ) - 1, "%FT%T", local_time );
-    sprintf( env_var, "%s=%s", ENV_VAR, env_time );
-
+    sprintf( env_var, "%s=%s", ENV_VAR_SMX, env_time );
     putenv( env_var );
+
+    sprintf( env_var, "%s=%s/%s.<app_name>.%d.zlog.error.log", ENV_VAR_ZLOG, ZLOG_PATH,
+            env_time, getpid() );
+    putenv( env_var );
+    printf( "%s\n", env_var );
 
     if( access( LOG_APP_CONFIG_PATH, F_OK ) != -1 )
         log_conf_file = LOG_APP_CONFIG_PATH;
