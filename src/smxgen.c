@@ -1292,6 +1292,8 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     {
         smxgen_replace_path( buffer );
         smxgen_replace( buffer, BIN_NAME_PATTERN, binname );
+        smxgen_replace( buffer, APP_NAME_PATTERN,
+                igraph_cattribute_GAS( g, "name" ) );
         if( strstr( buffer, APP_NW_PATTERN ) != NULL )
         {
             smxgen_network_create( g, ident, &tt_vcnt, &tt_ecnt );
