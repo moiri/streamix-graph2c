@@ -8,6 +8,8 @@ void cgen_connect_name( int ident, int id_ch, int id_box, const char* box_name,
         const char* ch_name, const char* mode );
 void cgen_connect_idx( int ident, int id_ch, int id_box, const char* mode );
 void cgen_connect_guard( int, int, int, int );
+void cgen_connect_open( int ident, int id_net, const char* box_name,
+        const char* mode );
 void cgen_connect_rn( int ident, int id_ch, int id_box );
 void cgen_connect_tf( int ident, int vid, int eid1, int eid2,
         const char* ch_name );

@@ -336,6 +336,21 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt );
 void smxgen_network_run( igraph_t* g, int ident, int tt_vcnt );
 
 /**
+ * Get the degree of dynamic ports of a vertice.
+ *
+ * @param g
+ *  A pointer to the dependency graph
+ * @param vid
+ *  The id of the net
+ * @param mode
+ *  Constant giving the type of the incident edges to select. Possible values:
+ *  IGRAPH_OUT, outgoing edges; IGRAPH_IN, incoming edges; IGRAPH_ALL, all
+ *  edges.
+ */
+int smxgen_newtork_get_dyn_degree( igraph_t* g, int vid,
+        igraph_neimode_t mode );
+
+/**
  * Generate the instructions to sync the network on termination
  *
  * @param g         pointer to the dependency graph

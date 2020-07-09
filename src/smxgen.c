@@ -672,7 +672,6 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     struct timespec tt[2*edge_cnt];
     int eid, vid1, vid2, ch_len, tt_type, i;
     int net_cnt = igraph_vcount( g );
-    igraph_vector_t indegree, outdegree;
     // init timer structures
     for( i=0; i<edge_cnt; i++ ) {
         tt[i].tv_sec = 0;
@@ -689,18 +688,13 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
                 igraph_cattribute_VAS( g, GV_IMPL, vid1 ),
                 igraph_cattribute_VAN( g, GV_TT, vid1 ) );
         igraph_vs_1( &v_cp, vid1 );
-        igraph_vector_init( &indegree, 1 );
-        igraph_vector_init( &outdegree, 1 );
-        igraph_degree( g, &indegree, v_cp, IGRAPH_IN, 1 );
-        igraph_degree( g, &outdegree, v_cp, IGRAPH_OUT, 1 );
-        cgen_net_init( ident, vid1, VECTOR( indegree )[0],
-                VECTOR( outdegree )[0],
+        cgen_net_init( ident, vid1,
+                smxgen_newtork_get_dyn_degree( g, vid1,  IGRAPH_IN ),
+                smxgen_newtork_get_dyn_degree( g, vid1,  IGRAPH_OUT ),
                 igraph_cattribute_VAS( g, GV_IMPL, vid1 ) );
         if( smxgen_net_is_type( g, vid1, TEXT_CP ) )
             cgen_net_init_rn( ident, vid1 );
         igraph_vs_destroy( &v_cp );
-        igraph_vector_destroy( &indegree );
-        igraph_vector_destroy( &outdegree );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -746,6 +740,20 @@ void smxgen_network_create( igraph_t* g, int ident, int* tt_vcnt, int* tt_ecnt )
     }
     igraph_eit_destroy( &e_it );
     igraph_es_destroy( &e_sel );
+
+    // acccommodate open ports
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        vid1 = IGRAPH_VIT_GET( v_it );
+        cgen_connect_open( ident, vid1,
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ), "IN" );
+        cgen_connect_open( ident, vid1,
+                igraph_cattribute_VAS( g, GV_IMPL, vid1 ), "OUT" );
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
 
     // connect dynamic channels
     e_sel = igraph_ess_all( IGRAPH_EDGEORDER_ID );
@@ -915,6 +923,32 @@ void smxgen_network_destroy( igraph_t* g, int ident, int tt_vcnt, int tt_ecnt )
         cgen_net_destroy_tf( ident, i + net_cnt );
         cgen_net_destroy( ident, i + net_cnt );
     }
+}
+
+/******************************************************************************/
+int smxgen_newtork_get_dyn_degree( igraph_t* g, int vid, igraph_neimode_t mode )
+{
+    int count = 0;
+    int eid;
+    igraph_es_t e_sel;
+    igraph_eit_t e_it;
+    igraph_es_incident( &e_sel, vid, mode );
+    igraph_eit_create( g, e_sel, &e_it );
+    while( !IGRAPH_EIT_END( e_it ) ) {
+        // generate channel creation code
+        eid = IGRAPH_EIT_GET( e_it );
+        if( smxgen_net_is_type( g, vid, TEXT_CP )
+                || igraph_cattribute_EAN( g, GE_DYNSRC, eid ) )
+        {
+            count++;
+        }
+
+        IGRAPH_EIT_NEXT( e_it );
+    }
+    igraph_eit_destroy( &e_it );
+    igraph_es_destroy( &e_sel );
+
+    return count;
 }
 
 /******************************************************************************/

@@ -61,6 +61,14 @@ void cgen_connect_guard( int ident, int id_ch, int iats, int iatns )
 }
 
 /******************************************************************************/
+void cgen_connect_open( int ident, int id_net, const char* box_name,
+        const char* mode )
+{
+    cgen_ident( ident );
+    cgen_print( "SMX_CONNECT_OPEN( %d, %s, %s );\n", id_net, box_name, mode );
+}
+
+/******************************************************************************/
 void cgen_connect_tf( int ident, int vid, int eid1, int eid2,
         const char* ch_name )
 {
