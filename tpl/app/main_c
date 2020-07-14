@@ -38,18 +38,18 @@ int main( int argc, char **argv )
     char* app_conf_file = NULL;
     char* log_conf_file = NULL;
     char env_time[100];
-    char env_var[200];
+    char env_var_smx[200];
+    char env_var_log[200];
     time_t now = time( NULL );
     struct tm *local_time = localtime( &now );
 
     strftime( env_time, sizeof( env_time ) - 1, "%FT%T", local_time );
-    sprintf( env_var, "%s=%s", ENV_VAR_SMX, env_time );
-    putenv( env_var );
+    sprintf( env_var_smx, "%s=%s", ENV_VAR_SMX, env_time );
+    putenv( env_var_smx );
 
-    sprintf( env_var, "%s=%s/%s.<app_name>.%d.zlog.error.log", ENV_VAR_ZLOG, ZLOG_PATH,
+    sprintf( env_var_log, "%s=%s/%s.<app_name>.%d.zlog.error.log", ENV_VAR_ZLOG, ZLOG_PATH,
             env_time, getpid() );
-    putenv( env_var );
-    printf( "%s\n", env_var );
+    putenv( env_var_log );
 
     if( access( LOG_APP_CONFIG_PATH, F_OK ) != -1 )
         log_conf_file = LOG_APP_CONFIG_PATH;
