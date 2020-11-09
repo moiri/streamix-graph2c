@@ -66,7 +66,14 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
                 igraph_cattribute_GAS( g, "binname" ) );
         if( strstr( buffer, APP_CONF_PATTERN ) != NULL )
         {
-            smxgen_insert_conf_impl( g, ftgt );
+            if( strcmp( tpl_path, TPL_APP_SJSON ) == 0 )
+            {
+                smxgen_insert_conf_impl( g, ftgt, true );
+            }
+            else
+            {
+                smxgen_insert_conf_impl( g, ftgt, false );
+            }
         }
         else
             fputs( buffer, ftgt );
@@ -319,6 +326,7 @@ void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     char id_str[10];
+    bool is_schema;
 
     ftpl = fopen( tpl_path, "r" );
 
@@ -335,11 +343,13 @@ void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
         smxgen_replace( buffer, NET_ID_PATTERN, id_str );
         if( strstr( buffer, APP_CONF_NET_PATTERN ) != NULL )
         {
-            smxgen_insert_conf_net( g, ftgt, impl );
+            is_schema = strcmp( tpl_path, TPL_IMPL_SJSON ) == 0;
+            smxgen_insert_conf_net( g, ftgt, impl, is_schema );
         }
         else if( strstr( buffer, APP_CONF_INST_PATTERN ) != NULL )
         {
-            smxgen_insert_conf_inst( g, ftgt, impl, net );
+            is_schema = strcmp( tpl_path, TPL_NET_SJSON ) == 0;
+            smxgen_insert_conf_inst( g, ftgt, impl, net, is_schema );
         }
         else
             fputs( buffer, ftgt );
@@ -485,7 +495,7 @@ void smxgen_get_year_str( char* year )
 }
 
 /******************************************************************************/
-void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt )
+void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt, bool is_schema )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -508,7 +518,14 @@ void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt )
             continue;
         }
         names[idx++] = name;
-        smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_JSON, ftgt );
+        if( is_schema )
+        {
+            smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_SJSON, ftgt );
+        }
+        else
+        {
+            smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_JSON, ftgt );
+        }
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -516,7 +533,8 @@ void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt )
 }
 
 /******************************************************************************/
-void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl )
+void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl,
+        bool is_schema )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -545,7 +563,14 @@ void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl )
             continue;
         }
         names[idx++] = name;
-        smxgen_conf_file( g, vid, impl, name, TPL_NET_JSON, ftgt );
+        if( is_schema )
+        {
+            smxgen_conf_file( g, vid, impl, name, TPL_NET_SJSON, ftgt );
+        }
+        else
+        {
+            smxgen_conf_file( g, vid, impl, name, TPL_NET_JSON, ftgt );
+        }
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -554,7 +579,7 @@ void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl )
 
 /******************************************************************************/
 void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
-        const char* net )
+        const char* net, bool is_schema )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -595,7 +620,14 @@ void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
     {
         for( i = 0; i < idx; i++ )
         {
-            smxgen_conf_file( g, ids[i], impl, net, TPL_INST_JSON, ftgt );
+            if( is_schema )
+            {
+                smxgen_conf_file( g, ids[i], impl, net, TPL_INST_SJSON, ftgt );
+            }
+            else
+            {
+                smxgen_conf_file( g, ids[i], impl, net, TPL_INST_JSON, ftgt );
+            }
         }
     }
 }
@@ -1371,6 +1403,10 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     sprintf( file, "%s/app.json", path_tmp );
     smxgen_app_file( g, TPL_APP_JSON, file );
     smxgen_cp_file( file, "app.json" );
+
+    sprintf( file, "%s/app.schema.json", path_tmp );
+    smxgen_app_file( g, TPL_APP_SJSON, file );
+    smxgen_cp_file( file, "app.schema.json" );
 
     sprintf( file, "%s/app.zlog", path_tmp );
     smxgen_app_file( g, TPL_APP_LOG, file );

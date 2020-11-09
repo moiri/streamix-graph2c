@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "type": "object",
+    "required": ["_nets", "_name"],
+    "definitions": {
+        "net": {
+            "type": "object",
+            "properties": {
+                "profiler": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "type_filter": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "dyn_conf_port": {
+                    "type": "string"
+                },
+                "dyn_conf_timeout": {
+                    "type": "number"
+                }
+            }
+        }
+    },
+    "properties": {
+        "_name": { "const": "<app_name>-<maj_version>" },
+        "_nets": {
+            "type": "object",
+            "required": ["_default"],
+            "properties": {
+                "_default": {
+                    "allOf": [
+                        { "$ref": "#/definitions/net" },
+                        {
+                            "properties": {
+                                "comment": {
+                                    "type": "string",
+                                    "default": "fallback configuration for all nets"
+                                }
+                            }
+                        },
+                        {
+                            "properties": {
+                                "config": { "type": "object" }
+                            }
+                        }
+                    ]
+                }
+                <box_configs>
+            }
+        }
+    }
+}

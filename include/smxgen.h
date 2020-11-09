@@ -67,6 +67,10 @@
 #define TPL_IMPL_JSON       TPL_PATH_APP "/tpl_impl_json"
 #define TPL_NET_JSON        TPL_PATH_APP "/tpl_net_json"
 #define TPL_INST_JSON       TPL_PATH_APP "/tpl_inst_json"
+#define TPL_APP_SJSON       TPL_PATH_APP "/app.schema_json"
+#define TPL_IMPL_SJSON      TPL_PATH_APP "/tpl_impl.schema_json"
+#define TPL_NET_SJSON       TPL_PATH_APP "/tpl_net.schema_json"
+#define TPL_INST_SJSON      TPL_PATH_APP "/tpl_inst.schema_json"
 #define TPL_APP_LOG         TPL_PATH_APP "/app_zlog"
 #define TPL_APP_MAIN        TPL_PATH_APP "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
@@ -244,8 +248,10 @@ void smxgen_get_year_str( char* year );
  *
  * @param g         pointer to the dependency graph
  * @param ftgt      file descriptor to the target file
+ * @param is_schema Flag to indicate whether the JSON schema or the json example
+ *                  is created
  */
-void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt );
+void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt, bool is_schema );
 
 /**
  * Insert the net configurations to the implementation configuration entry.
@@ -253,8 +259,11 @@ void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt );
  * @param g         pointer to the dependency graph
  * @param ftgt      file descriptor to the target file
  * @param impl      the name of the implementation
+ * @param is_schema Flag to indicate whether the JSON schema or the json example
+ *                  is created
  */
-void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl );
+void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl,
+        bool is_schema );
 
 /**
  * Insert the net instance configurations to the net configuration entry.
@@ -263,9 +272,11 @@ void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl );
  * @param ftgt      file descriptor to the target file
  * @param impl      the name of the implementation
  * @param net       the name of the net
+ * @param is_schema Flag to indicate whether the JSON schema or the json example
+ *                  is created
  */
 void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
-        const char* net );
+        const char* net, bool is_schema );
 
 /**
  * Insert port templates to the target file.
