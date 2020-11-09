@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
     "type": "object",
     "required": ["_nets", "_name"],
-    "definitions": {
+    "configs": {
         "net": {
             "type": "object",
             "properties": {
@@ -22,6 +22,7 @@
                 }
             }
         }
+        <box_definitions>
     },
     "properties": {
         "_name": { "const": "<app_name>-<maj_version>" },
@@ -31,7 +32,7 @@
             "properties": {
                 "_default": {
                     "allOf": [
-                        { "$ref": "#/definitions/net" },
+                        { "$ref": "#/configs/net" },
                         {
                             "properties": {
                                 "comment": {
@@ -50,5 +51,6 @@
                 <box_configs>
             }
         }
-    }
+    },
+    "default": { "$ref": "app.json" }
 }

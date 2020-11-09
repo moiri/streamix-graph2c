@@ -4,7 +4,7 @@
                             "properties": {
                                 "_default": {
                                     "allOf": [
-                                        { "$ref": "#/definitions/net" },
+                                        { "$ref": "#/configs/net" },
                                         {
                                             "properties": {
                                                 "comment": {

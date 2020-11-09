@@ -64,7 +64,11 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
                 igraph_cattribute_GAS( g, "rts_dep" ) );
         smxgen_replace( buffer, BIN_NAME_PATTERN,
                 igraph_cattribute_GAS( g, "binname" ) );
-        if( strstr( buffer, APP_CONF_PATTERN ) != NULL )
+        if( strstr( buffer, APP_DEF_PATTERN ) != NULL )
+        {
+            smxgen_insert_def_impl( g, ftgt );
+        }
+        else if( strstr( buffer, APP_CONF_PATTERN ) != NULL )
         {
             if( strcmp( tpl_path, TPL_APP_SJSON ) == 0 )
             {
@@ -320,20 +324,24 @@ int smxgen_box_is_duplicate_id( int id, int* ids, int len )
 }
 
 /******************************************************************************/
-void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
+int smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
         const char* tpl_path, FILE* ftgt )
 {
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
     char id_str[10];
     bool is_schema;
+    int rc;
+
+    if( tpl_path == NULL )
+        return -1;
 
     ftpl = fopen( tpl_path, "r" );
 
     if( ftpl == NULL )
     {
         fprintf( stderr, "cannot open source file '%s'\n", tpl_path );
-        return;
+        return -1;
     }
     while( ( fgets( buffer, BUFFER_SIZE, ftpl ) ) != NULL )
     {
@@ -351,11 +359,21 @@ void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
             is_schema = strcmp( tpl_path, TPL_NET_SJSON ) == 0;
             smxgen_insert_conf_inst( g, ftgt, impl, net, is_schema );
         }
+        else if( strstr( buffer, BOX_DEF_PATTERN ) != NULL )
+        {
+            rc = smxgen_conf_file( g, id, impl, NULL, net, ftgt );
+            if( rc < 0 )
+            {
+                smxgen_replace( buffer, BOX_DEF_PATTERN, "{}" );
+                fputs( buffer, ftgt );
+            }
+        }
         else
             fputs( buffer, ftgt );
     }
 
     fclose( ftpl );
+    return 0;
 }
 
 /******************************************************************************/
@@ -495,6 +513,62 @@ void smxgen_get_year_str( char* year )
 }
 
 /******************************************************************************/
+void smxgen_insert_def_impl( igraph_t* g, FILE* ftgt )
+{
+    igraph_vs_t v_sel;
+    igraph_vit_t v_it;
+    int vid, idx;
+    const char* name;
+    int net_count = igraph_vcount( g );
+    const char* names[net_count];
+    char path[1000];
+    char libname[1000];
+    char version[10];
+
+    for( idx = 0; idx < net_count; idx++ )
+    {
+        names[idx] = NULL;
+    }
+    idx = 0;
+
+    // for all boxes
+    v_sel = igraph_vss_all();
+    igraph_vit_create( g, v_sel, &v_it );
+    while( !IGRAPH_VIT_END( v_it ) ) {
+        // generate code to run boxes
+        vid = IGRAPH_VIT_GET( v_it );
+        name = igraph_cattribute_VAS( g, GV_IMPL, vid );
+        if( smxgen_box_is_duplicate( name, names, net_count ) )
+        {
+            IGRAPH_VIT_NEXT( v_it );
+            continue;
+        }
+        names[idx++] = name;
+        if( smxgen_net_is_extern( g, vid ) )
+        {
+            smxgen_to_alnum( libname, name );
+            smxgen_read_dep_version( libname, version );
+            sprintf( path, "%s/lib%s%s/box.schema.json", TPL_CONF_PATH, libname, version );
+            smxgen_conf_file( g, vid, name, path, TPL_IMPL_DEF_SJSON, ftgt );
+        }
+        else if( smxgen_net_is_type( g, vid, TEXT_CP )
+                    || smxgen_net_is_type( g, vid, TEXT_TF ) )
+        {
+            smxgen_read_dep_version( "smxrts", version );
+            sprintf( path, "%s/libsmxrts%s/%s.schema.json", TPL_CONF_PATH, version, name );
+            smxgen_conf_file( g, vid, name, path, TPL_IMPL_DEF_SJSON, ftgt );
+        }
+        else
+        {
+            smxgen_conf_file( g, vid, name, NULL, TPL_IMPL_DEF_SJSON, ftgt );
+        }
+        IGRAPH_VIT_NEXT( v_it );
+    }
+    igraph_vit_destroy( &v_it );
+    igraph_vs_destroy( &v_sel );
+}
+
+/******************************************************************************/
 void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt, bool is_schema )
 {
     igraph_vs_t v_sel;
@@ -542,7 +616,7 @@ void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl,
     const char* names[net_count];
     const char* name;
 
-    for( i=0; i<net_count; i++ )
+    for( i = 0; i < net_count; i++ )
         names[i] = NULL;
     // for all boxes in the scope
     v_sel = igraph_vss_all();
@@ -1112,6 +1186,14 @@ void smxgen_port_file( int eid, const char* box_name, const char* port_name,
 /******************************************************************************/
 void smxgen_read_dep( const char* libname, char* dep )
 {
+    char version[1000];
+    smxgen_read_dep_version( libname, version );
+    sprintf( dep, " -l%s-%s", libname, version );
+}
+
+/******************************************************************************/
+void smxgen_read_dep_version( const char* libname, char* version )
+{
     char link[1000];
     char buf[1000];
     ssize_t buf_size;
@@ -1121,12 +1203,12 @@ void smxgen_read_dep( const char* libname, char* dep )
     {
         printf( "failed to parse version number of library '%s': '%s'\n", link,
                 strerror( errno ) );
-        sprintf( dep, " -l%s", libname );
+        sprintf( version, "%s", "" );
     }
     else
     {
         buf[buf_size] = '\0';
-        sprintf( dep, " -l%s-%s", libname, buf + strlen( libname ) + 7 );
+        sprintf( version, "%s", buf + strlen( libname ) + 7 );
     }
 }
 

@@ -23,6 +23,8 @@
 #define APP_DEP_PATTERN       "<box_dependencies>"
 #define APP_REL_PATTERN       "<box_relations>"
 #define RTS_DEP_PATTERN       "<rts_dependency>"
+#define APP_DEF_PATTERN       "<box_definitions>"
+#define BOX_DEF_PATTERN       "<box_definition>"
 #define APP_CONF_PATTERN      "<box_configs>"
 #define APP_CONF_NET_PATTERN  "<net_configs>"
 #define APP_CONF_INST_PATTERN "<net_inst_configs>"
@@ -69,6 +71,7 @@
 #define TPL_INST_JSON       TPL_PATH_APP "/tpl_inst_json"
 #define TPL_APP_SJSON       TPL_PATH_APP "/app.schema_json"
 #define TPL_IMPL_SJSON      TPL_PATH_APP "/tpl_impl.schema_json"
+#define TPL_IMPL_DEF_SJSON  TPL_PATH_APP "/tpl_impl_def.schema.json"
 #define TPL_NET_SJSON       TPL_PATH_APP "/tpl_net.schema_json"
 #define TPL_INST_SJSON      TPL_PATH_APP "/tpl_inst.schema_json"
 #define TPL_APP_LOG         TPL_PATH_APP "/app_zlog"
@@ -190,8 +193,9 @@ int smxgen_box_is_duplicate( const char* name, const char** names, int len );
  *  The path to the source tpl file
  * @param ftgt
  *  A file pointer to the target file
+ * @return -1 on failure, 0 on success
  */
-void smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
+int smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
         const char* tpl_path, FILE* ftgt );
 
 /**
@@ -277,6 +281,11 @@ void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl,
  */
 void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
         const char* net, bool is_schema );
+
+/**
+ *
+ */
+void smxgen_insert_def_impl( igraph_t* g, FILE* ftgt );
 
 /**
  * Insert port templates to the target file.
@@ -411,9 +420,25 @@ void smxgen_port_file( int eid, const char* box_name, const char* port_name,
         const char* port_mode, const char* tpl_path, FILE* ftgt );
 
 /**
+ * Read the library file of a streamix library and return the linker option
+ * to correctly link the latest version.
  *
+ * @param libname
+ *  The name of the library to search.
+ * @param dep
+ *  The output parameter to store the linker option string.
  */
 void smxgen_read_dep( const char* libname, char* dep );
+
+/**
+ * Read the library file of a streamix library and return the version number.
+ *
+ * @param libname
+ *  The name of the library to search.
+ * @param version
+ *  The output parameter to store the version string.
+ */
+void smxgen_read_dep_version( const char* libname, char* version );
 
 /**
  * Replace all occurrences of a given a word in string.

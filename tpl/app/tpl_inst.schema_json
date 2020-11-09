@@ -1,21 +1,19 @@
                                 , "<net_id>": {
                                     "type": "object",
-                                    "properties": {
-                                        "allOf": [
-                                            { "$ref": "#/definitions/net" },
-                                            {
-                                                "properties": {
-                                                    "comment": {
-                                                        "type": "string",
-                                                        "default": "configuration for the net instance with id `<net_id>`"
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                "properties": {
-                                                    "config": { "$ref": "#/configs/<box_name>" }
+                                    "allOf": [
+                                        { "$ref": "#/configs/net" },
+                                        {
+                                            "properties": {
+                                                "comment": {
+                                                    "type": "string",
+                                                    "default": "configuration for the net instance with id `<net_id>`"
                                                 }
                                             }
-                                        ]
-                                    }
+                                        },
+                                        {
+                                            "properties": {
+                                                "config": { "$ref": "#/configs/<box_name>" }
+                                            }
+                                        }
+                                    ]
                                 }
