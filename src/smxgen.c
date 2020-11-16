@@ -775,19 +775,22 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     smxgen_app_file( g, TPL_APP_README, file );
     smxutility_cp_file( file, "README.md" );
 
+    sprintf( file, "%s/app.json", path_tmp );
     rc = smxconfgen_generate_file( g, igraph_cattribute_GAS( g, "name" ),
             "<maj_version>", false, path_tmp, "app.json" );
     if( rc == 0 )
     {
-        fprintf( stdout, "(*) created file '%s/%s'\n", path_tmp, "app.json" );
+        fprintf( stdout, "(*) created file '%s'\n", file );
+        smxutility_cp_file( file, "app.json" );
     }
 
+    sprintf( file, "%s/app.schema.json", path_tmp );
     smxconfgen_generate_file( g, igraph_cattribute_GAS( g, "name" ),
             "<maj_version>", true, path_tmp, "app.schema.json" );
     if( rc == 0 )
     {
-        fprintf( stdout, "(*) created file '%s/%s'\n", path_tmp,
-                "app.schema.json" );
+        fprintf( stdout, "(*) created file '%s'\n", file );
+        smxutility_cp_file( file, "app.schema.json" );
     }
 
     sprintf( file, "%s/app.zlog", path_tmp );
