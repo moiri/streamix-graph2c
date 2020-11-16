@@ -37,8 +37,6 @@ with `-l<lib_name>` (add this to the `EXT_LIBS` variable in the app Makefile).
 
 A Makefile is provided that allows to
  - compile the box implementation to a library `lib<lib_name>` (`make`)
- - create `deb` packages including the library, this document, and the default
-   configuration file (`make dpkg`)
  - manually install to the target folders (`sudo make install`)
 
 ## Building a Debian Package
