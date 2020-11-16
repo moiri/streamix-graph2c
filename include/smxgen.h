@@ -22,7 +22,7 @@
 #define BOX_LIB_PATTERN       "<lib_name>"
 #define BOX_MSG_PATTERN       "<box_msg_types>"
 
-#define TPL_PATH_APP        TPL_PATH "/app"
+#define TPL_PATH_APP        TPL_PATH "/smxappgen"
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
 #define TPL_APP_GITIGNORE   TPL_PATH_APP "/_gitignore"
 #define TPL_APP_README      TPL_PATH_APP "/README_md"
