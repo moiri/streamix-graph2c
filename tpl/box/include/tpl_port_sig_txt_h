@@ -1,3 +1,0 @@
- *   - <port_mode> <port_name>:
- *     SMX_CHANNEL_READ( h, <box_name>, <port_name> );
- *   <box_signature_<port_mode>_tpl>
