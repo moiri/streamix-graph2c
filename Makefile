@@ -5,7 +5,7 @@ LOC_INC_DIR = include
 LOC_SRC_DIR = src
 SIA_LANG_DIR = streamix-sia-lang
 
-TARGET_PATH = /opt/smx
+TARGET_PATH = /etc/smx
 TGT_BIN = /usr/bin
 
 SOURCES = main.c \
@@ -47,7 +47,7 @@ install:
 	mkdir -p $(TGT_BIN)
 	mkdir -p $(TARGET_PATH)/tpl
 	cp -a $(PROJECT) $(TGT_BIN)/.
-	cp -a tpl $(TARGET_PATH)/
+	cp -a tpl/app $(TARGET_PATH)/smxappgen
 	cp utils/smx*.sh $(TGT_BIN)/.
 	cp utils/smx*.py $(TGT_BIN)/.
 
