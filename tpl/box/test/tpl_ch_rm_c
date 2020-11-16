@@ -1,1 +1,2 @@
     SMX_CHANNEL_DESTROY( <ch_id> );
+    //<net_ch_rm_<port_mode>>

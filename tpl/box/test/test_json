@@ -12,11 +12,11 @@
                 "test_data": {
                     "in": {
                         "_default": null
-                        <box_ports_in_conf>
+                        , "tpl_item_to append_ports": "<box_ports_in_conf>"
                     },
                     "out": {
                         "_default": null
-                        <box_ports_out_conf>
+                        , "tpl_item_to append_ports": "<box_ports_out_conf>"
                     }
                 }
             }

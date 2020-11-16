@@ -3,3 +3,4 @@
             // PERFORM TEST DATA CONVERSION
 
         break;
+        //<box_ports_<port_mode>_case> this tag allows utility tools to add new ports

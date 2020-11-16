@@ -77,13 +77,13 @@ int main( int argc, char **argv )
 
     SMX_NET_CREATE( 0, Test, <box_name>, 0 );
     SMX_NET_INIT( 0, <in_degree>, <out_degree>, <box_name> );
-    <net_ch_in>
-    <net_ch_out>
+    //<net_ch_in>
+    //<net_ch_out>
     SMX_PROGRAM_INIT_RUN();
     SMX_NET_RUN( 0, <box_name> );
     SMX_NET_WAIT_END( 0 );
-    <net_ch_rm_in>
-    <net_ch_rm_out>
+    //<net_ch_rm_in>
+    //<net_ch_rm_out>
     SMX_NET_DESTROY( 0 );
 
     smx_program_cleanup( rts );

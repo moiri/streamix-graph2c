@@ -12,7 +12,8 @@
  *
  * The box has the following signature:
  *
- *   <box_signature>
+ *   <box_signature_in_tpl>
+ *   <box_signature_out_tpl>
  */
 
 #ifndef BOX_<box_name>_SIG_H
@@ -34,7 +35,7 @@ typedef enum ports_<box_name>_out_e ports_<box_name>_out_t;
  */
 enum ports_<box_name>_in_e
 {
-    <box_ports_in>
+    SMX_PORT_IDX_<box_name>_in_NO_PORTS_DEFINED,
 };
 
 /**
@@ -42,7 +43,7 @@ enum ports_<box_name>_in_e
  */
 enum ports_<box_name>_out_e
 {
-    <box_ports_out>
+    SMX_PORT_IDX_<box_name>_out_NO_PORTS_DEFINED,
 };
 
 #endif

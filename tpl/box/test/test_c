@@ -27,7 +27,7 @@ smx_msg_t* <box_name>_in_data_conversion( void* h, const bson_value_t* data,
 
     switch( idx )
     {
-        <box_ports_in_case>
+        //<box_ports_in_case> this tag allows utility tools to add new ports
         default:
         break;
     }
@@ -51,7 +51,7 @@ int <box_name>_out_data_conversion( void* h, const bson_value_t* data,
 
     switch( idx )
     {
-        <box_ports_out_case>
+        //<box_ports_out_case> this tag allows utility tools to add new ports
         default:
         break;
     }

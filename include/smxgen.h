@@ -11,12 +11,6 @@
 #include <igraph.h>
 #include <stdbool.h>
 
-#define PATH_INCLUDE_PATTERN  "<include_path>"
-#define PATH_LIB_PATTERN      "<lib_path>"
-#define PATH_BIN_PATTERN      "<bin_path>"
-#define PATH_DOC_PATTERN      "<doc_path>"
-#define PATH_CONF_PATTERN     "<conf_path>"
-#define YEAR_PATTERN          "<date_y>"
 #define AUTHOR_PATTERN        "<author>"
 #define APP_NAME_PATTERN      "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
@@ -25,34 +19,8 @@
 #define RTS_DEP_PATTERN       "<rts_dependency>"
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
-#define BOX_NAME_PATTERN      "<box_name>"
-#define NET_NAME_PATTERN      "<net_name>"
-#define NET_ID_PATTERN        "<net_id>"
 #define BOX_LIB_PATTERN       "<lib_name>"
 #define BOX_MSG_PATTERN       "<box_msg_types>"
-#define BOX_PORTS_IN_PATTERN  "<box_ports_in>"
-#define BOX_PORTS_OUT_PATTERN "<box_ports_out>"
-#define BOX_SIG_PATTERN       "<box_signature>"
-#define PORT_NAME_PATTERN     "<port_name>"
-#define PORT_MODE_PATTERN     "<port_mode>"
-#define CH_ID_PATTERN         "<ch_id>"
-#define BOX_IN_CASE_PATTERN   "<box_ports_in_case>"
-#define BOX_OUT_CASE_PATTERN  "<box_ports_out_case>"
-#define BOX_IN_CONF_PATTERN   "<box_ports_in_conf>"
-#define BOX_OUT_CONF_PATTERN  "<box_ports_out_conf>"
-#define NET_IN_CH_PATTERN     "<net_ch_in>"
-#define NET_OUT_CH_PATTERN    "<net_ch_out>"
-#define NET_IN_CH_RM_PATTERN  "<net_ch_rm_in>"
-#define NET_OUT_CH_RM_PATTERN "<net_ch_rm_out>"
-#define INDEGREE_PATTERN      "<in_degree>"
-#define OUTDEGREE_PATTERN     "<out_degree>"
-
-#define TPL_INCLUDE_PATH    "/usr/include/smx"
-#define TPL_LIB_PATH        "/usr/lib/x86_64-linux-gnu"
-#define TPL_BIN_PATH        "/usr/bin"
-#define TPL_DOC_PATH        "/usr/share/doc"
-#define TPL_CONF_PATH       "/etc/smx"
-#define TPL_PATH            "/opt/smx/tpl"
 
 #define TPL_PATH_APP        TPL_PATH "/app"
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
@@ -62,30 +30,6 @@
 #define TPL_APP_CONF_MK     TPL_PATH_APP "/config_mk"
 #define TPL_APP_LOG         TPL_PATH_APP "/app_zlog"
 #define TPL_APP_MAIN        TPL_PATH_APP "/main_c"
-#define TPL_BOX_PATH        TPL_PATH "/box"
-#define TPL_BOX_GITIGNORE   TPL_BOX_PATH "/_gitignore"
-#define TPL_BOX_DOXYGEN     TPL_BOX_PATH "/_doxygen"
-#define TPL_BOX_CONF        TPL_BOX_PATH "/box_json"
-#define TPL_BOX_MK          TPL_BOX_PATH "/box_mk"
-#define TPL_BOX_CONF_MK     TPL_BOX_PATH "/config_mk"
-#define TPL_BOX_README      TPL_BOX_PATH "/README_md"
-#define TPL_BOX_DPKG        TPL_BOX_PATH "/debian"
-#define TPL_BOX_C           TPL_BOX_PATH "/src/box_c"
-#define TPL_BOX_H           TPL_BOX_PATH "/include/box_h"
-#define TPL_BOX_SIG_H       TPL_BOX_PATH "/include/box_sig_h"
-#define TPL_BOX_SIG_PORT    TPL_BOX_PATH "/include/tpl_port_sig_h"
-#define TPL_BOX_TEST_PATH   TPL_BOX_PATH "/test"
-#define TPL_BOX_TEST_GI     TPL_BOX_TEST_PATH "/_gitignore"
-#define TPL_BOX_TEST_MK     TPL_BOX_TEST_PATH "/test_mk"
-#define TPL_BOX_TEST_H      TPL_BOX_TEST_PATH "/test_h"
-#define TPL_BOX_TEST_C      TPL_BOX_TEST_PATH "/test_c"
-#define TPL_BOX_TEST_MAIN_C TPL_BOX_TEST_PATH "/main_c"
-#define TPL_BOX_TEST_PORT   TPL_BOX_TEST_PATH "/tpl_port_c"
-#define TPL_BOX_TEST_CH     TPL_BOX_TEST_PATH "/tpl_ch_c"
-#define TPL_BOX_TEST_CH_RM  TPL_BOX_TEST_PATH "/tpl_ch_rm_c"
-#define TPL_BOX_TEST_JSON   TPL_BOX_TEST_PATH "/test_json"
-#define TPL_BOX_TEST_ZLOG   TPL_BOX_TEST_PATH "/test_zlog"
-#define TPL_BOX_TEST_P_JSON TPL_BOX_TEST_PATH "/tpl_port_json"
 
 /**
  * Read an app template file, replace the generic patterns and insert it to the
@@ -112,59 +56,6 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path, const char* tgt_path );
 int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path );
 
 /**
- * Read a box template file, replace the generic patterns and insert it to the
- * target file.
- *
- * @param g         pointer to the dependency graph
- * @param id        id of a box
- * @param name      name of a box
- * @param tpl_path  path to the template file
- * @param ftgt      pointer to the target file
- */
-void smxgen_box_file( igraph_t* g, int id, const char* name,
-        const char* tpl_path, FILE* ftgt );
-
-/**
- * Wrapper for smxgen_box_file which opend a target file descriptor.
- *
- * @param g         pointer to the dependency graph
- * @param id        id of a box
- * @param name      name of a box
- * @param tpl_path  path to the template file
- * @param tgt_path  path to the target file
- * @param append    if true abbend to file, if false create new file
- */
-void smxgen_box_file_path( igraph_t* g, int id, const char* name,
-        const char* tpl_path, const char* tgt_path, bool append );
-
-/**
- * Traverse a directory tree and apply smxgen_box_file_path() on each file.
- *
- * @param g
- *  a pointer to the dependency graph
- * @param id        id of a box
- * @param name      name of a box
- * @param src_path
- *  the path to the source directory
- * @param tgt_path
- *  the path to the target directory
- * @return
- *  0 on success, -1 on failure.
- */
-int smxgen_box_file_tree( igraph_t* g, int id, const char* name,
-        char* src_path, const char* tgt_path );
-
-/**
- * Checks wether a box name already exists
- *
- * @param name  the name of the box to check
- * @param names the list of existing box names
- * @param len   the length of the existing box array
- * @return      1 if suplicate exists, 0 otherwise
- */
-int smxgen_box_is_duplicate( const char* name, const char** names, int len );
-
-/**
  * Generate the code to conncet an edge to a vertex given a mode.
  *
  * @param g         pointer to the dependency graph
@@ -179,16 +70,18 @@ void smxgen_connect( igraph_t* g, int ident, int eid, int vid, int mode,
         bool is_dyn );
 
 /**
- * Copy a file
+ * Extract box degrees from dependency graph.
  *
- * @param src
- *  The source file path
- * @param tgt
- *  The target file path
- * @return
- *  0 on success, -1 on failure
+ * @param g
+ *  A pointer to the dependecy graph.
+ * @param id
+ *  The vertex ID.
+ * @param indeg
+ *  An output parameter to store the indegree.
+ * @param outdeg
+ *  An output parameter to store the outdegree.
  */
-int smxgen_cp_file( const char* src, const char* tgt );
+void smxgen_get_box_degrees( igraph_t* g, int id, int* indeg, int* outdeg );
 
 /**
  *
@@ -206,36 +99,11 @@ void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels );
 const char* smxgen_get_port_name( igraph_t* g, int eid, int mode );
 
 /**
- * Get the curren year as string.
- *
- * @param year
- *  An allocated output buffer to store the year.
- */
-void smxgen_get_year_str( char* year );
-
-/**
  * Insert port templates to the target file.
  *
- * @param g         pointer to the dependency graph
- * @param id        id of a box
- * @param mode      the port direction
- * @param name      name of a box
- * @param tpl_path  path to the template file
- * @param ftgt      file descriptor to the target file
- * @return          the number of generated ports
  */
 int smxgen_insert_ports( igraph_t* g, int id, igraph_neimode_t mode,
-        const char* name, const char* tpl_path, FILE* ftgt );
-
-/**
- * Insert the box signature to the target file.
- *
- * @param g        pointer to the dependency graph
- * @param id       id of the box
- * @param box_name name of the box
- * @param ftgt     file descriptor to the target file
- */
-void smxgen_insert_sig( igraph_t* g, int id, const char* box_name, FILE* ftgt );
+    const char* box_name, const char* box_path );
 
 /**
  * Generate the smx network of the application.
@@ -306,82 +174,11 @@ int smxgen_newtork_get_dyn_degree( igraph_t* g, int vid,
 void smxgen_network_wait_end( igraph_t* g, int ident, int tt_vcnt );
 
 /**
- * Checks whether a box is externally defined
- *
- * @param g     pointer to the dependency graph
- * @param vid   id of a vertex of the dependency graph
- * @return      1 if the box is externally defined, 0 otherwise
- */
-int smxgen_net_is_extern( igraph_t* g, int vid );
-
-/**
- * @brief checks whether a net is a certain type of net
- *
- * @param g     pointer to the dependency graph
- * @param vid   id of a vertex of the dependency graph
- * @param type  type string to check against
- * @return      1 if the type matches, 0 otherwise
- */
-int smxgen_net_is_type( igraph_t* g, int vid, const char* type );
-
-/**
  * Generates the include in the main file.
  *
  * @param g     pointer to the dependency graph
  */
 void smxgen_main_includes( igraph_t* g );
-
-/**
- * Read a port template file, replace the generic patterns and insert it to the
- * target file
- *
- * @param eid       the edge id
- * @param box_name  name of the box
- * @param port_name name of the port
- * @param port_mode port direction string
- * @param tpl_path  path to the template file
- * @param ftgt      file descriptor to the target file
- */
-void smxgen_port_file( int eid, const char* box_name, const char* port_name,
-        const char* port_mode, const char* tpl_path, FILE* ftgt );
-
-/**
- * Read the library file of a streamix library and return the linker option
- * to correctly link the latest version.
- *
- * @param libname
- *  The name of the library to search.
- * @param dep
- *  The output parameter to store the linker option string.
- */
-void smxgen_read_dep( const char* libname, char* dep );
-
-/**
- * Read the library file of a streamix library and return the version number.
- *
- * @param libname
- *  The name of the library to search.
- * @param version
- *  The output parameter to store the version string.
- */
-void smxgen_read_dep_version( const char* libname, char* version );
-
-/**
- * Replace all occurrences of a given a word in string.
- *
- * @param str       the string to be modified
- * @param old_word  the word to be replaced
- * @param new_word  the replacing word
- */
-void smxgen_replace( char* str, const char* old_word, const char* new_word );
-
-/**
- * Replace all path patterns
- *
- * @param buffer
- *  pointer to the current line buffer
- */
-void smxgen_replace_path( char* buffer );
 
 /**
  * Checks wether a timer with the same settings already exists
@@ -393,14 +190,6 @@ void smxgen_replace_path( char* buffer );
  */
 int smxgen_timer_is_duplicate( struct timespec tt_elem, struct timespec* tt,
         int len );
-
-/**
- * Convert a string to an alphanumeric string.
- *
- * @param dst   The target string
- * @param src   The source string
- */
-void smxgen_to_alnum( char* dst, const char* src );
 
 /**
  * Copies the box template files to the output and replaces the generic patterns
