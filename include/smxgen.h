@@ -23,11 +23,6 @@
 #define APP_DEP_PATTERN       "<box_dependencies>"
 #define APP_REL_PATTERN       "<box_relations>"
 #define RTS_DEP_PATTERN       "<rts_dependency>"
-#define APP_DEF_PATTERN       "<box_definitions>"
-#define BOX_DEF_PATTERN       "<box_definition>"
-#define APP_CONF_PATTERN      "<box_configs>"
-#define APP_CONF_NET_PATTERN  "<net_configs>"
-#define APP_CONF_INST_PATTERN "<net_inst_configs>"
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
 #define BOX_NAME_PATTERN      "<box_name>"
@@ -65,15 +60,6 @@
 #define TPL_APP_README      TPL_PATH_APP "/README_md"
 #define TPL_APP_MK          TPL_PATH_APP "/app_mk"
 #define TPL_APP_CONF_MK     TPL_PATH_APP "/config_mk"
-#define TPL_APP_JSON        TPL_PATH_APP "/app_json"
-#define TPL_IMPL_JSON       TPL_PATH_APP "/tpl_impl_json"
-#define TPL_NET_JSON        TPL_PATH_APP "/tpl_net_json"
-#define TPL_INST_JSON       TPL_PATH_APP "/tpl_inst_json"
-#define TPL_APP_SJSON       TPL_PATH_APP "/app.schema_json"
-#define TPL_IMPL_SJSON      TPL_PATH_APP "/tpl_impl.schema_json"
-#define TPL_IMPL_DEF_SJSON  TPL_PATH_APP "/tpl_impl_def.schema.json"
-#define TPL_NET_SJSON       TPL_PATH_APP "/tpl_net.schema_json"
-#define TPL_INST_SJSON      TPL_PATH_APP "/tpl_inst.schema_json"
 #define TPL_APP_LOG         TPL_PATH_APP "/app_zlog"
 #define TPL_APP_MAIN        TPL_PATH_APP "/main_c"
 #define TPL_BOX_PATH        TPL_PATH "/box"
@@ -179,26 +165,6 @@ int smxgen_box_file_tree( igraph_t* g, int id, const char* name,
 int smxgen_box_is_duplicate( const char* name, const char** names, int len );
 
 /**
- * Generic wrapper file to replace instance or net tpl configuration files.
- *
- * @param g
- *  A pointer to the depedency graph
- * @param id
- *  The id of the net
- * @param impl
- *  The name of the box implementation
- * @param net
- *  The name of the net
- * @param tpl_path
- *  The path to the source tpl file
- * @param ftgt
- *  A file pointer to the target file
- * @return -1 on failure, 0 on success
- */
-int smxgen_conf_file( igraph_t* g, int id, const char* impl, const char* net,
-        const char* tpl_path, FILE* ftgt );
-
-/**
  * Generate the code to conncet an edge to a vertex given a mode.
  *
  * @param g         pointer to the dependency graph
@@ -246,46 +212,6 @@ const char* smxgen_get_port_name( igraph_t* g, int eid, int mode );
  *  An allocated output buffer to store the year.
  */
 void smxgen_get_year_str( char* year );
-
-/**
- * Insert the box configurations to the configuration file.
- *
- * @param g         pointer to the dependency graph
- * @param ftgt      file descriptor to the target file
- * @param is_schema Flag to indicate whether the JSON schema or the json example
- *                  is created
- */
-void smxgen_insert_conf_impl( igraph_t* g, FILE* ftgt, bool is_schema );
-
-/**
- * Insert the net configurations to the implementation configuration entry.
- *
- * @param g         pointer to the dependency graph
- * @param ftgt      file descriptor to the target file
- * @param impl      the name of the implementation
- * @param is_schema Flag to indicate whether the JSON schema or the json example
- *                  is created
- */
-void smxgen_insert_conf_net( igraph_t* g, FILE* ftgt, const char* impl,
-        bool is_schema );
-
-/**
- * Insert the net instance configurations to the net configuration entry.
- *
- * @param g         pointer to the dependency graph
- * @param ftgt      file descriptor to the target file
- * @param impl      the name of the implementation
- * @param net       the name of the net
- * @param is_schema Flag to indicate whether the JSON schema or the json example
- *                  is created
- */
-void smxgen_insert_conf_inst( igraph_t* g, FILE* ftgt, const char* impl,
-        const char* net, bool is_schema );
-
-/**
- *
- */
-void smxgen_insert_def_impl( igraph_t* g, FILE* ftgt );
 
 /**
  * Insert port templates to the target file.

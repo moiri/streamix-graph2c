@@ -59,6 +59,7 @@ flags = [
 '-x', 'c',
 '-isystem', '/usr/local/include',
 '-isystem', '/usr/target/include',
+'-isystem', '/usr/include/smx',
 '-isystem', '/usr/include',
 '-I', '.',
 '-I', './include',

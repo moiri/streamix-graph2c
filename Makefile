@@ -16,6 +16,7 @@ INCLUDES = $(LOC_INC_DIR)/* \
 		   $(SIA_LANG_DIR)/$(LOC_INC_DIR)/*
 
 INCLUDES_DIR = -I/usr/include/igraph \
+			   -I/usr/include/smx \
 			   -I$(LOC_INC_DIR) \
 			   -I$(SIA_LANG_DIR)/$(LOC_INC_DIR) \
 			   -I$(SIA_LANG_DIR)/uthash/src \
@@ -23,7 +24,7 @@ INCLUDES_DIR = -I/usr/include/igraph \
 
 LINK_DIR = -L/usr/local/lib
 
-LINK_FILE = -ligraph
+LINK_FILE = -ligraph -lsmxutils-0.1
 
 CFLAGS = -Wall
 DEBUG_FLAGS = -g -O0
