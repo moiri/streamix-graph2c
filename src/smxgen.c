@@ -649,6 +649,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
     igraph_vit_t v_it;
     int vid, idx;
     const char* name;
+    char path[BUFFER_SIZE];
     int net_count = igraph_vcount( g );
     const char* names[net_count];
     int indegree, outdegree;
@@ -681,8 +682,9 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
                 igraph_cattribute_GAS( g, "author" ),
                 indegree, outdegree, box_path );
         // append ports
-        smxgen_insert_ports( g, vid, IGRAPH_IN, name, box_path );
-        smxgen_insert_ports( g, vid, IGRAPH_OUT, name, box_path );
+        sprintf( path, "%s/%s", box_path, name );
+        smxgen_insert_ports( g, vid, IGRAPH_IN, name, path );
+        smxgen_insert_ports( g, vid, IGRAPH_OUT, name, path );
         IGRAPH_VIT_NEXT( v_it );
     }
     igraph_vit_destroy( &v_it );
@@ -765,15 +767,15 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
 
     sprintf( file, "%s/Makefile", path_tmp );
     smxgen_app_file( g, TPL_APP_MK, file );
-    smxutility_cp_file( file, "Makefile" );
+    smxutility_file_cp( file, "Makefile" );
 
     sprintf( file, "%s/config.mk", path_tmp );
     smxgen_app_file( g, TPL_APP_CONF_MK, file );
-    smxutility_cp_file( file, "config.mk" );
+    smxutility_file_cp( file, "config.mk" );
 
     sprintf( file, "%s/README.md", path_tmp );
     smxgen_app_file( g, TPL_APP_README, file );
-    smxutility_cp_file( file, "README.md" );
+    smxutility_file_cp( file, "README.md" );
 
     sprintf( file, "%s/app.json", path_tmp );
     rc = smxconfgen_generate_file( g, igraph_cattribute_GAS( g, "name" ),
@@ -781,7 +783,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     if( rc == 0 )
     {
         fprintf( stdout, "(*) created file '%s'\n", file );
-        smxutility_cp_file( file, "app.json" );
+        smxutility_file_cp( file, "app.json" );
     }
 
     sprintf( file, "%s/app.schema.json", path_tmp );
@@ -790,16 +792,16 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     if( rc == 0 )
     {
         fprintf( stdout, "(*) created file '%s'\n", file );
-        smxutility_cp_file( file, "app.schema.json" );
+        smxutility_file_cp( file, "app.schema.json" );
     }
 
     sprintf( file, "%s/app.zlog", path_tmp );
     smxgen_app_file( g, TPL_APP_LOG, file );
-    smxutility_cp_file( file, "app.zlog" );
+    smxutility_file_cp( file, "app.zlog" );
 
     sprintf( file, "%s/.gitignore", path_tmp );
     smxgen_app_file( g, TPL_APP_GITIGNORE, file );
-    smxutility_cp_file( file, ".gitignore" );
+    smxutility_file_cp( file, ".gitignore" );
 
     sprintf( path_tmp, "%s/tpl/debian", build_path );
     mkdir( path_tmp, 0755 );
