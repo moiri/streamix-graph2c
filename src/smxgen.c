@@ -58,7 +58,7 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
         smxutility_replace( buffer, YEAR_PATTERN, year );
         smxutility_replace( buffer, AUTHOR_PATTERN,
                 igraph_cattribute_GAS( g, "author" ) );
-        smxutility_replace( buffer, APP_NAME_PATTERN, name );
+        smxutility_replace( buffer, SMX_APP_NAME_PATTERN, name );
         smxutility_replace( buffer, APP_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "deps" ) );
         smxutility_replace( buffer, APP_REL_PATTERN,
@@ -735,7 +735,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     {
         smxutility_replace_path( buffer );
         smxutility_replace( buffer, BIN_NAME_PATTERN, binname );
-        smxutility_replace( buffer, APP_NAME_PATTERN,
+        smxutility_replace( buffer, SMX_APP_NAME_PATTERN,
                 igraph_cattribute_GAS( g, "name" ) );
         if( strstr( buffer, APP_NW_PATTERN ) != NULL )
         {

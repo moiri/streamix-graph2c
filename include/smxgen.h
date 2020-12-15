@@ -12,7 +12,7 @@
 #include <stdbool.h>
 
 #define AUTHOR_PATTERN        "<author>"
-#define APP_NAME_PATTERN      "<app_name>"
+#define SMX_APP_NAME_PATTERN  "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_DEP_PATTERN       "<box_dependencies>"
 #define APP_REL_PATTERN       "<box_relations>"
