@@ -10,6 +10,7 @@
 
 #include <igraph.h>
 #include <stdbool.h>
+#include "path_defines.h"
 
 #define AUTHOR_PATTERN        "<author>"
 #define SMX_APP_NAME_PATTERN  "<app_name>"

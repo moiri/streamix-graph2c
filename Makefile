@@ -47,7 +47,7 @@ install:
 	mkdir -p $(TGT_BIN)
 	mkdir -p $(TARGET_PATH)/tpl
 	cp -a $(PROJECT) $(TGT_BIN)/.
-	cp -a tpl/app $(TARGET_PATH)/tpl/smxappgen
+	cp -TR tpl/app $(TARGET_PATH)/tpl/smxappgen
 	cp utils/smx*.sh $(TGT_BIN)/.
 	cp utils/smx*.py $(TGT_BIN)/.
 

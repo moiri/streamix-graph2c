@@ -6,8 +6,8 @@ EVENT = 50, LOG_INFO
 [formats]
 debug = "[%d.%us] [%V] [%t] [%c] %m%n"
 [rules]
-#*.DEBUG   "/var/log/smx/%E(SMX_LOG_PREFIX).<app_name>.%p.debug.log", 1GB * 5
-*.EVENT   "/var/log/smx/%E(SMX_LOG_PREFIX).<app_name>.%p.log", 10MB * 5
+#*.DEBUG   "/var/log/smx/%E(SMX_LOG_PREFIX).<app_name>-%E(SMX_LIB_VERSION).%p.debug.log", 1000MB * 5
+*.EVENT   "/var/log/smx/%E(SMX_LOG_PREFIX).<app_name>-%E(SMX_LIB_VERSION).%p.log", 10MB * 5
 *.=NOTICE  >stdout
 *.=EVENT   >stdout
 *.WARN     >stderr
