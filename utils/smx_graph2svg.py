@@ -21,7 +21,8 @@ parser.add_argument( '-l', metavar="LAYOUT", dest='layout', choices=['circle', '
 parser.add_argument( '-o', metavar="OUTFILE", dest='output', default='out', help='set the output path of the result (default: out.[FORMAT])' )
 parser.add_argument( '-x', metavar="PIXEL", dest='x', default=1000, type=int, help='define the image with (default: 1000)' )
 parser.add_argument( '-y', metavar="PIXEL", dest='y', default=1000, type=int, help='define the image height (default: 1000)' )
-parser.add_argument( '-s', metavar="PIXEL", dest='s', default=80, type=int, help='define the node size (default: 80)' )
+parser.add_argument( '-s', metavar="PIXEL", dest='s', default=40, type=int, help='define the node size (default: 40)' )
+parser.add_argument( '-S', metavar="STANDARD", dest='S', choices=['qHD', 'HD', 'HD+', 'FHD', 'QHD', 'QHD+', '4K', '5K', '8K'], help='A High-definition TV standard resolution' )
 parser.add_argument( 'net', metavar="NET", nargs=1, help='the dependency graph of the PNSC' )
 # parser.add_argument( 'outfile', nargs=1, metavar="OUTFILE", help="the graph file to be written" )
 args = parser.parse_args()
@@ -48,8 +49,39 @@ def main():
             e['color'] = '#0000ff';
         if( e['dsrc'] and e['ddst'] ):
             e['color'] = '#ff00ff';
-    x = args.x;
-    y = args.y;
+
+    resolution = args.S
+
+    if( resolution == 'qHD' ):
+        x = 960;
+        y = 540;
+    elif( resolution == 'HD' ):
+        x = 1280;
+        y = 720;
+    elif( resolution == 'HD+' ):
+        x = 1600;
+        y = 900;
+    elif( resolution == 'FHD' ):
+        x = 1920;
+        y = 1080;
+    elif( resolution == 'QHD' ):
+        x = 2560;
+        y = 1440;
+    elif( resolution == 'QHD+' ):
+        x = 3200;
+        y = 1800;
+    elif( resolution == '4K' ):
+        x = 3840;
+        y = 2160;
+    elif( resolution == '5K' ):
+        x = 5120;
+        y = 2880;
+    elif( resolution == '8K' ):
+        x = 7680;
+        y = 4320;
+    else:
+        x = args.x;
+        y = args.y;
     box = args.s/2 + 10;
     out = igraph.Plot( target=outfile[0] + ".svg", bbox=( 0, 0, x, y ), background="white" )
     out.add( g, bbox=( box, box, x-box, y-box ), layout=g.layout(args.layout) )
