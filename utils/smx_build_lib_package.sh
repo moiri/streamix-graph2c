@@ -53,7 +53,7 @@ while [ $# -gt 0 ] ; do
             doxygen="-d"
             ;;
         -t|--dryrun)
-            dryrun=-"t"
+            dryrun="-t"
             ;;
         -*)
             usage "Unknown option '$1'"

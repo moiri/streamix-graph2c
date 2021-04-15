@@ -142,8 +142,11 @@ function build_new() {
         # handle all debian helper files
         for item in $path/debian/dh/*
         do
+            [ -f "$item" ] || continue
             mv $item $path/debian/$LIBNAME$VMAJ.$VMIN.$(basename $item)
         done
+
+        rm -rf $path/debian/dh
     else
         cp -R $path/build/tpl/debian $path/debian
         mv $path/debian/manpage $path/debian/$APPNAME-$VMAJ.$VMIN.1
