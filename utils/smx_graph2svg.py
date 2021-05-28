@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Convert a igrap graphml file to an image"""
 
@@ -10,7 +10,7 @@ __status__ = "Prototype"
 
 import igraph
 import sys, argparse
-import igraph.vendor.texttable
+# import igraph.vendor.texttable
 import os
 
 sys.settrace
