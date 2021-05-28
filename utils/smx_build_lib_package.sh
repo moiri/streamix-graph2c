@@ -26,6 +26,7 @@ Options:
                               and exit
 -C, --directory [DIRECTORY]   specify the path where to execute the script
 -d, --doxygen                 do not generate manpages with doxygen
+-t, --dryrun                  only create a debian folder with the appripriate files
 
 EOF
 
@@ -34,6 +35,7 @@ EOF
 
 directory="."
 doxygen=""
+dryrun=""
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
@@ -50,6 +52,9 @@ while [ $# -gt 0 ] ; do
         -d|--doxygen)
             doxygen="-d"
             ;;
+        -t|--dryrun)
+            dryrun="-t"
+            ;;
         -*)
             usage "Unknown option '$1'"
             ;;
@@ -60,4 +65,4 @@ while [ $# -gt 0 ] ; do
     shift
 done
 
-smx_build_package.sh -l -C $directory $doxygen
+smx_build_package.sh -l -C $directory $doxygen $dryrun

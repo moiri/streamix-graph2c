@@ -56,6 +56,7 @@ Options:
 -C, --directory [DIRECTORY]   specify the path where to execute the script
 -d, --doxygen                 do not generate manpages with doxygen
 -l, --library                 build a library file instead of a binary
+-t, --dryrun                  only create a debian folder with the appripriate files
 
 EOF
 
@@ -66,6 +67,7 @@ directory="."
 doxygen=1
 new=0
 library=0
+dryrun=0
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
@@ -80,6 +82,9 @@ while [ $# -gt 0 ] ; do
             ;;
         -l|--library)
             library=1
+            ;;
+        -t|--dryrun)
+            dryrun=1
             ;;
         -*)
             usage "Unknown option '$1'"
@@ -115,36 +120,33 @@ tag=v$branch.$VREV
 pristine_branch=pristine-tar
 pristine_branch_v=${pristine_branch}_$branch
 
-# Only execute the script if the repo is clean
-if ! [ -z "$(git status --porcelain)" ]; then
-    echo "Working directory $path has uncommitted changes, aborting"
-    exit 1
-fi
-
-# Check if a package must be updated or a new package is required
-if ! git -C $path show-ref --verify --quiet refs/heads/$branch; then
-    new=1
-fi
-
-# Create master tag
-if ! git -C $path tag $tag-master; then
-    echo "Master tag already exists, continuing"
-fi
-
-# Create build branch
-git -C $path branch $branch_p
-if [ $new -ne 0 ]; then
-    # Create upstream branch
-    git -C $path checkout -b $branch
-
+function build_new() {
     # Copy Debian Templates
     rm -rf $path/debian
     if [ $library -ne 0 ]
     then
         cp -R $path/tpl/debian $path/debian
-        mv $path/debian/install $path/debian/$LIBNAME$VMAJ.$VMIN.install
         mv $path/debian/install-dev $path/debian/$LIBNAME-dev.install
-        mv $path/debian/docs $path/debian/$LIBNAME$VMAJ.$VMIN.docs
+        # this is left here for legacy reasons now this is handled in the dh
+        # folder
+        if [ -f $path/debian/install ]
+        then
+            mv $path/debian/install $path/debian/$LIBNAME$VMAJ.$VMIN.install
+        fi
+        # this is left here for legacy reasons now this is handled in the dh
+        # folder
+        if [ -f $path/debian/docs ]
+        then
+            mv $path/debian/docs $path/debian/$LIBNAME$VMAJ.$VMIN.docs
+        fi
+        # handle all debian helper files
+        for item in $path/debian/dh/*
+        do
+            [ -f "$item" ] || continue
+            mv $item $path/debian/$LIBNAME$VMAJ.$VMIN.$(basename $item)
+        done
+
+        rm -rf $path/debian/dh
     else
         cp -R $path/build/tpl/debian $path/debian
         mv $path/debian/manpage $path/debian/$APPNAME-$VMAJ.$VMIN.1
@@ -173,6 +175,37 @@ if [ $new -ne 0 ]; then
         echo "replacing date_r: $DATE_M"
         sed -i "s/<date_m>/$DATE_M/g" $file
     done
+}
+
+if [ $dryrun -ne 0 ]
+then
+    build_new
+    exit 0
+fi
+
+# Only execute the script if the repo is clean
+if ! [ -z "$(git status --porcelain)" ]; then
+    echo "Working directory $path has uncommitted changes, aborting"
+    exit 1
+fi
+
+# Check if a package must be updated or a new package is required
+if ! git -C $path show-ref --verify --quiet refs/heads/$branch; then
+    new=1
+fi
+
+# Create master tag
+if ! git -C $path tag $tag-master; then
+    echo "Master tag already exists, continuing"
+fi
+
+# Create build branch
+git -C $path branch $branch_p
+if [ $new -ne 0 ]; then
+    # Create upstream branch
+    git -C $path checkout -b $branch
+
+    build_new
 else
     head=$(git rev-parse HEAD)
     git -C $path checkout $branch
