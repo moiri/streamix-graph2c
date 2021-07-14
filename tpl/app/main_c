@@ -35,8 +35,9 @@
 
 int main( int argc, char **argv )
 {
-    int c;
-    char* app_conf_file = NULL;
+    int c, map_count = 0;
+    const char* app_conf_file = NULL;
+    const char* app_conf_maps[100];
     char* log_conf_file = NULL;
     char env_time[100];
     char env_var_smx[200];
@@ -88,6 +89,7 @@ int main( int argc, char **argv )
                 printf( "                 1. '%s' in the application root\n", LOG_APP_CONFIG_PATH );
                 printf( "                 2. '%s'\n", LOG_SYS_CONFIG_PATH );
                 printf( "                 3. '%s'\n", LOG_GLOBAL_CONFIG_PATH );
+                printf( "  -m 'FILE'     Key-value maps to modify the app configuration. To pass multiple maps, use this argument multiple times.\n" );
                 return 0;
             case 'v':
                 printf( "%s v%s\n", argv[0], APP_VERSION );
@@ -97,6 +99,10 @@ int main( int argc, char **argv )
                 break;
             case 'l':
                 log_conf_file = optarg;
+                break;
+            case 'm':
+                app_conf_maps[map_count] = optarg;
+                map_count++;
                 break;
             case '?':
                 if( optopt == 'c' )
@@ -110,7 +116,8 @@ int main( int argc, char **argv )
                 abort();
         }
 
-    smx_rts_t* rts = smx_program_init( app_conf_file, log_conf_file );
+    smx_rts_t* rts = smx_program_init( app_conf_file, log_conf_file,
+            app_conf_maps, map_count );
 
     <smx_network>
 
