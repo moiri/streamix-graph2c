@@ -694,7 +694,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
 /******************************************************************************/
 void smxgen_tpl_main( igraph_t* g, char* build_path )
 {
-    char path_tmp[1000];
+    char path_tmp[500];
     char file[1000];
     char deps[1000] = "";
     char rels[1000] = "";
