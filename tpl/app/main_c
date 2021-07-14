@@ -73,7 +73,7 @@ int main( int argc, char **argv )
     else
         fprintf( stderr, "warning: no default app config file found\n" );
 
-    while( ( c = getopt( argc, argv, "hvc:l:" ) ) != -1 )
+    while( ( c = getopt( argc, argv, "hvc:l:m:" ) ) != -1 )
         switch( c ) {
             case 'h':
                 printf( "Usage:\n  %s [OPTION...]\n\n", argv[0] );
