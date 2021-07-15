@@ -12,18 +12,24 @@
 #include <stdbool.h>
 #include "path_defines.h"
 
+#ifndef SMXRTSP_VERSION_LIB
+#define SMXRTSP_VERSION_LIB "unknown"
+#endif
+
 #define AUTHOR_PATTERN        "<author>"
 #define SMX_APP_NAME_PATTERN  "<app_name>"
 #define BIN_NAME_PATTERN      "<bin_name>"
 #define APP_DEP_PATTERN       "<box_dependencies>"
 #define APP_REL_PATTERN       "<box_relations>"
 #define RTS_DEP_PATTERN       "<rts_dependency>"
+#define RTSP_DEP_PATTERN      "<rtsp_dependency>"
+#define SMXC_DEP_PATTERN      "<smxc_dependency>"
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
 #define BOX_LIB_PATTERN       "<lib_name>"
 #define BOX_MSG_PATTERN       "<box_msg_types>"
 
-#define TPL_PATH_APP        TPL_PATH "/smxappgen"
+#define TPL_PATH_APP        TPL_PATH "/smxappgen-" SMXRTSP_VERSION_LIB
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
 #define TPL_APP_GITIGNORE   TPL_PATH_APP "/_gitignore"
 #define TPL_APP_README      TPL_PATH_APP "/README_md"

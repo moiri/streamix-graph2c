@@ -65,6 +65,10 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
                 igraph_cattribute_GAS( g, "rels" ) );
         smxutility_replace( buffer, RTS_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "rts_dep" ) );
+        smxutility_replace( buffer, RTSP_DEP_PATTERN,
+                igraph_cattribute_GAS( g, "rtsp_dep" ) );
+        smxutility_replace( buffer, SMXC_DEP_PATTERN,
+                igraph_cattribute_GAS( g, "smxc_dep" ) );
         smxutility_replace( buffer, BIN_NAME_PATTERN,
                 igraph_cattribute_GAS( g, "binname" ) );
         fputs( buffer, ftgt );
@@ -716,6 +720,8 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
 
     smxutility_read_dep( "smxrts", deps );
     igraph_cattribute_GAS_set( g, "rts_dep", deps );
+    igraph_cattribute_GAS_set( g, "rtsp_dep", " smxrtsp-0.2" );
+    igraph_cattribute_GAS_set( g, "smxc_dep", " smxc-0.5" );
 
     smxgen_get_box_deps( g, deps, rels );
     igraph_cattribute_GAS_set( g, "deps", deps );

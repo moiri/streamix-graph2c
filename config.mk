@@ -6,32 +6,14 @@
 #  - test/Makefile                                                            #
 ###############################################################################
 
-# The version number of the box library ($(VMAJ).$(VMIN).$(VREV))
+# The version number of the app ($(VMAJ).$(VMIN).$(VREV))
 VMAJ = 0
-VMIN = 1
+VMIN = 2
 VREV = 0
 VDEB = 1
 
-# the compiler
-SMXC =<smxc_dependency>
-
-# the graph post-processor
-RTSP =<rtsp_dependency>
-
 # the RTS library
-LIB_RTS =<rts_dependency>
-
-# list the external libraries prefixed with -l
-EXT_LIBS =<box_dependencies>
-
-# list the external libraries directories prefixed with -L
-EXT_LIBS_DIR =
-
-# list the external include files prefixed with -I
-EXT_INCS_DIR =
-
-# define additional CFLAGS
-EXT_CFLAGS =
+LIB_SMXUTILS = -lsmxutils-0.2
 
 # the name of the application
-APPNAME = <app_name>
+APPNAME = smxrtsp

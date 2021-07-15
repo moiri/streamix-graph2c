@@ -80,10 +80,10 @@ $(SIAGRAPH): $(PNSCGRAPH)
 	$(TGT_BIN)/smxsia -f $(FORMAT) -o $@ $^ $(GENPATH)/sia/*
 
 $(PNSCGRAPH) $(OUTSRC) $(OUTINC): $(OUTGRAPH)
-	$(TGT_BIN)/smxrtsp $^ -p $(GENPATH) -f $(FORMAT) -e "<author>"
+	$(TGT_BIN)/$(RTSP) $^ -p $(GENPATH) -f $(FORMAT) -e "<author>"
 
 $(OUTGRAPH): $(APPNAME).smx
-	$(TGT_BIN)/smxc -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^
+	$(TGT_BIN)/$(SMXC) -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^
 
 
 .PHONY: clean run clean_run valgrind boximpl $(BOXIMPL) setboxpaths install uninstall

@@ -5,8 +5,21 @@ LOC_INC_DIR = include
 LOC_SRC_DIR = src
 SIA_LANG_DIR = streamix-sia-lang
 
-TARGET_PATH = /etc/smx
-TGT_BIN = /usr/bin
+include config.mk
+
+LIB_VERSION = $(VMAJ).$(VMIN)
+UPSTREAM_VERSION = $(LIB_VERSION).$(VREV)
+DEBIAN_REVISION = $(VDEB)
+VERSION = $(UPSTREAM_VERSION)-$(DEBIAN_REVISION)
+
+VAPPNAME = $(APPNAME)-$(LIB_VERSION)
+VPKGNAME = $(APPNAME)$(LIB_VERSION)
+
+TGT_BIN = $(DESTDIR)/usr/bin
+TGT_DOC = $(DESTDIR)/usr/share/doc/$(VPKGNAME)
+TGT_CONF = $(DESTDIR)/etc/smx
+TGT_TPL = $(TGT_CONF)/tpl
+LOCAL_TPL = tpl
 
 SOURCES = main.c \
 		  $(LOC_SRC_DIR)/* \
@@ -24,9 +37,11 @@ INCLUDES_DIR = -I/usr/include/igraph \
 
 LINK_DIR = -L/usr/local/lib
 
-LINK_FILE = -ligraph -lsmxutils-0.1
+LINK_FILE = -ligraph $(LIB_SMXUTILS)
 
-CFLAGS = -Wall
+CFLAGS = -Wall \
+		 -DSMXRTSP_VERSION_LIB=\"$(LIB_VERSION)\" \
+		 -DSMXRTSP_VERSION_UP=\"$(UPSTREAM_VERSION)\"
 DEBUG_FLAGS = -g -O0
 
 CC = gcc
@@ -41,15 +56,16 @@ debug: $(PROJECT)
 $(PROJECT): $(SOURCES) $(INCLUDES)
 	$(CC) $(CFLAGS) $(SOURCES) $(INCLUDES_DIR) $(LINK_DIR) $(LINK_FILE) -o $(PROJECT)
 
-.PHONY: clean install
+.PHONY: clean install uninstall
 
 install:
-	mkdir -p $(TGT_BIN)
-	mkdir -p $(TARGET_PATH)/tpl
-	cp -a $(PROJECT) $(TGT_BIN)/.
-	cp -TR tpl/app $(TARGET_PATH)/tpl/smxappgen
-	cp utils/smx*.sh $(TGT_BIN)/.
-	cp utils/smx*.py $(TGT_BIN)/.
+	mkdir -p $(TGT_BIN) $(TGT_TPL)
+	cp -a $(APPNAME) $(TGT_BIN)/$(VAPPNAME)
+	cp -a $(LOCAL_TPL)/app $(TGT_TPL)/smxappgen-$(LIB_VERSION)
+
+uninstall:
+	rm -f $(TGT_BIN)/$(VAPPNAME)
+	rm -rf $(TGT_TPL)/smxappgen-$(LIB_VERSION)
 
 clean:
 	rm -f $(PROJECT)
