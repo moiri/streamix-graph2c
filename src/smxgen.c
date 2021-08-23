@@ -59,10 +59,12 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
         smxutility_replace( buffer, AUTHOR_PATTERN,
                 igraph_cattribute_GAS( g, "author" ) );
         smxutility_replace( buffer, SMX_APP_NAME_PATTERN, name );
-        smxutility_replace( buffer, APP_DEP_PATTERN,
+        smxutility_replace( buffer, BOX_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "deps" ) );
-        smxutility_replace( buffer, APP_REL_PATTERN,
+        smxutility_replace( buffer, BOX_REL_PATTERN,
                 igraph_cattribute_GAS( g, "rels" ) );
+        smxutility_replace( buffer, BOX_INC_PATTERN,
+                igraph_cattribute_GAS( g, "incs" ) );
         smxutility_replace( buffer, RTS_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "rts_dep" ) );
         smxutility_replace( buffer, RTSP_DEP_PATTERN,
@@ -169,7 +171,7 @@ void smxgen_get_box_degrees( igraph_t* g, int id, int* indeg, int* outdeg )
 }
 
 /******************************************************************************/
-void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels )
+void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels, char* incs )
 {
     igraph_vs_t v_sel;
     igraph_vit_t v_it;
@@ -177,8 +179,10 @@ void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels )
     const char* name;
     int net_count = igraph_vcount( g );
     const char* names[net_count];
-    char libname[1000];
+    char libname[500];
     char dep[1000];
+    char inc[1000];
+    char version[100];
     bool first = true;
 
     for( idx = 0; idx < net_count; idx++ )
@@ -203,8 +207,11 @@ void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels )
             continue;
         }
         names[idx++] = name;
-        smxutility_read_dep( libname, dep );
+        smxutility_read_dep_version( libname, version );
+        sprintf( dep, " -l%s-%s", libname, version );
         strcat( deps, dep );
+        sprintf( inc, " -I%s/lib%s-%s", TGT_INCLUDE, libname, version );
+        strcat( incs, inc );
         if( rels != NULL )
         {
             if( first )
@@ -702,6 +709,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     char file[1000];
     char deps[1000] = "";
     char rels[1000] = "";
+    char incs[1000] = "";
     char binname[1000] = "";
     FILE* ftpl;
     char buffer[BUFFER_SIZE];
@@ -723,9 +731,10 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     igraph_cattribute_GAS_set( g, "rtsp_dep", " smxrtsp-0.2" );
     igraph_cattribute_GAS_set( g, "smxc_dep", " smxc-0.5" );
 
-    smxgen_get_box_deps( g, deps, rels );
+    smxgen_get_box_deps( g, deps, rels, incs );
     igraph_cattribute_GAS_set( g, "deps", deps );
     igraph_cattribute_GAS_set( g, "rels", rels );
+    igraph_cattribute_GAS_set( g, "incs", incs );
     smxutility_to_alnum( binname, igraph_cattribute_GAS( g, "name" ) );
     igraph_cattribute_GAS_set( g, "binname", binname );
 

@@ -28,7 +28,7 @@ EXT_LIBS =<box_dependencies>
 EXT_LIBS_DIR =
 
 # list the external include files prefixed with -I
-EXT_INCS_DIR =
+EXT_INCS_DIR =<box_includes>
 
 # define additional CFLAGS
 EXT_CFLAGS =
