@@ -2,7 +2,8 @@
 
 ### Changes
 
- - Debianize
+ - Generalize Streamix dependencies
+ - Add box include paths to config.mk
 
 
 -------------------
