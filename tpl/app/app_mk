@@ -36,16 +36,22 @@ INCLUDES = $(wildcard $(BOXIMPL)/include/*.h)
 
 INCLUDES_DIR = -I/usr/local \
 			   -I/usr/include/libbson-1.0 \
-			   -I$(TGT_INCLUDE) \
-			   -I. $(BOX_INC_DIR) $(EXT_INCS_DIR)
+			   -I. \
+			   -I $(TGT_INCLUDE)/lib$(RTS_LIB) \
+			   $(BOX_INC_DIR) \
+			   $(patsubst %, -I$(TGT_INCLUDE)/lib%, $(SMX_LIBS)) \
+			   $(EXT_INCS_DIR)
 
 LINK_DIR = -L/usr/local/lib \
 	-L$(TGT_LIB) $(BOX_LIB_DIR) $(EXT_LIBS_DIR)
 
-LINK_FILE = $(LIBS) $(LIB_RTS) \
+LINK_FILE = $(LIBS) \
 	-lpthread \
 	-lbson-1.0 \
-	-lzlog $(EXT_LIBS)
+	-lzlog \
+	-l$(RTS_LIB) \
+	$(patsubst %, -l%, $(SMX_LIBS)) \
+	$(EXT_LIBS)
 
 CC = gcc
 CFLAGS = -Wall -DAPP_VERSION=\"$(UPSTREAM_VERSION)\" -DLIB_VERSION=\"$(LIB_VERSION)\" $(EXT_CFLAGS)
@@ -80,7 +86,7 @@ $(SIAGRAPH): $(PNSCGRAPH)
 	$(TGT_BIN)/smxsia -f $(FORMAT) -o $@ $^ $(GENPATH)/sia/*
 
 $(PNSCGRAPH) $(OUTSRC) $(OUTINC): $(OUTGRAPH)
-	$(TGT_BIN)/$(RTSP) $^ -p $(GENPATH) -f $(FORMAT) -e "<author>"
+	$(TGT_BIN)/$(SMXRTSP) $^ -p $(GENPATH) -f $(FORMAT) -e "<author>"
 
 $(OUTGRAPH): $(APPNAME).smx
 	$(TGT_BIN)/$(SMXC) -f $(FORMAT) -p $(GENPATH) $(SIA_INPUT) -o $(OUTGRAPH_NAME) $^

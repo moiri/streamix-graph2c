@@ -16,19 +16,22 @@ VDEB = 1
 SMXC =<smxc_dependency>
 
 # the graph post-processor
-RTSP =<rtsp_dependency>
+SMXRTSP =<smxrtsp_dependency>
 
 # the RTS library
-LIB_RTS =<rts_dependency>
+RTS_LIB =<smxrts_dependency>
+
+# list of Streamix libraries to be linked and included
+SMX_LIBS =<app_dependencies>
 
 # list the external libraries prefixed with -l
-EXT_LIBS =<box_dependencies>
+EXT_LIBS =
 
 # list the external libraries directories prefixed with -L
 EXT_LIBS_DIR =
 
 # list the external include files prefixed with -I
-EXT_INCS_DIR =<box_includes>
+EXT_INCS_DIR =
 
 # define additional CFLAGS
 EXT_CFLAGS =

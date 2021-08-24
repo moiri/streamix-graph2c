@@ -20,15 +20,14 @@
 #define APP_INC_PATTERN       "<app_includes>"
 #define APP_NW_PATTERN        "<smx_network>"
 #define BIN_NAME_PATTERN      "<bin_name>"
-#define BOX_DEP_PATTERN       "<box_dependencies>"
+#define APP_DEP_PATTERN       "<app_dependencies>"
 #define BOX_REL_PATTERN       "<box_relations>"
-#define BOX_INC_PATTERN       "<box_includes>"
 #define BOX_LIB_PATTERN       "<lib_name>"
 #define BOX_MSG_PATTERN       "<box_msg_types>"
-#define RTS_DEP_PATTERN       "<rts_dependency>"
-#define RTSP_DEP_PATTERN      "<rtsp_dependency>"
 #define SMX_APP_NAME_PATTERN  "<app_name>"
 #define SMXC_DEP_PATTERN      "<smxc_dependency>"
+#define SMXRTS_DEP_PATTERN    "<smxrts_dependency>"
+#define SMXRTSP_DEP_PATTERN   "<smxrtsp_dependency>"
 
 #define TPL_PATH_APP        TPL_PATH "/smxappgen-" SMXRTSP_VERSION_LIB
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
@@ -94,7 +93,7 @@ void smxgen_get_box_degrees( igraph_t* g, int id, int* indeg, int* outdeg );
 /**
  *
  */
-void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels, char* incs );
+void smxgen_get_box_deps( igraph_t* g, char* deps, char* rels );
 
 /**
  * Get the name of a port given the edge id and the mode of the port.
