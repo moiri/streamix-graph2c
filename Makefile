@@ -33,7 +33,7 @@ INCLUDES_DIR = -I/usr/include/igraph \
 			   -I$(LOC_INC_DIR) \
 			   -I$(SIA_LANG_DIR)/$(LOC_INC_DIR) \
 			   -I$(SIA_LANG_DIR)/uthash/src \
-			   -I.
+			   -I. $(INC_SMXUTILS)
 
 LINK_DIR = -L/usr/local/lib
 
