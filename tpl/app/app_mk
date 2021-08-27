@@ -48,7 +48,6 @@ LINK_DIR = -L/usr/local/lib \
 LINK_FILE = $(LIBS) \
 	-lpthread \
 	-lbson-1.0 \
-	-lzlog \
 	-l$(RTS_LIB) \
 	$(patsubst %, -l%, $(SMX_LIBS)) \
 	$(EXT_LIBS)

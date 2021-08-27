@@ -1,3 +1,12 @@
+# `v0.4.0` (latest)
+
+### Changes
+
+ - Update to library libsmxutils-0.3
+ - Handle automatic zlog dependency
+
+
+-------------------
 # `v0.3.0` (latest)
 
 ### Changes

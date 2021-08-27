@@ -65,6 +65,8 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
                 igraph_cattribute_GAS( g, "rels" ) );
         smxutility_replace( buffer, SMXRTS_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "smxrts_dep" ) );
+        smxutility_replace( buffer, SMXZLOG_DEP_PATTERN,
+                igraph_cattribute_GAS( g, "smxrts_zlog" ) );
         smxutility_replace( buffer, SMXRTSP_DEP_PATTERN,
                 igraph_cattribute_GAS( g, "smxrtsp_dep" ) );
         smxutility_replace( buffer, SMXC_DEP_PATTERN,
@@ -702,6 +704,8 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     char path_tmp[500];
     char file[1000];
     char rts[100] = "";
+    char zlog_version[100] = "";
+    char zlog[100] = "";
     char deps[1000] = "";
     char rels[1000] = "";
     char binname[1000] = "";
@@ -721,7 +725,10 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     }
 
     smxutility_read_dep( "smxrts", rts );
+    smxutility_read_dep_version_ext( "smxzlog", zlog_version );
+    sprintf( zlog, "smxzlog-%s", zlog_version );
     igraph_cattribute_GAS_set( g, "smxrts_dep", rts );
+    igraph_cattribute_GAS_set( g, "smxzlog_dep", zlog );
     igraph_cattribute_GAS_set( g, "smxrtsp_dep", " smxrtsp-0.3" );
     igraph_cattribute_GAS_set( g, "smxc_dep", " smxc-0.5" );
 

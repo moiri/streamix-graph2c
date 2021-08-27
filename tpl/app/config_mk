@@ -19,10 +19,10 @@ SMXC =<smxc_dependency>
 SMXRTSP =<smxrtsp_dependency>
 
 # the RTS library
-RTS_LIB =<smxrts_dependency>
+RTS_LIB = <smxrts_dependency>
 
 # list of Streamix libraries to be linked and included
-SMX_LIBS =<app_dependencies>
+SMX_LIBS = <smxzlog_dependency><app_dependencies>
 
 # list the external libraries prefixed with -l
 EXT_LIBS =
