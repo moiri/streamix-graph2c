@@ -26,9 +26,7 @@
 #define BOX_MSG_PATTERN       "<box_msg_types>"
 #define SMX_APP_NAME_PATTERN  "<app_name>"
 #define SMXC_DEP_PATTERN      "<smxc_dependency>"
-#define SMXRTS_DEP_PATTERN    "<smxrts_dependency>"
 #define SMXRTSP_DEP_PATTERN   "<smxrtsp_dependency>"
-#define SMXZLOG_DEP_PATTERN   "<smxzlog_dependency>"
 
 #define TPL_PATH_APP        TPL_PATH "/smxappgen-" SMXRTSP_VERSION_LIB
 #define TPL_PATH_APP_DPKG   TPL_PATH_APP "/debian"
