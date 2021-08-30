@@ -8,7 +8,7 @@
 
 # The version number of the app ($(VMAJ).$(VMIN).$(VREV))
 VMAJ = 0
-VMIN = 3
+VMIN = 4
 VREV = 0
 VDEB = 1
 

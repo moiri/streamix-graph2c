@@ -13,10 +13,10 @@ VREV = 0
 VDEB = 1
 
 # the compiler
-SMXC =<smxc_dependency>
+SMXC = <smxc_dependency>
 
 # the graph post-processor
-SMXRTSP =<smxrtsp_dependency>
+SMXRTSP = <smxrtsp_dependency>
 
 # the RTS library
 RTS_LIB = <smxrts_dependency>
