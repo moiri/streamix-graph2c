@@ -83,7 +83,8 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path,
 }
 
 /******************************************************************************/
-int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path )
+int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path,
+        const char* cp_path )
 {
     FTS* ftsp;
     FTSENT* p;
@@ -92,6 +93,7 @@ int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path )
     int pathlen = strlen( src_path );
     char* path;
     char tmp_path[1000];
+    char tmp_path_cp[1000];
     char* paths[] = { src_path, NULL };
 
     if( ( ftsp = fts_open( paths, fts_options, NULL ) ) == NULL )
@@ -113,12 +115,22 @@ int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path )
                     path = p->fts_path + pathlen + 1;
                     sprintf( tmp_path, "%s/%s", tgt_path, path );
                     mkdir( tmp_path, 0755 );
+                    if( cp_path != NULL )
+                    {
+                        sprintf( tmp_path_cp, "%s/%s", cp_path, path );
+                        mkdir( tmp_path_cp, 0755 );
+                    }
                 }
                 break;
             case FTS_F:
                 path = p->fts_path + pathlen + 1;
                 sprintf( tmp_path, "%s/%s", tgt_path, path );
                 smxgen_app_file( g, p->fts_path, tmp_path );
+                if( cp_path != NULL )
+                {
+                    sprintf( tmp_path_cp, "%s/%s", cp_path, path );
+                    smxutility_file_cp( tmp_path, tmp_path_cp );
+                }
                 break;
             default:
                 break;
@@ -777,6 +789,8 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     fclose( __src_file );
 
     mkdir( DIR_LOG, 0755 );
+    mkdir( "tpl", 0755 );
+    mkdir( "tpl/debian", 0755 );
     sprintf( path_tmp, "%s/tpl", build_path );
     mkdir( path_tmp, 0755 );
 
@@ -820,5 +834,5 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
 
     sprintf( path_tmp, "%s/tpl/debian", build_path );
     mkdir( path_tmp, 0755 );
-    smxgen_app_file_tree( g, TPL_PATH_APP_DPKG, path_tmp );
+    smxgen_app_file_tree( g, TPL_PATH_APP_DPKG, path_tmp, "tpl/debian" );
 }

@@ -1,4 +1,13 @@
-# `v0.4.0` (latest)
+# `v0.4.1` (latest)
+
+### Changes
+
+ - Copy the generated debian files from the build directory to the app
+   directory.
+
+
+-------------------
+# `v0.4.0`
 
 ### Changes
 
@@ -7,7 +16,7 @@
 
 
 -------------------
-# `v0.3.0` (latest)
+# `v0.3.0`
 
 ### Changes
 

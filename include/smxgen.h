@@ -56,10 +56,13 @@ void smxgen_app_file( igraph_t* g, const char* tpl_path, const char* tgt_path );
  *  the path to the source directory
  * @param tgt_path
  *  the path to the target directory
+ * @param cp_path
+ *  an optional path to copy the generated files to
  * @return
  *  0 on success, -1 on failure.
  */
-int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path );
+int smxgen_app_file_tree( igraph_t* g, char* src_path, const char* tgt_path,
+        const char* cp_path );
 
 /**
  * Generate the code to conncet an edge to a vertex given a mode.
