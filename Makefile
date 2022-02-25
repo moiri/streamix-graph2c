@@ -61,7 +61,8 @@ $(PROJECT): $(SOURCES) $(INCLUDES)
 install:
 	mkdir -p $(TGT_BIN) $(TGT_TPL)
 	cp -a $(APPNAME) $(TGT_BIN)/$(VAPPNAME)
-	cp -a $(LOCAL_TPL)/app $(TGT_TPL)/smxappgen-$(LIB_VERSION)
+	rm -rf  $(TGT_TPL)/smxappgen-$(LIB_VERSION)
+	cp -aR $(LOCAL_TPL)/app $(TGT_TPL)/smxappgen-$(LIB_VERSION)
 
 uninstall:
 	rm -f $(TGT_BIN)/$(VAPPNAME)
