@@ -1,4 +1,12 @@
-# `v0.4.1` (latest)
+# `v0.5.0` (latest)
+
+### Changes
+
+ - Update to the new RTS init call.
+
+
+-------------------
+# `v0.4.1`
 
 ### Changes
 

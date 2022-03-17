@@ -8,8 +8,8 @@
 
 # The version number of the app ($(VMAJ).$(VMIN).$(VREV))
 VMAJ = 0
-VMIN = 4
-VREV = 1
+VMIN = 5
+VREV = 0
 VDEB = 1
 
 # the RTS library
