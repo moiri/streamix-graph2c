@@ -100,9 +100,13 @@ Options:
                          1. 'app.zlog' in the application root
                          2. '/etc/smx/<bin_name><pkg_version>/app.zlog'
                          3. '/etc/smx/default.zlog'
-  -m, --map=FILE        Key-value maps to modify the app configuration. To pass multiple maps, use this argument multiple times.
-  -a, --arg-file=FILE   A JSON file to be stored in the RTS state which can be accessed read-only by all nets. This can be used to set the 'experiment_id' and the 'lab_id' of the experiment.
-  -A, --arg-string=STR  The same as '--arg-file' but here a JSON string is passed. This takes precedent over '--arg-file'.
+  -m, --map=FILE        Key-value maps to modify the app configuration. To pass
+                        multiple maps, use this argument multiple times.
+  -a, --arg-file=FILE   A JSON file to be stored in the RTS state which can be
+                        accessed read-only by all nets. This can be used to set
+                        the 'experiment_id' and the 'lab_id' of the experiment.
+  -A, --arg-string=STR  The same as '--arg-file' but here a JSON string is
+                        passed. This takes precedent over '--arg-file'.
 ```
 
 [Back to top](#streamix-application-<app_name>)

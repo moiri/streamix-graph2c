@@ -39,18 +39,20 @@ void print_usage( const char* name )
     printf( "Usage:\n  %s [OPTION...]\n\n", name );
     printf( "Options:\n" );
     printf( "  -h, --help            This this message and exit.\n" );
-    printf( "  -v, --version         Display the version of the application"
-            " and exit.\n" );
-    printf( "  -c, --conf=FILE       App configuration file to be passed to"
-            " the application.\n" );
+    printf( "  -v, --version         "
+            "Display the version of the application and exit.\n" );
+
+    printf( "  -c, --conf=FILE       "
+            "App configuration file to be passed to the application.\n" );
     printf( "                        "
             "If no file is specified the application falls back to:\n" );
     printf( "                        "
             " 1. '%s' in the application root\n", JSON_APP_CONFIG_PATH );
     printf( "                        "
             " 2. '%s'\n", JSON_SYS_CONFIG_PATH );
-    printf( "  -l, --log=FILE        Log configuration file to be passed to"
-            " the application.\n" );
+
+    printf( "  -l, --log=FILE        "
+            "Log configuration file to be passed to the application.\n" );
     printf( "                        "
             "If no file is specified the application falls back to:\n" );
     printf( "                        "
@@ -59,14 +61,23 @@ void print_usage( const char* name )
             " 2. '%s'\n", LOG_SYS_CONFIG_PATH );
     printf( "                        "
             " 3. '%s'\n", LOG_GLOBAL_CONFIG_PATH );
-    printf( "  -m, --map=FILE        Key-value maps to modify the app"
-            " configuration. To pass multiple maps, use this argument"
-            " multiple times.\n" );
-    printf( "  -a, --arg-file=FILE   A JSON file to be stored in the RTS state"
-            " which can be accessed read-only by all nets. This can be used to"
-            " set the 'experiment_id' and the 'lab_id' of the experiment.\n" );
-    printf( "  -A, --arg-string=STR  The same as '--arg-file' but here a JSON"
-            " string is passed. This takes precedent over '--arg-file'.\n" );
+
+    printf( "  -m, --map=FILE        "
+            "Key-value maps to modify the app configuration. To pass\n"
+            "                        "
+            "multiple maps, use this argument multiple times.\n" );
+
+    printf( "  -a, --arg-file=FILE   "
+            "A JSON file to be stored in the RTS state which can be\n"
+            "                        "
+            "accessed read-only by all nets. This can be used to set\n"
+            "                        "
+            "the 'experiment_id' and the 'lab_id' of the experiment.\n" );
+
+    printf( "  -A, --arg-string=STR  "
+            "The same as '--arg-file' but here a JSON string is\n"
+            "                        "
+            "passed. This takes precedent over '--arg-file'.\n" );
 }
 
 int main( int argc, char **argv )
