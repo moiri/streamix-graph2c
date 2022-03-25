@@ -2,7 +2,15 @@
 
 This application ...
 
-## Configuration
+## Table of Content
+
+- [Configuration](#1-configuration)
+- [Network](#2-network)
+- [Usage](#3-usage)
+- [Compiling and Installing](#4-compiling-and-installing)
+- [Building a Debian Package](#5-building-a-debian-package)
+
+## 1. Configuration
 
 In general, a configuration file is of the following form:
 
@@ -64,20 +72,42 @@ An example configuration of this application can be found in
 `/etc/smx/<app_name>-__version__/app.json` where `__version__` stand for the
 version number (major.minor) of the application.
 
-## Network
+[Back to top](#streamix-application-<app_name>)
+
+## 2. Network
 
 The application network is described in `<app_name>.smx` using the syntax of
 the coordination language Streamix. Refer to the configuration file
 `/opt/smx/conf/<app_name>.json` for a list of all nets used in the network.
 
-## Usage
+[Back to top](#streamix-application-<app_name>)
 
-To display the command line options of the application type:
+## 3. Usage
+
 ```
-<app_name> - h
+Usage:
+  ./<app_name> [OPTION...]
+
+Options:
+  -h, --help            This this message and exit.
+  -v, --version         Display the version of the application and exit.
+  -c, --conf=FILE       App configuration file to be passed to the application.
+                        If no file is specified the application falls back to:
+                         1. 'app.json' in the application root
+                         2. '/etc/smx/<bin_name><pkg_version>/app.json'
+  -l, --log=FILE        Log configuration file to be passed to the application.
+                        If no file is specified the application falls back to:
+                         1. 'app.zlog' in the application root
+                         2. '/etc/smx/<bin_name><pkg_version>/app.zlog'
+                         3. '/etc/smx/default.zlog'
+  -m, --map=FILE        Key-value maps to modify the app configuration. To pass multiple maps, use this argument multiple times.
+  -a, --arg-file=FILE   A JSON file to be stored in the RTS state which can be accessed read-only by all nets. This can be used to set the 'experiment_id' and the 'lab_id' of the experiment.
+  -A, --arg-string=STR  The same as '--arg-file' but here a JSON string is passed. This takes precedent over '--arg-file'.
 ```
 
-## Compiling and Installing
+[Back to top](#streamix-application-<app_name>)
+
+## 4. Compiling and Installing
 
 A Makefile is provided with the following commands (among others):
  - `make`: compile the app and all local box implementations to an executable
@@ -90,7 +120,9 @@ A Makefile is provided with the following commands (among others):
  - `sudo make uninstall`: manually remove the app files from to the target
    folders
 
-## Building a Debian Package
+[Back to top](#streamix-application-<app_name>)
+
+## 5. Building a Debian Package
 
 The following dependencies are required to build a debian package:
 
@@ -110,10 +142,15 @@ Make sure you are on the master branch and the app version in the file
 smx_build_bin_package.sh
 ```
 
-Not that this script will create several branches and tags as well as
-generating the debian changelog. To build a package from a debian branch first
-checkout the branch of the version you want to build and then run the following
-command:
+Note that this script will create several branches and tags as well as
+generating the debian changelog.
+
+[Back to top](#streamix-application-<app_name>)
+
+### 5.1. Building a Debian Package from a Branch
+
+To build a package from a debian branch first checkout the branch of the
+version you want to build and then run the following command:
 
 ```sh
 gbp buildpackage --git-export-dir=dpkg --git-upstream-tag='v%(version)s' --git-debian-branch=$(git rev-parse --abbrev-ref HEAD) --git-submodules -uc -us
@@ -125,7 +162,9 @@ For ease of use this command is wrapped by the script
 smx_gbp_buildpackage.sh
 ```
 
-## Reproducing the Source with pristine-tar
+[Back to top](#streamix-application-<app_name>)
+
+### 5.2 Reproducing the Source with pristine-tar
 
 Every version can be reproduced with `pristine-tar`.
 First rename the pristine-tar branch of the target version (e.g. version 0.5.1`):
@@ -138,8 +177,10 @@ Then generate the source. Note that the name of the output file must match the
 name of the files in the pristine-tar branch.
 
 ```sh
-pristine-tar checkout <app_name>__pkg_version__.orig.tar.gz
+pristine-tar checkout <app_name><pkg_version>.orig.tar.gz
 ```
 
-where `__pkg_version__` is of the form `major.minor_major.minor.revision`. With
+where `<pkg_version>` is of the form `major.minor_major.minor.revision`. With
 our example from above this results in `<app_name>0.5_0.5.1.orig.tar.gz`.
+
+[Back to top](#streamix-application-<app_name>)
