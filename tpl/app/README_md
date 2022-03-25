@@ -94,11 +94,11 @@ Options:
   -c, --conf=FILE       App configuration file to be passed to the application.
                         If no file is specified the application falls back to:
                          1. 'app.json' in the application root
-                         2. '/etc/smx/<bin_name><pkg_version>/app.json'
+                         2. '/etc/smx/<bin_name><maj_version>/app.json'
   -l, --log=FILE        Log configuration file to be passed to the application.
                         If no file is specified the application falls back to:
                          1. 'app.zlog' in the application root
-                         2. '/etc/smx/<bin_name><pkg_version>/app.zlog'
+                         2. '/etc/smx/<bin_name><maj_version>/app.zlog'
                          3. '/etc/smx/default.zlog'
   -m, --map=FILE        Key-value maps to modify the app configuration. To pass
                         multiple maps, use this argument multiple times.

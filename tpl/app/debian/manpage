@@ -9,13 +9,13 @@
 This is an application that was created with the coordination language Streamix.
 .SH OPTIONS
 .TP
-.B -h
+.B -h, --help
 Prints program usage information and exits successfully.
 .TP
-.B -v
+.B -v, --version
 Prints the program version and exits successfully.
 .TP
-.BI -c " FILE"
+.BI -c " FILE" ", --config=" "FILE"
 Configuration file to be passed to the application.
 .br
 If no file is specified the application falls back to:
@@ -24,6 +24,27 @@ If no file is specified the application falls back to:
 .br
 2. 'app.json' in /etc/smx/<bin_name><maj_version>
 .RE
+.TP
+.BI -l " FILE" ", --log=" "FILE"
+Log configuration file to be passed to the application.
+.br
+If no file is specified the application falls back to:
+.RS
+1. 'app.zlog' in the application root
+.br
+2. '/etc/smx/<bin_name><pkg_version>/app.zlog'
+.br
+3. '/etc/smx/default.zlog'
+.RE
+.TP
+.BI -m " FILE" ", --map=" "FILE"
+Key-value maps to modify the app configuration. To pass multiple maps, use this argument multiple times.
+.TP
+.BI -a " FILE" ", --arg-file=" "FILE"
+A JSON file to be stored in the RTS state which can be accessed read-only by all nets. This can be used to set the 'experiment_id' and the 'lab_id' of the experiment.
+.TP
+.BI -A " FILE" ", --arg-string=" "FILE"
+The same as '--arg-file' but here a JSON string is passed. This takes precedent over '--arg-file'.
 .SH SEE ALSO
 <box_relations>
 .SH BUGS
