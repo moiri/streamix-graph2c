@@ -106,10 +106,10 @@ clean_run:
 	rm -f log/*
 
 run:
-	./$(APPNAME)
+	./$(APPNAME) -A "{ \"experiment_id\": \"experiment OID\" }"
 
 valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(APPNAME)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -v ./$(APPNAME) -A "{ \"experiment_id\": \"experiment OID\" }"
 
 install:
 	mkdir -p $(TGT_BIN) $(TGT_DOC) $(TGT_CONF)
