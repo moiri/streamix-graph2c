@@ -12,11 +12,11 @@ VMIN = 5
 VREV = 0
 VDEB = 1
 
-# the RTS library
-LIB_SMXUTILS = -lsmxutils-0.3
+# the utility library
+LIB_SMXUTILS = -lsmxutils-0.4
 
 # the include path of the smxutlis header files
-INC_SMXUTILS = -I/usr/include/smx/libsmxutils-0.3
+INC_SMXUTILS = -I/usr/include/smx/libsmxutils-0.4
 
 # the name of the application
 APPNAME = smxrtsp
