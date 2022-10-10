@@ -680,7 +680,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
     }
     idx = 0;
 
-    // for all non-external boxes
+    // for all local boxes
     v_sel = igraph_vss_all();
     igraph_vit_create( g, v_sel, &v_it );
     while( !IGRAPH_VIT_END( v_it ) ) {
@@ -688,7 +688,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
         vid = IGRAPH_VIT_GET( v_it );
         name = igraph_cattribute_VAS( g, GV_IMPL, vid );
         if( smxutility_is_duplicate_str( name, names, net_count )
-                || smxutility_is_net_extern( g, vid )
+                || !smxutility_is_net_local( g, vid )
                 || smxutility_is_net_type( g, vid, TEXT_CP )
                 || smxutility_is_net_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
