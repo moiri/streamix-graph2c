@@ -636,6 +636,7 @@ void smxgen_main_includes( igraph_t* g )
         // store name of vertex to avoid duplicates
         box_name = igraph_cattribute_VAS( g, GV_IMPL, vid );
         if( smxutility_is_duplicate_str( box_name, box_names, net_count )
+                || smxutility_is_net_intern( g, vid )
                 || smxutility_is_net_type( g, vid, TEXT_CP )
                 || smxutility_is_net_type( g, vid, TEXT_TF ) ) {
             IGRAPH_VIT_NEXT( v_it );
