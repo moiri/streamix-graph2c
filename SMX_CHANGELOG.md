@@ -1,9 +1,13 @@
-# `v0.5.1` (latest)
+# `v0.6.0` (latest)
 
 ### Changes
 
  - Update to library libsmxutils-0.4
  - Distinguish between local, internal, and external box libraries.
+
+
+-------------------
+# `v0.5.1` (deprecated)
 
 
 -------------------
