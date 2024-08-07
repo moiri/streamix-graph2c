@@ -215,7 +215,8 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path );
  *
  * @param g          pointer to the dependency graph
  * @param build_path path to the build folder
+ * @param version    the Streamix app version
  */
-void smxgen_tpl_main( igraph_t* g, char* build_path );
+void smxgen_tpl_main( igraph_t* g, char* build_path, const char* version );
 
 #endif /* SMXGEN_H */

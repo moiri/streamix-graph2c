@@ -7,16 +7,16 @@
 ###############################################################################
 
 # The version number of the app ($(VMAJ).$(VMIN).$(VREV))
-VMAJ = 0
-VMIN = 6
+VMAJ = 1
+VMIN = 0
 VREV = 0
 VDEB = 1
 
 # the utility library
-LIB_SMXUTILS = -lsmxutils-0.4
+LIB_SMXUTILS = -lsmxutils-1.0
 
 # the include path of the smxutlis header files
-INC_SMXUTILS = -I/usr/include/smx/libsmxutils-0.4
+INC_SMXUTILS = -I/usr/include/smx/libsmxutils-1.0
 
 # the name of the application
 APPNAME = smxrtsp

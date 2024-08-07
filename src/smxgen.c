@@ -712,7 +712,7 @@ void smxgen_tpl_box( igraph_t* g, char* box_path, char* build_path )
 }
 
 /******************************************************************************/
-void smxgen_tpl_main( igraph_t* g, char* build_path )
+void smxgen_tpl_main( igraph_t* g, char* build_path, const char* version )
 {
     char path_tmp[500];
     char file[1000];
@@ -792,6 +792,7 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     mkdir( DIR_LOG, 0755 );
     mkdir( "tpl", 0755 );
     mkdir( "tpl/debian", 0755 );
+    mkdir( "schemas", 0755 );
     sprintf( path_tmp, "%s/tpl", build_path );
     mkdir( path_tmp, 0755 );
 
@@ -809,20 +810,11 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
 
     sprintf( file, "%s/app.json", path_tmp );
     rc = smxconfgen_generate_file( g, igraph_cattribute_GAS( g, "name" ),
-            "<maj_version>", false, path_tmp, "app.json" );
+            version, false, path_tmp, "app.json" );
     if( rc == 0 )
     {
         fprintf( stdout, "(*) created file '%s'\n", file );
         smxutility_file_cp( file, "app.json" );
-    }
-
-    sprintf( file, "%s/app.schema.json", path_tmp );
-    smxconfgen_generate_file( g, igraph_cattribute_GAS( g, "name" ),
-            "<maj_version>", true, path_tmp, "app.schema.json" );
-    if( rc == 0 )
-    {
-        fprintf( stdout, "(*) created file '%s'\n", file );
-        smxutility_file_cp( file, "app.schema.json" );
     }
 
     sprintf( file, "%s/app.zlog", path_tmp );
@@ -832,6 +824,17 @@ void smxgen_tpl_main( igraph_t* g, char* build_path )
     sprintf( file, "%s/.gitignore", path_tmp );
     smxgen_app_file( g, TPL_APP_GITIGNORE, file );
     smxutility_file_cp( file, ".gitignore" );
+
+    sprintf( path_tmp, "%s/tpl/schemas", build_path );
+    mkdir( path_tmp, 0755 );
+    sprintf( file, "%s/config.json", path_tmp );
+    smxconfgen_generate_file( g, igraph_cattribute_GAS( g, "name" ),
+            version, true, path_tmp, "config.json" );
+    if( rc == 0 )
+    {
+        fprintf( stdout, "(*) created file '%s'\n", file );
+        smxutility_file_cp( file, "schemas/config.json" );
+    }
 
     sprintf( path_tmp, "%s/tpl/debian", build_path );
     mkdir( path_tmp, 0755 );

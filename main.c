@@ -48,6 +48,7 @@ int main( int argc, char **argv )
     char* build_path = NULL;
     char* box_path = NULL;
     char* author = "TPF <tpf@humdek.unibe.ch>";
+    char* version = "<maj_version>";
     char* path_sia;
     char* file_name;
     char* path_main;
@@ -59,17 +60,18 @@ int main( int argc, char **argv )
     int c;
     igraph_i_set_attribute_table( &igraph_cattribute_table );
 
-    while( ( c = getopt( argc, argv, "hvb:e:p:f:" ) ) != -1 )
+    while( ( c = getopt( argc, argv, "hva:b:e:p:f:" ) ) != -1 )
         switch( c ) {
             case 'h':
                 printf( "Usage:\n  %s [OPTION...] FILE\n\n", argv[0] );
                 printf( "Options:\n" );
-                printf( "  -h            This message\n" );
-                printf( "  -v            Version\n" );
-                printf( "  -b 'path'     Path to store the generated box files\n" );
-                printf( "  -e 'author'   The author of the source (default: TPF <tpf@humdek.unibe.ch>)" );
-                printf( "  -p 'path'     Path to store the generated app files\n" );
-                printf( "  -f 'format'   Format of the graph either 'gml' or 'graphml'\n" );
+                printf( "  -h               This message\n" );
+                printf( "  -v               Version\n" );
+                printf( "  -b 'path'        Path to store the generated box files\n" );
+                printf( "  -e 'author'      The author of the source (default: TPF <tpf@humdek.unibe.ch>)" );
+                printf( "  -p 'path'        Path to store the generated app files\n" );
+                printf( "  -f 'format'      Format of the graph either 'gml' or 'graphml'\n" );
+                printf( "  -a 'version'     The application version\n" );
                 return 0;
             case 'v':
                 printf( "%s v%s\n", argv[0], VERSION );
@@ -82,6 +84,9 @@ int main( int argc, char **argv )
                 break;
             case 'e':
                 author = optarg;
+                break;
+            case 'a':
+                version = optarg;
                 break;
             case 'f':
                 format = optarg;
@@ -165,7 +170,7 @@ int main( int argc, char **argv )
     igraph_cattribute_GAS_set( &g, "author", author );
     igraph_cattribute_GAS_set( &g, "name", file_name );
     smxgen_tpl_box( &g, box_path, build_path );
-    smxgen_tpl_main( &g, build_path );
+    smxgen_tpl_main( &g, build_path, version );
     fprintf( stdout, "\n" );
     fprintf( stdout, "  DO NOT MODIFY FILES MARKED BY (*)\n" );
     fprintf( stdout, "\n" );
